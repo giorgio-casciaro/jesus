@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "entityTest Entity",
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "Permission Type",
+            "type": "string"
+        }
+    },
+    "required": ["name"]
+}
