@@ -3,13 +3,7 @@ var sift = require('sift')
 var path = require('path')
 var fs = require('fs')
 const uuidV4 = require('uuid/v4')
-
-var db = {}
-var dbFilename
-var getCollection = (dbConfig, collectionName) => {
-  if (!db[collectionName])db[collectionName] = {}
-  return db[collectionName]
-}
+var db = global.inMemoryDb = {collections: {}, collectionsSaveTimeout: {}}
 function getReadableDate () { return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') }
 module.exports = async function getStorageTestPackage (CONFIG, DI) {
   try {
@@ -18,16 +12,28 @@ module.exports = async function getStorageTestPackage (CONFIG, DI) {
     const checkRequired = require('./jesus').checkRequired
     CONFIG = checkRequired(CONFIG, ['storageCollection', 'storageConfig'], PACKAGE)
     DI = checkRequired(DI, ['error', 'log', 'debug'], PACKAGE)
+
     var storageCollection = await getValuePromise(CONFIG.storageCollection)
     var storageConfig = await getValuePromise(CONFIG.storageConfig)
-    var dbFile = path.join(storageConfig.path, getReadableDate() + ' ' + storageCollection + '.json')
-    var collection = getCollection(storageConfig, storageCollection)
-    async function find ({query, sort, limit, start}) {
-      var sifted = sift(query, R.values(collection))
-      return sifted
+    var dbFile = path.join(storageConfig.path, storageCollection + '.json')
+
+    if (!db.collections[storageCollection])db.collections[storageCollection] = {}
+    var collection = db.collections[storageCollection]
+
+    async function find ({query, sort = null, limit = 1000, start = 0}) {
+      // TO FIX
+      var results = sift(query, R.values(collection))
+      DI.debug({msg: `find() `, context: PACKAGE, debug: {storageCollection,query, collection,results}})
+      if (sort) {
+        R.addIndex(R.forEach)((sortValue, sortIndex) => {
+          results = R.sortBy(R.prop(sortIndex), results)
+        }, sort)
+      }
+      return R.slice(limit, start + limit, results)
     }
     async function insert ({items}) {
       if (!items || !items.length) throw new Error('No items')
+      items = R.clone(items)
       items.forEach((value) => {
         if (!value._id)value._id = uuidV4()
         collection[value._id] = value
@@ -36,28 +42,33 @@ module.exports = async function getStorageTestPackage (CONFIG, DI) {
       return true
     }
     function savefile () {
-      DI.debug({msg: 'STORAGE TEST WRITE TO DISK ', context: PACKAGE, debug: {dbFile, collection}})
-      fs.writeFile(dbFile, JSON.stringify(collection), 'utf8', () => {
-        DI.debug({msg: 'STORAGE TEST WRITED TO DISK ', context: PACKAGE, debug: {dbFile, collection}})
-      })
+      if (!db.collectionsSaveTimeout[storageCollection])db.collectionsSaveTimeout[storageCollection] = {}
+      if (db.collectionsSaveTimeout[storageCollection]) clearTimeout(db.collectionsSaveTimeout[storageCollection])
+      db.collectionsSaveTimeout[storageCollection] = setTimeout(function () {
+        DI.debug({msg: `${storageCollection} WRITING TO DISK `, context: PACKAGE, debug: {dbFile, collection}})
+        fs.writeFile(dbFile, JSON.stringify(collection, null, 4), 'utf8', () => {
+          DI.debug({msg: `${storageCollection} WRITED TO DISK `, context: PACKAGE, debug: {dbFile}})
+        })
+      }, 1000)
       return true
     }
     return {
       insert,
       get: async function get ({ids}) {
         if (!ids) throw new Error('No items ids')
-        results = []
+        var results = []
         ids.forEach((id) => {
-          results[id] = R.clone(collection[id])
+          results.push(R.clone(collection[id]))
         })
         return results
       },
       find,
       update: async function update ({queriesArray, dataArray, insertIfNotExists = false}) {
+        dataArray = R.clone(dataArray)
         queriesArray.forEach(async(query, queryIndex) => {
           var queryResults = await find({query})
           queryResults.forEach((item) => {
-            collection[queryIndex] = R.merge(item, dataArray[queryIndex])
+            collection[dataArray[queryIndex]._id] = R.merge(item, dataArray[queryIndex])
           })
           if (!queryResults.length && insertIfNotExists) await insert({items: [dataArray[queryIndex]]})
         })

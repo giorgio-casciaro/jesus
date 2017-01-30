@@ -1,0 +1,325 @@
+[
+    {
+        "DEBUG mutations.cqrs > itemsSingleMutation to create": {
+            "mutation": "delete",
+            "lastMutationVersion": "000",
+            "itemsIds": [
+                "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+            ],
+            "itemsSingleMutation": [
+                {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "delete",
+                    "version": "000",
+                    "time": 1485778536.804,
+                    "data": {}
+                }
+            ]
+        }
+    },
+    {
+        "DEBUG views.cqrs > refreshItemsViews": {
+            "itemsIds": [
+                "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+            ],
+            "loadSnapshot": true,
+            "addMutations": [
+                {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "delete",
+                    "version": "000",
+                    "time": 1485778536.804,
+                    "data": {}
+                }
+            ]
+        }
+    },
+    {
+        "DEBUG views.cqrs > updateItemView": {
+            "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+            "loadSnapshot": true,
+            "loadMutations": true,
+            "addMutations": {
+                "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                "mutation": "delete",
+                "version": "000",
+                "time": 1485778536.804,
+                "data": {}
+            }
+        }
+    },
+    {
+        "DEBUG storage.test > find() ": {
+            "storageCollection": "entityTestViewsMainSnapshots",
+            "query": {
+                "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+            },
+            "collection": {},
+            "results": []
+        }
+    },
+    {
+        "DEBUG storage.test > find() ": {
+            "storageCollection": "entityTestMutations",
+            "query": {
+                "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+            },
+            "collection": {
+                "afdd7754-30c9-4353-8d10-db97b5b5d4b1": {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "create",
+                    "version": "001",
+                    "time": 1485778536.447,
+                    "data": {
+                        "name": "test",
+                        "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+                    },
+                    "_id": "afdd7754-30c9-4353-8d10-db97b5b5d4b1"
+                },
+                "64fd6267-db09-4633-97ef-5e8e89b146fd": {
+                    "itemId": "348c0130-be68-4467-b8a4-b8b4907e7cab",
+                    "mutation": "create",
+                    "version": "001",
+                    "time": 1485778536.447,
+                    "data": {
+                        "name": "test2",
+                        "_id": "348c0130-be68-4467-b8a4-b8b4907e7cab"
+                    },
+                    "_id": "64fd6267-db09-4633-97ef-5e8e89b146fd"
+                },
+                "bdc540fc-715a-4796-bb93-e3c830a1915d": {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "update",
+                    "version": "000",
+                    "time": 1485778536.756,
+                    "data": {
+                        "name": "testupdate",
+                        "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+                    },
+                    "_id": "bdc540fc-715a-4796-bb93-e3c830a1915d"
+                },
+                "ec2a6efa-a358-4693-a97d-43d0d456f993": {
+                    "itemId": "348c0130-be68-4467-b8a4-b8b4907e7cab",
+                    "mutation": "update",
+                    "version": "000",
+                    "time": 1485778536.756,
+                    "data": {
+                        "name": "testupdate2",
+                        "_id": "348c0130-be68-4467-b8a4-b8b4907e7cab"
+                    },
+                    "_id": "ec2a6efa-a358-4693-a97d-43d0d456f993"
+                },
+                "7678a316-3fac-437f-9fb8-aa605a3054b5": {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "delete",
+                    "version": "000",
+                    "time": 1485778536.804,
+                    "data": {},
+                    "_id": "7678a316-3fac-437f-9fb8-aa605a3054b5"
+                }
+            },
+            "results": [
+                {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "create",
+                    "version": "001",
+                    "time": 1485778536.447,
+                    "data": {
+                        "name": "test",
+                        "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+                    },
+                    "_id": "afdd7754-30c9-4353-8d10-db97b5b5d4b1"
+                },
+                {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "update",
+                    "version": "000",
+                    "time": 1485778536.756,
+                    "data": {
+                        "name": "testupdate",
+                        "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+                    },
+                    "_id": "bdc540fc-715a-4796-bb93-e3c830a1915d"
+                },
+                {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "delete",
+                    "version": "000",
+                    "time": 1485778536.804,
+                    "data": {},
+                    "_id": "7678a316-3fac-437f-9fb8-aa605a3054b5"
+                }
+            ]
+        }
+    },
+    {
+        "DEBUG mutations.cqrs > getItemMutations": {
+            "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+            "minTimestamp": 0,
+            "results": []
+        }
+    },
+    {
+        "DEBUG mutations.cqrs > applyMutationsFromPath": {
+            "state": {},
+            "mutations": [
+                {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "delete",
+                    "version": "000",
+                    "time": 1485778536.804,
+                    "data": {}
+                }
+            ],
+            "mutationsPath": "/home/vopa/Scrivania/civil/Kubernetes/git/jesus/testMaterial/entityTest/mutations"
+        }
+    },
+    {
+        "DEBUG views.cqrs > updatedView": {
+            "updatedView": {
+                "_deleted": true
+            },
+            "mutations": [
+                {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "delete",
+                    "version": "000",
+                    "time": 1485778536.804,
+                    "data": {}
+                }
+            ]
+        }
+    },
+    {
+        "DEBUG jesus.test > deleteEntityTest": {
+            "itemsIds": [
+                "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+            ],
+            "itemsMutations": [
+                {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "delete",
+                    "version": "000",
+                    "time": 1485778536.804,
+                    "data": {}
+                }
+            ]
+        }
+    },
+    {
+        "DEBUG storage.test > find() ": {
+            "storageCollection": "entityTestViewsMain",
+            "query": {
+                "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+            },
+            "collection": {
+                "c187dce7-d98f-4411-a2a2-565c0fdf9beb": {
+                    "name": "testupdate",
+                    "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+                },
+                "348c0130-be68-4467-b8a4-b8b4907e7cab": {
+                    "name": "testupdate2",
+                    "_id": "348c0130-be68-4467-b8a4-b8b4907e7cab"
+                },
+                "668146a2-f017-4055-853b-997b87400b21": {
+                    "_deleted": true,
+                    "_id": "668146a2-f017-4055-853b-997b87400b21"
+                }
+            },
+            "results": [
+                {
+                    "name": "testupdate",
+                    "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+                }
+            ]
+        }
+    },
+    {
+        "DEBUG storage.test > entityTestMutations WRITING TO DISK ": {
+            "dbFile": "/home/vopa/Scrivania/civil/Kubernetes/git/jesus/testMaterial/fileDb/entityTestMutations.json",
+            "collection": {
+                "afdd7754-30c9-4353-8d10-db97b5b5d4b1": {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "create",
+                    "version": "001",
+                    "time": 1485778536.447,
+                    "data": {
+                        "name": "test",
+                        "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+                    },
+                    "_id": "afdd7754-30c9-4353-8d10-db97b5b5d4b1"
+                },
+                "64fd6267-db09-4633-97ef-5e8e89b146fd": {
+                    "itemId": "348c0130-be68-4467-b8a4-b8b4907e7cab",
+                    "mutation": "create",
+                    "version": "001",
+                    "time": 1485778536.447,
+                    "data": {
+                        "name": "test2",
+                        "_id": "348c0130-be68-4467-b8a4-b8b4907e7cab"
+                    },
+                    "_id": "64fd6267-db09-4633-97ef-5e8e89b146fd"
+                },
+                "bdc540fc-715a-4796-bb93-e3c830a1915d": {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "update",
+                    "version": "000",
+                    "time": 1485778536.756,
+                    "data": {
+                        "name": "testupdate",
+                        "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+                    },
+                    "_id": "bdc540fc-715a-4796-bb93-e3c830a1915d"
+                },
+                "ec2a6efa-a358-4693-a97d-43d0d456f993": {
+                    "itemId": "348c0130-be68-4467-b8a4-b8b4907e7cab",
+                    "mutation": "update",
+                    "version": "000",
+                    "time": 1485778536.756,
+                    "data": {
+                        "name": "testupdate2",
+                        "_id": "348c0130-be68-4467-b8a4-b8b4907e7cab"
+                    },
+                    "_id": "ec2a6efa-a358-4693-a97d-43d0d456f993"
+                },
+                "7678a316-3fac-437f-9fb8-aa605a3054b5": {
+                    "itemId": "c187dce7-d98f-4411-a2a2-565c0fdf9beb",
+                    "mutation": "delete",
+                    "version": "000",
+                    "time": 1485778536.804,
+                    "data": {},
+                    "_id": "7678a316-3fac-437f-9fb8-aa605a3054b5"
+                }
+            }
+        }
+    },
+    {
+        "DEBUG storage.test > entityTestMutations WRITED TO DISK ": {
+            "dbFile": "/home/vopa/Scrivania/civil/Kubernetes/git/jesus/testMaterial/fileDb/entityTestMutations.json"
+        }
+    },
+    {
+        "DEBUG storage.test > entityTestViewsMain WRITING TO DISK ": {
+            "dbFile": "/home/vopa/Scrivania/civil/Kubernetes/git/jesus/testMaterial/fileDb/entityTestViewsMain.json",
+            "collection": {
+                "c187dce7-d98f-4411-a2a2-565c0fdf9beb": {
+                    "name": "testupdate",
+                    "_id": "c187dce7-d98f-4411-a2a2-565c0fdf9beb"
+                },
+                "348c0130-be68-4467-b8a4-b8b4907e7cab": {
+                    "name": "testupdate2",
+                    "_id": "348c0130-be68-4467-b8a4-b8b4907e7cab"
+                },
+                "668146a2-f017-4055-853b-997b87400b21": {
+                    "_deleted": true,
+                    "_id": "668146a2-f017-4055-853b-997b87400b21"
+                }
+            }
+        }
+    },
+    {
+        "DEBUG storage.test > entityTestViewsMain WRITED TO DISK ": {
+            "dbFile": "/home/vopa/Scrivania/civil/Kubernetes/git/jesus/testMaterial/fileDb/entityTestViewsMain.json"
+        }
+    }
+]

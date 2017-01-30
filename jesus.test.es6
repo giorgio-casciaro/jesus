@@ -6,38 +6,48 @@ const throwError = require('./error').throwError
 var t = require('tap')
 var R = require('ramda')
 var path = require('path')
+var fs = require('fs')
 const PACKAGE = 'jesus.test'
 process.on('unhandledRejection', (reason, promise) => {
   console.log('unhandledRejection Reason: ', promise, reason)
   console.trace(promise)
 })
+var debugActive = false
+var debugSaveTimeout
+var debugFile = path.join(__dirname, 'testMaterial/debug', PACKAGE + '.json')
+var debugRegistry = []
+function save_debug () {
 
-var DEBUG = function (type, debug, msg = 'unknow', context = 'unknow') {
-  const ANSI_RESET = '\u001B[0m'
-  const ANSI_BLACK = '\u001B[30m'
-  const ANSI_RED = '\u001B[31m'
-  const ANSI_GREEN = '\u001B[32m'
-  const ANSI_YELLOW = '\u001B[33m'
-  const ANSI_BLUE = '\u001B[34m'
-  const ANSI_PURPLE = '\u001B[35m'
-  const ANSI_CYAN = '\u001B[36m'
-  const ANSI_WHITE = '\u001B[37m'
-  if (type === 'ERROR') {
-    console.log(`${ANSI_RED}`)
-  }
-  if (type === 'WARNING') {
-    console.log(`${ANSI_YELLOW}`)
-  }
-  if (type === 'LOG') {
-    console.log(`${ANSI_GREEN}`)
-  }
-  if (type === 'DEBUG') {
-    console.log(`${ANSI_CYAN}`)
-  }
-  console.log(`${type} ${context} > ${msg} ${ANSI_RESET}`)
-  console.log(debug)
-  // console.log(JSON.stringify(arguments).substring(0, 250))
 }
+var DEBUG = function (type, debug, msg = 'unknow', context = 'unknow') {
+  if (!debugActive) return null
+  debugRegistry.push({
+    [`${type} ${context} > ${msg}`]: debug
+  })
+  if (debugSaveTimeout) clearTimeout(debugSaveTimeout)
+  debugSaveTimeout = setTimeout(function () {
+    fs.writeFile(debugFile, JSON.stringify(debugRegistry, null, 4), 'utf8')
+  }, 1000)
+}
+// var DEBUG = function (type, debug, msg = 'unknow', context = 'unknow') {
+//   if (!debugActive) return null
+//   const ANSI_RESET = '\u001B[0m'
+//   const ANSI_BLACK = '\u001B[30m'
+//   const ANSI_RED = '\u001B[31m'
+//   const ANSI_GREEN = '\u001B[32m'
+//   const ANSI_YELLOW = '\u001B[33m'
+//   const ANSI_BLUE = '\u001B[34m'
+//   const ANSI_PURPLE = '\u001B[35m'
+//   const ANSI_CYAN = '\u001B[36m'
+//   const ANSI_WHITE = '\u001B[37m'
+//   if (type === 'ERROR') console.log(`${ANSI_RED}`)
+//   if (type === 'WARNING') console.log(`${ANSI_YELLOW}`)
+//   if (type === 'LOG') console.log(`${ANSI_GREEN}`)
+//   if (type === 'DEBUG') console.log(`${ANSI_CYAN}`)
+//   console.log(`${type} ${context} > ${msg} ${ANSI_RESET}`)
+//   console.log(debug)
+//   // console.log(JSON.stringify(arguments).substring(0, 250))
+// }
 var LOG = function (type, log, msg = 'unknow', context = 'unknow') {
   const ANSI_RESET = '\u001B[0m'
   const ANSI_BLACK = '\u001B[30m'
@@ -52,8 +62,6 @@ var SERVICE_NAME = 'testService'
 var fakeAuth = {
   userId: '195151662661'
 }
-
-
 
 var DI = {
   throwError,
@@ -93,84 +101,62 @@ var DI = {
     // if (error.toString)console.log(JSON.stringify(error.toString(), null, 4))
     LOG('ERROR', error, 'jesus-test', 'APP-ERROR')
   }
-
-  // validateEntity: (payload) => new Promise((resolve, reject) => {
-  //   LOG('LOG', payload)
-  //   resolve(true)
-  // }),
-  // getEntitySchema: (payload) => new Promise((resolve, reject) => {
-  //   LOG('LOG', payload)
-  //   resolve(true)
-  // })
-
 }
-function setPackageArgsOverwrite () {
-  var overwriteArgs = Array.prototype.slice.call(arguments, 1)
-  var originalPackage = arguments[0]
-  var modifiedPackage = {}
-  for (var i in originalPackage) {
-    modifiedPackage[i] = function packageArgsOverwrite () {
-      var modifiedArguments = Object.assign(arguments, overwriteArgs)
-      return originalPackage[i].apply(this, modifiedArguments)
-    }
-  }
-  return modifiedPackage
-}
+
 t.test('*** JESUS SERVICE CRUD ***', {
   autoend: true
 }, async function mainTest (t) {
-  t.plan(1)
-  await t.test('*** JESUS SERVICE CRUD 1 ***', async function (t) {
-    try {
-      SERVICE = {
-        routes: {},
+  SERVICE = {
+    routes: {},
+    config: {
+      mainStorage: {
+        type: 'inmemory',
         config: {
-          mainStorage: {
-            type: 'inmemory',
-            config: {
-              path: path.join(__dirname, 'testMaterial/fileDb')
-            }
-          }
-        },
-        events: {}
+          path: path.join(__dirname, 'testMaterial/fileDb')
+        }
       }
-        // SHARED FUNCTIONS
-        // var optionsStorage = jesus.getStoragePackage(CONFIG.optionsStorage, CONFIG.items.entityTest.optionsStorageCollection)
+    },
+    events: {}
+  }
 
-      var storagePackage = require('./storage')
+  var storagePackage = require('./storage')
 
-      var entityTestConfig = {
-        storageType: () => SERVICE.config.mainStorage.type,
-        storageConfig: () => SERVICE.config.mainStorage.config,
-        mutationsPath: () => path.join(__dirname, 'testMaterial/entityTest/mutations'),
-        mutationsCollection: () => path.join(__dirname, 'testMaterial/entityTest/mutations'),
-        viewsSnapshotsMaxMutations: () => 10,
-        validationSchema: () => {
-          try {
-            return require('./testMaterial/entityTest/entity.schema.json')
-          } catch (error) {
-            DI.throwError('entityTestConfig validationSchema() ', error)
-          }
-        },
-        validationType: () => 'jsonSchema'
+  var entityTestConfig = {
+    storageType: () => SERVICE.config.mainStorage.type,
+    storageConfig: () => SERVICE.config.mainStorage.config,
+    mutationsPath: () => path.join(__dirname, 'testMaterial/entityTest/mutations'),
+    mutationsCollection: () => path.join(__dirname, 'testMaterial/entityTest/mutations'),
+    viewsSnapshotsMaxMutations: () => 10,
+    validationSchema: () => {
+      try {
+        return require('./testMaterial/entityTest/entity.schema.json')
+      } catch (error) {
+        DI.throwError('entityTestConfig validationSchema() ', error)
       }
-      var entityTestDI = R.merge({
-        mutationsStoragePackage: storagePackage(R.merge(entityTestConfig, {
-          storageCollection: () => 'entityTestMutations'
-        }), DI),
-        viewsStoragePackage: storagePackage(R.merge(entityTestConfig, {
-          storageCollection: () => 'entityTestViewsMain'
-        }), DI),
-        throwError: DI.throwError,
-        viewsSnapshotsStoragePackage: storagePackage(R.merge(entityTestConfig, {
-          storageCollection: () => 'entityTestViewsMainSnapshots'
-        }), DI)
-      }, DI)
-      entityTestDI.mutationsPackage = await require('./mutations.cqrs')(entityTestConfig, entityTestDI)
-      entityTestDI.viewsPackage = await require('./views.cqrs')(entityTestConfig, entityTestDI)
-      entityTestDI.validate = await require('./validate')(entityTestConfig, entityTestDI)
+    },
+    validationType: () => 'jsonSchema'
+  }
+  var entityTestDI = R.merge({
+    mutationsStoragePackage: storagePackage(R.merge(entityTestConfig, {
+      storageCollection: () => 'entityTestMutations'
+    }), DI),
+    viewsStoragePackage: storagePackage(R.merge(entityTestConfig, {
+      storageCollection: () => 'entityTestViewsMain'
+    }), DI),
+    throwError: DI.throwError,
+    viewsSnapshotsStoragePackage: storagePackage(R.merge(entityTestConfig, {
+      storageCollection: () => 'entityTestViewsMainSnapshots'
+    }), DI)
+  }, DI)
+  entityTestDI.mutationsPackage = await require('./mutations.cqrs')(entityTestConfig, entityTestDI)
+  entityTestDI.viewsPackage = await require('./views.cqrs')(entityTestConfig, entityTestDI)
+  entityTestDI.validate = await require('./validate')(entityTestConfig, entityTestDI)
 
-      async function createEntityTest (request) {
+  global.serviceResponse = {}
+  t.plan(4)
+  await t.test('-> CRUD CREATE', async function (t) {
+    try {
+      var createEntityTest = async function (request) {
         try {
           const uuidV4 = require('uuid/v4')
           var items = request.items
@@ -180,9 +166,9 @@ t.test('*** JESUS SERVICE CRUD ***', {
           var authorizationsData = await DI.authenticate({request})
           await DI.authorize({context: authorizationsData, action: 'write', entity: 'entityTest', items})
           var itemsIds = R.map(R.prop('_id'), items)
-          var itemsMutation = await entityTestDI.mutationsPackage.mutate({mutation: 'create', itemsIds, items})
-
-          await entityTestDI.viewsPackage.refreshItemsViews({itemsIds, loadSnapshot: false, itemsMutations: [itemsMutation]})
+          var itemsMutations = await entityTestDI.mutationsPackage.mutate({mutation: 'create', itemsIds, items})
+          DI.debug({msg: 'createEntityTest', context: PACKAGE, debug: {itemsMutations}})
+          await entityTestDI.viewsPackage.refreshItemsViews({itemsIds, loadSnapshot: false, loadMutations: false, addMutations: itemsMutations})
           return {itemsIds}
             // DI.log({context: 'packageName', name: 'createEntityTest', log: {ids}})
         } catch (error) {
@@ -192,99 +178,141 @@ t.test('*** JESUS SERVICE CRUD ***', {
       DI.registerRoute({route: 'createEntityTest', routeFunction: createEntityTest})
       DI.registerEvent({event: 'createEntityTest', route: 'createEntityTest'})
       var createEntityTestRequest = {
-        items: [{name: 'test'}]
+        items: [{name: 'test'}, {name: 'test2'}]
       }
       try {
-        var response=await DI.callRoute({route: 'createEntityTest', request: createEntityTestRequest})
-        t.type(response, 'object')
-        t.type(response.itemsIds, 'Array')
-        t.type(response.itemsIds.length, 1)
+        global.serviceResponse = await DI.callRoute({route: 'createEntityTest', request: createEntityTestRequest})
+        t.type(global.serviceResponse, 'object', 'Response is object')
+        t.type(global.serviceResponse.itemsIds, 'Array', 'itemsIds is array')
+        t.type(global.serviceResponse.itemsIds.length, 2, 'itemsIds length is 2')
       } catch (error) {
         DI.throwError('DI.callRoute createEntityTest', error, {route: 'createEntityTest', request: createEntityTestRequest})
       }
 
-        // var entityTestDI = {
-        //   validate: entityTestValidate,
-        //   mutationsPackage: entityTestMutationsPackage,
-        //   viewsPackage: entityTestMainViewPackage
-        // }
-        //
-        // var entityTest_crud = require('./service.crud')
-        // entityTest_crud(R.merge(entityTestDI, DI), {})
-      LOG('RESOLVE TEST 1', {SERVICE})
       t.end()
     } catch (error) {
-      // throw error
       DI.error({error})
-      LOG('REJECT TEST 1')
-      // t.fail('FAIL deleteentityTest')
-      t.end('FAIL deleteentityTest')
+      t.fail('FAIL createEntityTest')
+      t.end('FAIL createEntityTest')
     }
-      // SERVICE_API.deleteentityTest({
-      //   ids: testentityTestsIds
-      // }, function (result) {
-      //   LOG('RESOLVE deleteentityTest', result)
-      //   // t.pass('PASS deleteentityTest')
-      //   t.end()
-      // }, function (error) {
-      //   LOG('REJECT deleteentityTest', error)
-      //   t.fail('FAIL deleteentityTest')
-      //   t.end('FAIL deleteentityTest')
-      // })
   })
-    //
-    // await t.test('*** SERVICE.createentityTest ***', function (t) {
-    //   SERVICE_API.createentityTest({
-    //     items: testentityTests
-    //   }, function (result) {
-    //     LOG('RESOLVE createentityTest', result)
-    //     // t.pass('PASS createentityTest')
-    //     t.end()
-    //   }, function (error) {
-    //     LOG('REJECT createentityTest', error)
-    //     t.fail('FAIL createentityTest')
-    //     t.end()
-    //   })
-    // })
-    // //
-    // await t.test('*** SERVICE.createentityTest try to reinsert same ids***', function (t) {
-    //   SERVICE_API.createentityTest({
-    //     items: testentityTests
-    //   }, function (result) {
-    //     LOG('RESOLVE createentityTest', result)
-    //     t.fail('FAIL createentityTest')
-    //     t.end()
-    //   }, function (error) {
-    //     LOG('REJECT createentityTest', error)
-    //     t.end()
-    //   })
-    // })
-    //
-    // await t.test('*** SERVICE.readentityTest ***', function (t) {
-    //   SERVICE_API.readentityTest({
-    //     ids: testentityTestsIds
-    //   }, function (result) {
-    //     LOG('RESOLVE readentityTest', result)
-    //     t.end()
-    //   }, function (error) {
-    //     LOG('REJECT readentityTest', error)
-    //     t.fail('FAIL readentityTest')
-    //     t.end()
-    //   })
-    // })
-    //
-    // await t.test('*** SERVICE.updateentityTest ***', function (t) {
-    //   SERVICE_API.updateentityTest({
-    //     items: testentityTests
-    //   }, function (result) {
-    //     LOG('RESOLVE updateentityTest', result)
-    //     t.end('RESOLVE updateentityTest')
-    //   }, function (error) {
-    //     LOG('REJECT updateentityTest', error)
-    //     t.fail('FAIL updateentityTest')
-    //     t.end()
-    //   })
-    // })
-  // t.end()
-  // process.exit(0)
+  await t.test('-> CRUD UPDATE', async function (t) {
+    try {
+      var updateEntityTest = async function (request) {
+        try {
+          var items = request.items
+          if (!items || !items.length) throw new Error('updateEntityTest require items')
+          items.forEach((item) => { if (!item._id) throw new Error('updateEntityTest items _id field is required') }) // ID NEEDED
+          await entityTestDI.validate({items})
+          var authorizationsData = await DI.authenticate({request})
+          await DI.authorize({context: authorizationsData, action: 'write', entity: 'entityTest', items})
+          var itemsIds = R.map(R.prop('_id'), items)
+          var itemsMutations = await entityTestDI.mutationsPackage.mutate({mutation: 'update', itemsIds, items})
+          DI.debug({msg: 'updateEntityTest', context: PACKAGE, debug: {itemsMutations}})
+          await entityTestDI.viewsPackage.refreshItemsViews({itemsIds, loadSnapshot: true, loadMutations: true, addMutations: itemsMutations})
+          return {itemsIds}
+            // DI.log({context: 'packageName', name: 'updateEntityTest', log: {ids}})
+        } catch (error) {
+          DI.throwError('updateEntityTest', error, request)
+        }
+      }
+      DI.registerRoute({route: 'updateEntityTest', routeFunction: updateEntityTest})
+      DI.registerEvent({event: 'updateEntityTest', route: 'updateEntityTest'})
+      var updateEntityTestRequest = {
+        items: [{name: 'testupdate', _id: global.serviceResponse.itemsIds[0] }, {name: 'testupdate2', _id: global.serviceResponse.itemsIds[1] }]
+      }
+      try {
+        global.serviceResponse = await DI.callRoute({route: 'updateEntityTest', request: updateEntityTestRequest})
+        t.type(global.serviceResponse, 'object', 'Response is object')
+        t.type(global.serviceResponse.itemsIds, 'Array', 'itemsIds is array')
+        t.type(global.serviceResponse.itemsIds.length, 2, 'itemsIds length is 2')
+      } catch (error) {
+        DI.throwError('DI.callRoute updateEntityTest', error, {route: 'updateEntityTest', request: updateEntityTestRequest})
+      }
+
+      t.end()
+    } catch (error) {
+      DI.error({error})
+      t.fail('FAIL updateEntityTest')
+      t.end('FAIL updateEntityTest')
+    }
+  })
+  await t.test('-> CRUD READ', async function (t) {
+    try {
+      var readEntityTest = async function (request) {
+        try {
+          var itemsIds = request.ids
+          if (!itemsIds || !itemsIds.length) throw new Error('readEntityTest require items ids')
+          var authorizationsData = await DI.authenticate({request})
+          await DI.authorize({context: authorizationsData, action: 'read', entity: 'entityTest', itemsIds})
+          var items = await entityTestDI.viewsPackage.get({ids: itemsIds})
+          DI.debug({msg: 'readEntityTest', context: PACKAGE, debug: {itemsIds, authorizationsData, items}})
+          return {items}
+            // DI.log({context: 'packageName', name: 'readEntityTest', log: {ids}})
+        } catch (error) {
+          DI.throwError('readEntityTest', error, request)
+        }
+      }
+      DI.registerRoute({route: 'readEntityTest', routeFunction: readEntityTest})
+      DI.registerEvent({event: 'readEntityTest', route: 'readEntityTest'})
+      var readEntityTestRequest = {
+        ids: global.serviceResponse.itemsIds
+      }
+      try {
+        global.serviceResponse = await DI.callRoute({route: 'readEntityTest', request: readEntityTestRequest})
+        t.type(global.serviceResponse, 'object', 'Response is object')
+        t.type(global.serviceResponse.items, 'Array', 'items is array')
+        t.type(global.serviceResponse.items.length, 2, 'items length is 2')
+        t.equal(global.serviceResponse.items[0].name, 'testupdate', 'item 1 : sended name = readed name')
+        t.equal(global.serviceResponse.items[1].name, 'testupdate2', 'item 2 : sended name = readed name')
+      } catch (error) {
+        DI.throwError('DI.callRoute readEntityTest', error, {route: 'readEntityTest', request: readEntityTestRequest})
+      }
+
+      t.end()
+    } catch (error) {
+      DI.error({error})
+      t.fail('FAIL readEntityTest')
+      t.end('FAIL readEntityTest')
+    }
+  })
+  debugActive = true
+  await t.test('-> CRUD DELETE', async function (t) {
+    try {
+      var deleteEntityTest = async function (request) {
+        try {
+          var itemsIds = request.ids
+          if (!itemsIds || !itemsIds.length) throw new Error('deleteEntityTest require items ids')
+          var authorizationsData = await DI.authenticate({request})
+          await DI.authorize({context: authorizationsData, action: 'write', entity: 'entityTest', itemsIds})
+          var itemsMutations = await entityTestDI.mutationsPackage.mutate({mutation: 'delete', itemsIds})
+          await entityTestDI.viewsPackage.refreshItemsViews({itemsIds, loadSnapshot: true, loadMutations: true, addMutations: itemsMutations})
+          DI.debug({msg: 'deleteEntityTest', context: PACKAGE, debug: {itemsIds, itemsMutations}})
+          return {itemsIds}
+            // DI.log({context: 'packageName', name: 'deleteEntityTest', log: {ids}})
+        } catch (error) {
+          DI.throwError('deleteEntityTest', error, request)
+        }
+      }
+      DI.registerRoute({route: 'deleteEntityTest', routeFunction: deleteEntityTest})
+      DI.registerEvent({event: 'deleteEntityTest', route: 'deleteEntityTest'})
+      var deleteEntityTestRequest = {
+        ids: [global.serviceResponse.items[0]._id]
+      }
+      try {
+        global.serviceResponse = await DI.callRoute({route: 'deleteEntityTest', request: deleteEntityTestRequest})
+        t.type(global.serviceResponse, 'object', 'Response is object')
+        t.type(global.serviceResponse.itemsIds, 'Array', 'items is array')
+        t.type(global.serviceResponse.itemsIds.length, 1, 'items length is 1')
+      } catch (error) {
+        DI.throwError('DI.callRoute deleteEntityTest', error, {route: 'deleteEntityTest', request: deleteEntityTestRequest})
+      }
+
+      t.end()
+    } catch (error) {
+      DI.error({error})
+      t.fail('FAIL deleteEntityTest')
+      t.end('FAIL deleteEntityTest')
+    }
+  })
 })

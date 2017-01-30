@@ -8,5 +8,5 @@
             "type": "string"
         }
     },
-    "required": ["name"]
+    "required": ["_id","name"]
 }

@@ -17,36 +17,38 @@ module.exports = async function getViewsCqrsPackage (CONFIG, DI) {
     CONFIG = checkRequired(CONFIG, ['viewsSnapshotsMaxMutations'], PACKAGE)
     DI = checkRequired(DI, ['viewsStoragePackage', 'viewsSnapshotsStoragePackage', 'mutationsPackage', 'error', 'log', 'debug'], PACKAGE)
 
-    async function updateEntityView (itemId, loadSnapshot = true, newMutations = false) {
+    async function updateItemView ({itemId, loadSnapshot = true, loadMutations = true, addMutations = []}) {
       try {
-        var lastSnapshot
+        DI.debug({msg: 'updateItemView', context: PACKAGE, debug: {itemId, loadSnapshot, loadMutations, addMutations}})
+        var lastSnapshot = {timestamp: 0, state: {}}
+        var mutations = []
         if (loadSnapshot) {
-          var lastSnapshotFromDb = await DI.viewsSnapshotsStoragePackage.find({itemId: itemId}, {timestamp: 1}, 0, 1)
+          var lastSnapshotFromDb = await DI.viewsSnapshotsStoragePackage.find({query: {itemId: itemId}, sort: {timestamp: 1}, limit: 1, start: 0})
           if (lastSnapshotFromDb && lastSnapshotFromDb[0]) lastSnapshot = lastSnapshotFromDb[0]
         }
-        if (!lastSnapshot)lastSnapshot = {timestamp: 0, state: {}}
-
-        if (newMutations === false) {
-          newMutations = await DI.mutationsPackage.getEntityMutations({itemId, minTimestamp: lastSnapshot.timestamp})
-        }
-
-        var updatedView = await DI.mutationsPackage.applyMutations({state: lastSnapshot.state, mutations: newMutations})
+        if (loadMutations)mutations = await DI.mutationsPackage.getItemMutations({itemId, minTimestamp: lastSnapshot.timestamp})
+        
+        mutations = mutations.concat(addMutations)
+        //clear array, remove duplicate ids
+        mutations = R.uniqWith(R.prop("_id"),mutations);
+        var updatedView = await DI.mutationsPackage.applyMutations({state: lastSnapshot.state, mutations})
         DI.viewsStoragePackage.update({queriesArray: [{'_id': itemId}], dataArray: [updatedView], insertIfNotExists: true})
-        DI.debug({msg: 'updatedView', context: PACKAGE, debug: {updatedView}})
+        DI.debug({msg: 'updatedView', context: PACKAGE, debug: {updatedView,mutations}})
 
-        if (DI.snapshotsMaxMutations < newMutations && newMutations.length) {
+        if (DI.snapshotsMaxMutations < mutations && mutations.length) {
           await DI.viewsSnapshotsStorage.insert({timestamp: Date.now(), state: updatedView}) // update snapshot if required
         }
         return true
       } catch (error) {
-        DI.throwError(PACKAGE + ' updateEntityView(args)', error, {itemId, loadSnapshot, newMutations})
+        DI.throwError(PACKAGE + ' updateItemView(args)', error, {itemId, loadSnapshot, loadMutations, addMutations})
       }
     }
     return {
-      refreshItemsViews: function refreshItemsViews ({itemsIds, loadSnapshot = false, itemsMutations = false}) {
+      refreshItemsViews: function refreshItemsViews ({itemsIds, loadSnapshot, loadMutations, addMutations }) {
+        DI.debug({msg: 'refreshItemsViews', context: PACKAGE, debug: {itemsIds, loadSnapshot, addMutations}})
         function singleItemView (itemId, index) {
-          var newMutations = (itemsMutations && itemsMutations[index]) ? itemsMutations[index] : false
-          return updateEntityView(itemId, loadSnapshot, newMutations)
+          var checkedMutations = (addMutations && addMutations[index]) ? addMutations[index] : []
+          return updateItemView({itemId, loadSnapshot, loadMutations, addMutations:checkedMutations})
         }
         return Promise.all(R.addIndex(R.map)(singleItemView, itemsIds))
       },

@@ -1,7 +1,18 @@
 const R = require('ramda')
 // const jesus = require('jesus')
 const uuidV4 = require('uuid/v4')
-
+function setPackageArgsOverwrite () {
+  var overwriteArgs = Array.prototype.slice.call(arguments, 1)
+  var originalPackage = arguments[0]
+  var modifiedPackage = {}
+  for (var i in originalPackage) {
+    modifiedPackage[i] = function packageArgsOverwrite () {
+      var modifiedArguments = Object.assign(arguments, overwriteArgs)
+      return originalPackage[i].apply(this, modifiedArguments)
+    }
+  }
+  return modifiedPackage
+}
 function checkRequiredDependencies (DI, requiredDependenciesNames) {
   if (!DI) { throw new Error(`Required Dependencies Container is missing`) }
   requiredDependenciesNames.forEach((dependencyName) => {

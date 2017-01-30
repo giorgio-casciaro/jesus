@@ -14,8 +14,7 @@ function debug () {
 //   return instance
 // }
 
-function createItemsMutations (mutationId, mutationVersion, mutationsitemsIds, mutationsArgs) {
-  // debug('createItemsMutations', mutationId, mutationVersion, items)
+function createItemsMutation (mutationId, mutationVersion, mutationsItemsIds, mutationsArgs) {
   var mutations = R.addIndex(R.map)((itemId, index) => {
     return {
       itemId,
@@ -26,22 +25,22 @@ function createItemsMutations (mutationId, mutationVersion, mutationsitemsIds, m
         ? mutationsArgs[index]
         : {}
     }
-  }, mutationsitemsIds)
+  }, mutationsItemsIds)
   return mutations
 }
 
 // function applyMutations (mutationsFunctions, mutations, states) {
 //   debug('applyMutations', mutationsFunctions, mutations, states)
 //   states = states || {}
-//   var mutationsByEntity = R.groupBy(R.prop('itemId'), mutations)
-//   var statesByEntity = R.zipObj(R.map(R.prop('itemId', states)), states)
-//   for (let itemId in mutationsByEntity) {
-//     for (let mutation of mutationsByEntity[itemId]) {
-//       statesByEntity[itemId] = mutationsFunctions[mutation.mutation][mutation.version](statesByEntity[itemId] || {}, mutation.data)
+//   var mutationsByItem = R.groupBy(R.prop('itemId'), mutations)
+//   var statesByItem = R.zipObj(R.map(R.prop('itemId', states)), states)
+//   for (let itemId in mutationsByItem) {
+//     for (let mutation of mutationsByItem[itemId]) {
+//       statesByItem[itemId] = mutationsFunctions[mutation.mutation][mutation.version](statesByItem[itemId] || {}, mutation.data)
 //     }
 //   }
-//   debug('appliedMutations', statesByEntity)
-//   return R.values(statesByEntity)
+//   debug('appliedMutations', statesByItem)
+//   return R.values(statesByItem)
 // }
 
 function getMutationsFunctions (basePath) {
@@ -60,7 +59,8 @@ function getMutationsFunctions (basePath) {
 function applyMutationsFromPath (state, mutations, mutationsPath) {
   state = R.clone(state)
   function applyMutation (state, mutation) {
-    var mutationFile=path.join(mutationsPath, `${mutation.mutation}.${mutation.version}.js`)
+    // console.log(`applyMutationsFromPath ${mutation.mutation}.${mutation.version}.js`)
+    var mutationFile = path.join(mutationsPath, `${mutation.mutation}.${mutation.version}.js`)
     return require(mutationFile)(state, mutation.data)
   }
   return R.reduce(applyMutation, state, mutations)
@@ -93,7 +93,7 @@ module.exports = async function getMutationsCqrsPackage (CONFIG, DI) {
     const getValuePromise = require('./jesus').getValuePromise
     const checkRequired = require('./jesus').checkRequired
     CONFIG = checkRequired(CONFIG, ['mutationsPath'], PACKAGE)
-    DI = checkRequired(DI, ['mutationsStoragePackage','error', 'log', 'debug'], PACKAGE)
+    DI = checkRequired(DI, ['mutationsStoragePackage', 'error', 'log', 'debug'], PACKAGE)
     return {
       mutate: async function mutate ({mutation, itemsIds, items}) {
         try {
@@ -101,24 +101,32 @@ module.exports = async function getMutationsCqrsPackage (CONFIG, DI) {
           var mutationsFunctions = getMutationsFunctions(configMutationsPath)
           checkMutationFunction(mutation, mutationsFunctions)
           var lastMutationVersion = mutationsFunctions[mutation][0].mutationVersion
-          var itemsMutations = createItemsMutations(mutation, lastMutationVersion, itemsIds, items)
-          DI.debug({msg: 'itemsMutations to create', context: PACKAGE, debug: {mutation, lastMutationVersion, itemsIds, items, itemsMutations}})
-          await DI.mutationsStoragePackage.insert({items: itemsMutations})
-          return itemsMutations
+          // DI.debug({msg: 'createItemsMutations', context: PACKAGE, debug: {mutation, lastMutationVersion, itemsIds, items}})
+
+          var itemsSingleMutation = createItemsMutation(mutation, lastMutationVersion, itemsIds, items)
+          DI.debug({msg: 'itemsSingleMutation to create', context: PACKAGE, debug: {mutation, lastMutationVersion, itemsIds, items, itemsSingleMutation}})
+          await DI.mutationsStoragePackage.insert({items: itemsSingleMutation})
+          return itemsSingleMutation
         } catch (error) {
           DI.throwError(PACKAGE + ' mutate(args) Error', error, {mutation, itemsIds, items})
         }
       },
-      getEntityMutations: function getEntityMutations ({itemId, minTimestamp}) {
-        return DI.mutationsStoragePackage.find({
-          itemId: itemId,
-          timestamp: {
-            $gte: minTimestamp || 0
-          }
-        }, {timestamp: 1})
+      getItemMutations: async function getItemMutations ({itemId, minTimestamp = 0}) {
+        // TO FIX
+        var results = await DI.mutationsStoragePackage.find({
+          query: {
+            itemId: itemId,
+            //timestamp: {$gte: minTimestamp}// TO FIX
+          },
+          sort: {timestamp: 1}
+        })
+        DI.debug({msg: 'getItemMutations', context: PACKAGE, debug: {itemId, minTimestamp, results}})
+        return results
       },
       applyMutations: async function applyMutations ({state, mutations}) {
         var mutationsPath = await getValuePromise(CONFIG.mutationsPath)
+
+        DI.debug({msg: 'applyMutationsFromPath', context: PACKAGE, debug: {state, mutations, mutationsPath}})
         return applyMutationsFromPath(state, mutations, mutationsPath)
       }
     }

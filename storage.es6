@@ -11,7 +11,6 @@ module.exports = function getStoragePackage (CONFIG, DI) {
       try {
         var type = await getValuePromise(CONFIG.storageType)
         var storage = await require('./storage.' + type)(CONFIG, DI)
-        console.log(storage)
         var results = await storage[action](args)
         return results
       } catch (error) {
