@@ -1,0 +1,28 @@
+syntax = "proto3";
+import "./shared.proto";
+
+service Service {
+  rpc authorize (authorizeRequest) returns (authorizeResponse);
+  rpc updateAutorizationsView (updateViewRequest) returns (nullResponse);
+}
+
+message updateViewRequest {
+  RequestMeta meta = 1;
+  repeated string itemsIds = 2;
+  repeated User.Entity items = 3;
+}
+
+message authorizeRequest {
+  string action = 1;
+  string entityName = 2;
+  repeated string itemsIds = 3;
+  RequestMeta meta = 4;
+}
+message authorizeResponse {
+  ResponseError error = 1;
+  userData userData = 2;
+}
+
+message userData {
+  string userId = 1;
+}

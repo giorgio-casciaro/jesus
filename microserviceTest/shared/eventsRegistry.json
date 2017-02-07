@@ -1,0 +1,28 @@
+{
+    "services": {
+        "testMicroservice": {
+            "proto":"/home/vopa/Scrivania/civil/Kubernetes/git/jesus/microserviceTest/shared/services/testMicroservice.proto",
+            "grpc": {
+                "url": "0.0.0.0:10000"
+            }
+        },
+        "authorizations": {
+          "proto":"/home/vopa/Scrivania/civil/Kubernetes/git/jesus/microserviceTest/shared/services/authorizations.proto",
+            "grpc": {
+                "url": "0.0.0.0:10001"
+            }
+        }
+    },
+    "listeners": {
+        "viewsUpdated": [{
+            "service": "testMicroservice",
+            "route": "test",
+            "haveResponse": true
+        }],
+        "authorize": [{
+            "service": "authorizations",
+            "route": "authorize",
+            "haveResponse": true
+        }]
+    }
+}

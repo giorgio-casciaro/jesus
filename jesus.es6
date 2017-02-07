@@ -30,17 +30,10 @@ function checkRequired (OBJ, propNames, PACKAGE = 'unknow') {
   })
   return R.clone(OBJ)
 }
-function debug () {
-  console.log('\u001b[1;33m' +
-    '<State Mutations>' +
-    '\u001b[0m')
-  console.log.apply(console, arguments)
+function isEmptyArray (array) {
+  return (!array || !array.length)
 }
-
 module.exports = {
-  asyncResponse: function () {
-    return {}
-  },
   getValuePromise: function (value) {
     return new Promise((resolve, reject) => {
       Promise.resolve(value).then(function (value) {
@@ -53,7 +46,6 @@ module.exports = {
   checkRequired,
   checkRequiredDependencies,
   createNewIds: R.compose(R.map(() => uuidV4()), R.repeat(true)),
-  debug,
   // debug,
   addObjectColumn: function (objectsArray, columnName, valuesArray) {
     var addColums = (val, index) => R.merge({
@@ -61,54 +53,23 @@ module.exports = {
     }, val)
     return R.addIndex(R.map)(addColums, objectsArray)
   },
-  getStoragePackage: R.curry((storage, collection) => {
-    return require('jesus/storage.' + storage.type)(storage, collection)
-  }),
-  getLogFunctionOld: function (DI) {
-    checkRequiredDependencies(DI, ['storage'])
-    return R.curry((context, type, object) => {
-      var contextString = context.join(' > ')
-      var time = Date.now()
-      var readableTime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
-      if (type === 'ERROR') {
-        console.log(`\u001b[1;33m ${type} ( ${contextString} ) \u001b[0m`)
-        console.log(object)
-        console.trace(object)
-      }
-      DI.storage.insert([
-        {
-          type,
-          readableTime,
-          context,
-          object,
-          time
-        }
-      ])
-    })
-  },
-  getLogFunction: function (DI) {
-    checkRequiredDependencies(DI, ['storage'])
-    return function log (logData) {
-      logData = R.merge(logData, {
-        readableTime: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
-        type: 'LOG',
-        time: Date.now(),
-        data: {}
-      })
-      if (logData.type === 'ERROR') {
-        var contextString = logData.context.join(' > ')
-        console.log(`\u001b[1;33m ${logData.type} ( ${contextString} ) \u001b[0m`)
-        console.log(logData.data)
-        console.trace(logData.data)
-      }
-      DI.storage.insert([logData])
-    }
-  },
-  getServiceErrorFunction: function (DI) {
-    checkRequiredDependencies(DI, ['log'])
-    return function serviceError (e) {
-      DI.log('serviceError', e)
-      throw new Error(e)
-    }
+  checkRequestItemsIdsAndItems ({itemsIds, items, generateIds = false, appendIdsToItems = false}) {
+    console.log({itemsIds, items, generateIds, appendIdsToItems})
+    if (isEmptyArray(items) && isEmptyArray(itemsIds)) throw new Error('ARG items or itemsIds is required')
+    if (generateIds)itemsIds = R.map(() => uuidV4(), items)// generate ids
+    if (isEmptyArray(itemsIds) && isEmptyArray(items) && !appendIdsToItems)itemsIds = R.map(R.prop('_id'), items)// get ids from items
+    if (isEmptyArray(items))items = R.map(() => {}, itemsIds)// get items from ids
+    if (itemsIds.length !== items.length) throw new Error('ARG itemsIds and items must have the same length')
+    if (appendIdsToItems)items = R.addIndex(R.map)((item, index) => R.merge(item, {_id: itemsIds[index]}), items)// generate ids
+    // items = R.map((item) => R.merge({'_id': uuidV4()}, item), items)// generate new ids in _id field
+    return {itemsIds, items}
   }
+  // getServiceErrorFunction: function (DI) {
+  //   checkRequiredDependencies(DI, ['log'])
+  //   return function serviceError (e) {
+  //     DI.log('serviceError', e)
+  //     throw new Error(e)
+  //   }
+  // }
+
 }

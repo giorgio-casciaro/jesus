@@ -1,11 +1,11 @@
 
+const PACKAGE = 'storage'
 module.exports = function getStoragePackage (CONFIG, DI) {
   try {
-    const PACKAGE = 'storage'
     const getValuePromise = require('./jesus').getValuePromise
     const checkRequired = require('./jesus').checkRequired
     CONFIG = checkRequired(CONFIG, ['storageType', 'storageConfig', 'storageCollection'], PACKAGE)
-    DI = checkRequired(DI, [], PACKAGE)
+    DI = checkRequired(DI, ["throwError"], PACKAGE)
 
     var getStorageAction = async (action, args) => {
       try {

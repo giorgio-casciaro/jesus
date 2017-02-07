@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "updatePermission",
+    "type": "object",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "maxLength": 36,
+            "minLength": 4
+        },
+        "entity": {
+            "type": "string"
+        },
+        "action": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string"
+        },
+        "permit": {
+            "type": "boolean"
+        },
+        "forcePermit": {
+            "type": "boolean"
+        },
+        "args": {
+            "type": "object"
+        }
+    },
+    "additionalProperties": true
+}

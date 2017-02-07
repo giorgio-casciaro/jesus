@@ -1,0 +1,57 @@
+syntax = "proto3";
+import "../entities/User/entity.proto";
+import "../entities/Permission/entity.proto";
+import "./shared.proto";
+
+
+
+// The greeting service definition.
+service Service {
+  rpc test (UserIdsAndDataRequest) returns (UserIdsAndDataResponse);
+  rpc createUser (UserIdsAndDataRequest) returns (UserIdsResponse);
+  rpc updateUser (UserIdsAndDataRequest) returns (UserIdsResponse);
+  rpc deleteUser (UserIdsRequest) returns (UserIdsResponse);
+  rpc readUser (UserIdsRequest) returns (UserIdsAndDataResponse);
+}
+
+message UserIdsRequest {
+  RequestMeta meta = 1;
+  repeated string itemsIds = 2;
+}
+message UserIdsAndDataRequest {
+  RequestMeta meta = 1;
+  repeated string itemsIds = 2;
+  repeated User.Entity items = 3;
+}
+message UserIdsResponse {
+  repeated ResponseError error = 1;
+  repeated string itemsIds = 2;
+}
+message UserIdsAndDataResponse {
+  repeated ResponseError error = 1;
+  repeated string itemsIds = 2;
+  repeated User.Entity items = 3;
+}
+
+// rpc updateUserPermission (PermissionIdsAndDataRequest) returns (PermissionIdsResponse);
+// rpc deleteUserPermission (PermissionIdsRequest) returns (PermissionIdsResponse);
+// rpc readUserPermission (PermissionIdsRequest) returns (PermissionIdsAndDataResponse);
+
+// message PermissionIdsRequest {
+//   RequestMeta meta = 1;
+//   repeated string itemsIds = 2;
+// }
+// message PermissionIdsAndDataRequest {
+//   RequestMeta meta = 1;
+//   repeated string itemsIds = 2;
+//   repeated Permission.Entity items = 3;
+// }
+// message PermissionIdsResponse {
+//   repeated ResponseError error = 1;
+//   repeated string itemsIds = 2;
+// }
+// message PermissionIdsAndDataResponse {
+//   repeated ResponseError error = 1;
+//   repeated string itemsIds = 2;
+//   repeated Permission.Entity items = 3;
+// }

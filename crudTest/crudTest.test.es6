@@ -2,156 +2,36 @@
 if (!global._babelPolyfill) {
   require('babel-polyfill')
 }
-const throwError = require('./error').throwError
 var t = require('tap')
 var R = require('ramda')
 var path = require('path')
-var fs = require('fs')
 const PACKAGE = 'jesus.test'
 process.on('unhandledRejection', (reason, promise) => {
   console.log('unhandledRejection Reason: ', promise, reason)
   console.trace(promise)
 })
-var debugActive = false
-var debugSaveTimeout
-var debugFile = path.join(__dirname, 'testMaterial/debug', PACKAGE + '.json')
-var debugRegistry = []
-function save_debug () {
 
-}
-var DEBUG = function (type, debug, msg = 'unknow', context = 'unknow') {
-  if (!debugActive) return null
-  debugRegistry.push({
-    [`${type} ${context} > ${msg}`]: debug
-  })
-  if (debugSaveTimeout) clearTimeout(debugSaveTimeout)
-  debugSaveTimeout = setTimeout(function () {
-    fs.writeFile(debugFile, JSON.stringify(debugRegistry, null, 4), 'utf8')
-  }, 1000)
-}
-// var DEBUG = function (type, debug, msg = 'unknow', context = 'unknow') {
-//   if (!debugActive) return null
-//   const ANSI_RESET = '\u001B[0m'
-//   const ANSI_BLACK = '\u001B[30m'
-//   const ANSI_RED = '\u001B[31m'
-//   const ANSI_GREEN = '\u001B[32m'
-//   const ANSI_YELLOW = '\u001B[33m'
-//   const ANSI_BLUE = '\u001B[34m'
-//   const ANSI_PURPLE = '\u001B[35m'
-//   const ANSI_CYAN = '\u001B[36m'
-//   const ANSI_WHITE = '\u001B[37m'
-//   if (type === 'ERROR') console.log(`${ANSI_RED}`)
-//   if (type === 'WARNING') console.log(`${ANSI_YELLOW}`)
-//   if (type === 'LOG') console.log(`${ANSI_GREEN}`)
-//   if (type === 'DEBUG') console.log(`${ANSI_CYAN}`)
-//   console.log(`${type} ${context} > ${msg} ${ANSI_RESET}`)
-//   console.log(debug)
-//   // console.log(JSON.stringify(arguments).substring(0, 250))
-// }
-var LOG = function (type, log, msg = 'unknow', context = 'unknow') {
-  const ANSI_RESET = '\u001B[0m'
-  const ANSI_BLACK = '\u001B[30m'
-  const ANSI_BACKGROUND_CYAN = '\u001B[46m'
-  console.log(`${ANSI_BACKGROUND_CYAN + ANSI_BLACK}`)
-  console.log(`LOG --> ${type} ${context} > ${msg} ${ANSI_RESET}`)
-  DEBUG(type, log, msg, context)
-}
-
-var SERVICE
-var SERVICE_NAME = 'testService'
-var fakeAuth = {
-  userId: '195151662661'
-}
-
-var DI = {
-  throwError,
-  authenticate: async({request}) => fakeAuth,
-  authorize: async({route, request}) => true,
-  // getEvents: (payload) => new Promise((resolve, reject) => {
-  //   resolve(SERVICE.events)
-  // }),
-  // getConfig: (payload) => new Promise((resolve, reject) => {
-  //   resolve(config)
-  // }),
-  registerRoute: async({route, routeFunction}) => SERVICE.routes[route] = routeFunction,
-  callRoute: async({route, request}) => SERVICE.routes[route](request),
-  deregisterRoute: async({route}) => SERVICE.routes[route](request),
-  deregisterRoute: async({route}) => delete SERVICE.routes[route],
-  registerEvent: async({name, route}) => {
-    SERVICE.events[name] = {
-      name,
-      route,
-      service: SERVICE_NAME
+var SERVICE = {
+  name: 'testService',
+  routes: {},
+  config: {
+    mainStorage: {
+      type: 'inmemory',
+      config: {
+        path: path.join(__dirname, 'fileDb')
+      }
     }
   },
-  deregisterEvent: async({name}) => delete SERVICE.events[event],
-  emitEvent: async({name, payload}) => {
-
-  },
-  log: async({context, msg, log, type}) => LOG(type, log, msg, context),
-  debug: async({context, msg, debug}) => DEBUG('DEBUG', debug, msg, context),
-  error: async({error}) => {
-    const ANSI_RESET = '\u001B[0m'
-    const ANSI_RED = '\u001B[31m'
-    console.log(`${ANSI_RED} ORIGINAL ERROR ${ANSI_RESET}`)
-    console.log(error.originalError || error)
-    console.log(`APP ERROR --> ${error.info && error.info.message ? error.info.message : 'unknow'}`)
-    console.log(`${ANSI_RED} APP TRACE ${ANSI_RESET}`)
-    if (error.getAppTrace)console.log(JSON.stringify(error.getAppTrace(), null, 4))
-    // if (error.toString)console.log(JSON.stringify(error.toString(), null, 4))
-    LOG('ERROR', error, 'jesus-test', 'APP-ERROR')
-  }
+  events: {}
 }
+var DI = require('./DI.default')
+DI = R.merge(DI, require('./DI')(SERVICE, PACKAGE))
 
 t.test('*** JESUS SERVICE CRUD ***', {
   autoend: true
 }, async function mainTest (t) {
-  SERVICE = {
-    routes: {},
-    config: {
-      mainStorage: {
-        type: 'inmemory',
-        config: {
-          path: path.join(__dirname, 'testMaterial/fileDb')
-        }
-      }
-    },
-    events: {}
-  }
-
-  var storagePackage = require('./storage')
-
-  var entityTestConfig = {
-    storageType: () => SERVICE.config.mainStorage.type,
-    storageConfig: () => SERVICE.config.mainStorage.config,
-    mutationsPath: () => path.join(__dirname, 'testMaterial/entityTest/mutations'),
-    mutationsCollection: () => path.join(__dirname, 'testMaterial/entityTest/mutations'),
-    viewsSnapshotsMaxMutations: () => 10,
-    validationSchema: () => {
-      try {
-        return require('./testMaterial/entityTest/entity.schema.json')
-      } catch (error) {
-        DI.throwError('entityTestConfig validationSchema() ', error)
-      }
-    },
-    validationType: () => 'jsonSchema'
-  }
-  var entityTestDI = R.merge({
-    mutationsStoragePackage: storagePackage(R.merge(entityTestConfig, {
-      storageCollection: () => 'entityTestMutations'
-    }), DI),
-    viewsStoragePackage: storagePackage(R.merge(entityTestConfig, {
-      storageCollection: () => 'entityTestViewsMain'
-    }), DI),
-    throwError: DI.throwError,
-    viewsSnapshotsStoragePackage: storagePackage(R.merge(entityTestConfig, {
-      storageCollection: () => 'entityTestViewsMainSnapshots'
-    }), DI)
-  }, DI)
-  entityTestDI.mutationsPackage = await require('./mutations.cqrs')(entityTestConfig, entityTestDI)
-  entityTestDI.viewsPackage = await require('./views.cqrs')(entityTestConfig, entityTestDI)
-  entityTestDI.validate = await require('./validate')(entityTestConfig, entityTestDI)
-
+  var entityTestConfig = await require('./entityTestConfig')(SERVICE, DI)
+  var entityTestDI = await require('./entityTestDI')(DI, entityTestConfig)
   global.serviceResponse = {}
   t.plan(4)
   await t.test('-> CRUD CREATE', async function (t) {
@@ -276,7 +156,6 @@ t.test('*** JESUS SERVICE CRUD ***', {
       t.end('FAIL readEntityTest')
     }
   })
-  debugActive = true
   await t.test('-> CRUD DELETE', async function (t) {
     try {
       var deleteEntityTest = async function (request) {

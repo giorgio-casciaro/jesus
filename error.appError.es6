@@ -1,23 +1,38 @@
+var sourceMapSupport = require('source-map-support')
+
+function prepareStackTrace (error, stack) {
+  return stack.map(function (frame) {
+    return sourceMapSupport.wrapCallSite(frame)
+  })
+}
+function getCallerInfo (stackIndex = 3) {
+  var originalFunc = Error.prepareStackTrace
+  var callerInfo = {}
+  Error.prepareStackTrace = prepareStackTrace
+  var err = new Error()
+  callerInfo.fileName = err.stack[stackIndex].getFileName()
+  callerInfo.functionName = err.stack[stackIndex].getFunctionName()
+  callerInfo.lineNumber = err.stack[stackIndex].getLineNumber()
+  callerInfo.columnNumber = err.stack[stackIndex].getColumnNumber()
+  Error.prepareStackTrace = originalFunc
+  return callerInfo
+}
+
 module.exports = class AppError extends Error {
-  constructor (callerInfo, childError) {
+  constructor (message, originalError, args) {
+    // console.log("AppError",message, originalError, args)
     // Calling parent constructor of base Error class.
-    super(callerInfo.message)
-
-    // Capturing stack trace, excluding constructor call from it.
+    super(message)
     Error.captureStackTrace(this, this.constructor)
-
-    // Saving class name in the property of our custom error as a shortcut.
     this.name = 'AppError'
-    this.info = callerInfo
-    if (childError.originalError) this.originalError = childError.originalError
-    else this.originalError = childError
-    // this.childError = childError
+    this.info = getCallerInfo()
+    this.info.args=args
+    if (originalError.originalError) this.originalError = originalError.originalError
+    else this.originalError = originalError
     this.appTrace = []
-    if (childError.appTrace) this.appTrace = this.appTrace.concat(childError.appTrace)
-    this.appTrace.push(childError)
-    // You can use any additional properties you want.
-    // I'm going to use preferred HTTP status for this error types.
-    // `500` is the default value if not specified.
+    if (originalError.appTrace) this.appTrace = this.appTrace.concat(originalError.appTrace)
+    this.appTrace.push(this.info)
+
     this.status = 500
     this.toString = () => {
 

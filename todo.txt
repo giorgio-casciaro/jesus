@@ -1,0 +1,71 @@
+
+da valutare
+staccarsi da protobuf per la validazione, problemi quando si necessita di polimorfismo
+al post di protobuf, schema entity.schema.json con solo il controllo sul tipo di dati (no required)
+e service.createUser.schema.json per le chiamate ai servizi
+grpc usato solo per scambio di eventi interni polimorfici (proto)
+
+inserimento cache in moduli sviluppati: basata su storage
+net event basato su registry.json centrale
+
+nuovo test 2 micro: 1 Entity e 1 View ridotta event based
+test net events -> primi test view sincrona
+
+views sync ->
+per le nuove entity create event based
+on install get old entitities paginated
+checkViewUpdated: controlla che in un determitato periodo di tempo le views siano in sync,
+
+standardizzazione meta riguardanti il client fra varie api
+
+net creation
+nuovo nodo si collega ad un qualsiasi nodo e recupera il registro attuale
+il vecchio nodo aggiorna tutti i nodi con la nuova informazione
+se un nodo non risponde viene eliminato dal registro
+
+rivedere errori e log
+
+PERMESSI -> servizio can
+  casi d'uso:
+    - creare uno user:
+      solo admin
+    - creare una bacheca:
+      se il numero di bacheche create non supera il massimo consentito e lo user è loggato (no role not logged)
+    - creare un messaggio in bacheca:
+      in base ai ruoli bacheca (in caso di mancata iscrizione assegnato no_subscription)
+    - leggere un messaggio in bacheca:
+      in base ai ruoli bacheca (generalmente si esclude no_subscription)
+      in base agli user destinatari,gruppi destinatari
+      in base all'autore (posso leggere i miei messaggi)
+    - creare un commento a un messaggio in bacheca:
+      in base ai ruoli bacheca (generalmente si esclude no_subscription)
+      in base ai destinatari del messaggio parent
+      in base all'autore del parent (posso commentare i miei messaggi)
+
+  - can dovrebbe avere una struttura gerarchica per contesti
+  es. il permesso di inviare un commento dipende
+    > dal contesto messaggio che contiene il commento: il messaggio è pubblico o lo user è fra i destinatari ?
+    > dal contesto bacheca che contiene il messaggio: lo user è iscritto alla bacheca?, il suo ruolo permette di scrivere commenti?
+    > dal contesto app che contiene la bacheca: blacklist, superuser ecc.
+
+    can(write.delete,'Comment',CommentID) ->il permesso viene richiesto al contesto 'Comment' (contesto parentID,parentTYPE vengono richiamati
+    can(write.add.Comment,'Message',MessageID) ->il permesso viene richiesto al contesto parentID,parentTYPE
+    can(write.add.Dashboard') ->il permesso viene richiesto al contesto null -> APP
+
+  - la struttura gerarchica rende poco performante la gestione autonoma dei permessi da parte di ogni singolo microservice (molte chiamate verso parent obj), meglio un servizio autonomo
+  - il servizio can dovrebbe basarsi su una view indipendente event based con solo i dati utili alle funzioni di permesso (destinatari messaggi, iscritti dashboards(dashboardId,UserId), gerarchie messaggi e moduli(parentId,parentType), )
+  - il servizio can potrebbe unire authenticate , restituire i dati user e prendere il posto di "app" nella gerarchia
+  - le varie funzioni accedono direttamente allo storage della view
+  - le funzioni di permesso potrebbero essere sul registro delle entities
+
+Net events
+netEmit
+netListen
+insertNetEventsInRegistry -> scrive un file con le info sul servizio (eventi,routes)
+parseNetEvents -> legge tutti i file e ne estrapola gli eventi di interesse riordinadoli
+parseNetEvents dovrebbe essere cachata
+
+Npm cache
+
+
+*/

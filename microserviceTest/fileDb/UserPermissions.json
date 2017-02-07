@@ -1,0 +1,14 @@
+{
+    "testPermission": {
+        "entity": "*",
+        "action": "*",
+        "type": "rbac",
+        "permit": true,
+        "force": true,
+        "args": {
+            "roleId": "admin"
+        },
+        "_id": "testPermission",
+        "_deleted": true
+    }
+}

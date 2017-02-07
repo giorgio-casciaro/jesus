@@ -1,134 +1,134 @@
 'use strict';
 
 var ajv = require('ajv')({ allErrors: true });
+var fs = require('fs');
+var getCompiledSchema = function getCompiledSchema(validationSchema) {
+  return new Promise(function (resolve, reject) {
+    fs.readFile(validationSchema, 'utf8', function (err, contents) {
+      if (err) return resolve(false);
+      var compiledSchema = ajv.compile(JSON.parse(contents));
+      resolve(compiledSchema);
+    });
+  });
+};
+
 var PACKAGE = 'validate.jsonSchema';
-module.exports = function getJsonSchemaValidateFunction(CONFIG, DI) {
-  var getValuePromise, checkRequired, validationSchema, validate;
-  return regeneratorRuntime.async(function getJsonSchemaValidateFunction$(_context2) {
+module.exports = function jsonSchemaValidate(_ref) {
+  var items = _ref.items,
+      validationSchema = _ref.validationSchema,
+      _ref$throwIfFileNotFo = _ref.throwIfFileNotFounded,
+      throwIfFileNotFounded = _ref$throwIfFileNotFo === undefined ? true : _ref$throwIfFileNotFo;
+
+  var compiledSchema, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, item;
+
+  return regeneratorRuntime.async(function jsonSchemaValidate$(_context) {
     while (1) {
-      switch (_context2.prev = _context2.next) {
+      switch (_context.prev = _context.next) {
         case 0:
-          _context2.prev = 0;
-          getValuePromise = require('./jesus').getValuePromise;
-          checkRequired = require('./jesus').checkRequired;
+          _context.prev = 0;
+          _context.next = 3;
+          return regeneratorRuntime.awrap(getCompiledSchema(validationSchema));
 
-          CONFIG = checkRequired(CONFIG, ['validationSchema'], PACKAGE);
-          DI = checkRequired(DI, ['throwError'], PACKAGE);
+        case 3:
+          compiledSchema = _context.sent;
 
-          _context2.next = 7;
-          return regeneratorRuntime.awrap(getValuePromise(CONFIG.validationSchema));
+          if (compiledSchema) {
+            _context.next = 8;
+            break;
+          }
+
+          if (!throwIfFileNotFounded) {
+            _context.next = 7;
+            break;
+          }
+
+          throw new Error('REQUIRED Json Schema file not found ' + validationSchema);
 
         case 7:
-          validationSchema = _context2.sent;
-          validate = ajv.compile(validationSchema);
-          return _context2.abrupt('return', function jsonSchemaValidate(_ref) {
-            var items = _ref.items;
+          return _context.abrupt('return', false);
 
-            var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, item;
+        case 8:
+          if (items) {
+            _context.next = 10;
+            break;
+          }
 
-            return regeneratorRuntime.async(function jsonSchemaValidate$(_context) {
-              while (1) {
-                switch (_context.prev = _context.next) {
-                  case 0:
-                    _context.prev = 0;
+          throw new Error('Json Schema items are missing');
 
-                    if (items) {
-                      _context.next = 3;
-                      break;
-                    }
-
-                    throw new Error('Json Schema items are missing');
-
-                  case 3:
-                    _iteratorNormalCompletion = true;
-                    _didIteratorError = false;
-                    _iteratorError = undefined;
-                    _context.prev = 6;
-                    _iterator = items[Symbol.iterator]();
-
-                  case 8:
-                    if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                      _context.next = 15;
-                      break;
-                    }
-
-                    item = _step.value;
-
-                    if (validate(item)) {
-                      _context.next = 12;
-                      break;
-                    }
-
-                    throw new Error('JsonSchemaValidate Invalid: ' + ajv.errorsText(validate.errors));
-
-                  case 12:
-                    _iteratorNormalCompletion = true;
-                    _context.next = 8;
-                    break;
-
-                  case 15:
-                    _context.next = 21;
-                    break;
-
-                  case 17:
-                    _context.prev = 17;
-                    _context.t0 = _context['catch'](6);
-                    _didIteratorError = true;
-                    _iteratorError = _context.t0;
-
-                  case 21:
-                    _context.prev = 21;
-                    _context.prev = 22;
-
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                      _iterator.return();
-                    }
-
-                  case 24:
-                    _context.prev = 24;
-
-                    if (!_didIteratorError) {
-                      _context.next = 27;
-                      break;
-                    }
-
-                    throw _iteratorError;
-
-                  case 27:
-                    return _context.finish(24);
-
-                  case 28:
-                    return _context.finish(21);
-
-                  case 29:
-                    _context.next = 34;
-                    break;
-
-                  case 31:
-                    _context.prev = 31;
-                    _context.t1 = _context['catch'](0);
-
-                    DI.throwError("jsonSchemaValidate({items}) Error", _context.t1, { items: items });
-
-                  case 34:
-                  case 'end':
-                    return _context.stop();
-                }
-              }
-            }, null, this, [[0, 31], [6, 17, 21, 29], [22,, 24, 28]]);
-          });
-
-        case 12:
-          _context2.prev = 12;
-          _context2.t0 = _context2['catch'](0);
-
-          DI.throwError("getJsonSchemaValidateFunction(CONFIG, DI) Error", _context2.t0);
+        case 10:
+          _iteratorNormalCompletion = true;
+          _didIteratorError = false;
+          _iteratorError = undefined;
+          _context.prev = 13;
+          _iterator = items[Symbol.iterator]();
 
         case 15:
+          if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+            _context.next = 22;
+            break;
+          }
+
+          item = _step.value;
+
+          if (compiledSchema(item)) {
+            _context.next = 19;
+            break;
+          }
+
+          throw new Error('JsonSchemaValidate Invalid: ' + ajv.errorsText(compiledSchema.errors));
+
+        case 19:
+          _iteratorNormalCompletion = true;
+          _context.next = 15;
+          break;
+
+        case 22:
+          _context.next = 28;
+          break;
+
+        case 24:
+          _context.prev = 24;
+          _context.t0 = _context['catch'](13);
+          _didIteratorError = true;
+          _iteratorError = _context.t0;
+
+        case 28:
+          _context.prev = 28;
+          _context.prev = 29;
+
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+
+        case 31:
+          _context.prev = 31;
+
+          if (!_didIteratorError) {
+            _context.next = 34;
+            break;
+          }
+
+          throw _iteratorError;
+
+        case 34:
+          return _context.finish(31);
+
+        case 35:
+          return _context.finish(28);
+
+        case 36:
+          return _context.abrupt('return', true);
+
+        case 39:
+          _context.prev = 39;
+          _context.t1 = _context['catch'](0);
+          throw new Error(_context.t1);
+
+        case 42:
         case 'end':
-          return _context2.stop();
+          return _context.stop();
       }
     }
-  }, null, this, [[0, 12]]);
+  }, null, this, [[0, 39], [13, 24, 28, 36], [29,, 31, 35]]);
 };
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInZhbGlkYXRlLmpzb25TY2hlbWEuZXM2Il0sIm5hbWVzIjpbImFqdiIsInJlcXVpcmUiLCJhbGxFcnJvcnMiLCJQQUNLQUdFIiwibW9kdWxlIiwiZXhwb3J0cyIsImdldEpzb25TY2hlbWFWYWxpZGF0ZUZ1bmN0aW9uIiwiQ09ORklHIiwiREkiLCJnZXRWYWx1ZVByb21pc2UiLCJjaGVja1JlcXVpcmVkIiwidmFsaWRhdGlvblNjaGVtYSIsInZhbGlkYXRlIiwiY29tcGlsZSIsImpzb25TY2hlbWFWYWxpZGF0ZSIsIml0ZW1zIiwiRXJyb3IiLCJpdGVtIiwiZXJyb3JzVGV4dCIsImVycm9ycyIsInRocm93RXJyb3IiXSwibWFwcGluZ3MiOiI7O0FBQUEsSUFBSUEsTUFBTUMsUUFBUSxLQUFSLEVBQWUsRUFBQ0MsV0FBVyxJQUFaLEVBQWYsQ0FBVjtBQUNBLElBQU1DLFVBQVUscUJBQWhCO0FBQ0FDLE9BQU9DLE9BQVAsR0FBaUIsU0FBZUMsNkJBQWYsQ0FBOENDLE1BQTlDLEVBQXNEQyxFQUF0RDtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUVQQyx5QkFGTyxHQUVXUixRQUFRLFNBQVIsRUFBbUJRLGVBRjlCO0FBR1BDLHVCQUhPLEdBR1NULFFBQVEsU0FBUixFQUFtQlMsYUFINUI7O0FBSWJILG1CQUFTRyxjQUFjSCxNQUFkLEVBQXNCLENBQUMsa0JBQUQsQ0FBdEIsRUFBNENKLE9BQTVDLENBQVQ7QUFDQUssZUFBS0UsY0FBY0YsRUFBZCxFQUFrQixDQUFDLFlBQUQsQ0FBbEIsRUFBa0NMLE9BQWxDLENBQUw7O0FBTGE7QUFBQSwwQ0FPZ0JNLGdCQUFnQkYsT0FBT0ksZ0JBQXZCLENBUGhCOztBQUFBO0FBT1RBLDBCQVBTO0FBUVRDLGtCQVJTLEdBUUVaLElBQUlhLE9BQUosQ0FBWUYsZ0JBQVosQ0FSRjtBQUFBLDRDQVVOLFNBQWVHLGtCQUFmO0FBQUEsZ0JBQW9DQyxLQUFwQyxRQUFvQ0EsS0FBcEM7O0FBQUE7O0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFBQSx3QkFFRUEsS0FGRjtBQUFBO0FBQUE7QUFBQTs7QUFBQSwwQkFFZSxJQUFJQyxLQUFKLGlDQUZmOztBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxnQ0FHY0QsS0FIZDs7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBOztBQUdNRSx3QkFITjs7QUFBQSx3QkFJSUwsU0FBU0ssSUFBVCxDQUpKO0FBQUE7QUFBQTtBQUFBOztBQUFBLDBCQUkwQixJQUFJRCxLQUFKLENBQVUsaUNBQWlDaEIsSUFBSWtCLFVBQUosQ0FBZU4sU0FBU08sTUFBeEIsQ0FBM0MsQ0FKMUI7O0FBQUE7QUFBQTtBQUFBO0FBQUE7O0FBQUE7QUFBQTtBQUFBOztBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7O0FBQUE7QUFBQTtBQUFBOztBQUFBO0FBQUE7QUFBQTs7QUFBQTtBQUFBOztBQUFBO0FBQUE7QUFBQTtBQUFBOztBQUFBOztBQUFBO0FBQUE7O0FBQUE7QUFBQTs7QUFBQTtBQUFBO0FBQUE7O0FBQUE7QUFBQTtBQUFBOztBQU9IWCx1QkFBR1ksVUFBSCxDQUFjLG1DQUFkLGVBQXdELEVBQUNMLFlBQUQsRUFBeEQ7O0FBUEc7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FWTTs7QUFBQTtBQUFBO0FBQUE7O0FBcUJiUCxhQUFHWSxVQUFILENBQWMsaURBQWQ7O0FBckJhO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLENBQWpCIiwiZmlsZSI6InZhbGlkYXRlLmpzb25TY2hlbWEuZXM2Iiwic291cmNlc0NvbnRlbnQiOlsidmFyIGFqdiA9IHJlcXVpcmUoJ2FqdicpKHthbGxFcnJvcnM6IHRydWV9KVxuY29uc3QgUEFDS0FHRSA9ICd2YWxpZGF0ZS5qc29uU2NoZW1hJ1xubW9kdWxlLmV4cG9ydHMgPSBhc3luYyBmdW5jdGlvbiBnZXRKc29uU2NoZW1hVmFsaWRhdGVGdW5jdGlvbiAoQ09ORklHLCBESSkge1xuICB0cnkge1xuICAgIGNvbnN0IGdldFZhbHVlUHJvbWlzZSA9IHJlcXVpcmUoJy4vamVzdXMnKS5nZXRWYWx1ZVByb21pc2VcbiAgICBjb25zdCBjaGVja1JlcXVpcmVkID0gcmVxdWlyZSgnLi9qZXN1cycpLmNoZWNrUmVxdWlyZWRcbiAgICBDT05GSUcgPSBjaGVja1JlcXVpcmVkKENPTkZJRywgWyd2YWxpZGF0aW9uU2NoZW1hJ10sIFBBQ0tBR0UpXG4gICAgREkgPSBjaGVja1JlcXVpcmVkKERJLCBbJ3Rocm93RXJyb3InXSwgUEFDS0FHRSlcblxuICAgIHZhciB2YWxpZGF0aW9uU2NoZW1hID0gYXdhaXQgZ2V0VmFsdWVQcm9taXNlKENPTkZJRy52YWxpZGF0aW9uU2NoZW1hKVxuICAgIHZhciB2YWxpZGF0ZSA9IGFqdi5jb21waWxlKHZhbGlkYXRpb25TY2hlbWEpXG5cbiAgICByZXR1cm4gYXN5bmMgZnVuY3Rpb24ganNvblNjaGVtYVZhbGlkYXRlICh7aXRlbXN9KSB7XG4gICAgICB0cnkge1xuICAgICAgICBpZiAoIWl0ZW1zKSB0aHJvdyBuZXcgRXJyb3IoYEpzb24gU2NoZW1hIGl0ZW1zIGFyZSBtaXNzaW5nYClcbiAgICAgICAgZm9yICh2YXIgaXRlbSBvZiBpdGVtcykge1xuICAgICAgICAgIGlmICghdmFsaWRhdGUoaXRlbSkpIHRocm93IG5ldyBFcnJvcignSnNvblNjaGVtYVZhbGlkYXRlIEludmFsaWQ6ICcgKyBhanYuZXJyb3JzVGV4dCh2YWxpZGF0ZS5lcnJvcnMpKVxuICAgICAgICB9XG4gICAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgICBESS50aHJvd0Vycm9yKFwianNvblNjaGVtYVZhbGlkYXRlKHtpdGVtc30pIEVycm9yXCIsZXJyb3Ise2l0ZW1zfSlcbiAgICAgIH1cbiAgICB9XG4gIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgREkudGhyb3dFcnJvcihcImdldEpzb25TY2hlbWFWYWxpZGF0ZUZ1bmN0aW9uKENPTkZJRywgREkpIEVycm9yXCIsZXJyb3IpXG4gIH1cbn1cbiJdfQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInZhbGlkYXRlLmpzb25TY2hlbWEuZXM2Il0sIm5hbWVzIjpbImFqdiIsInJlcXVpcmUiLCJhbGxFcnJvcnMiLCJmcyIsImdldENvbXBpbGVkU2NoZW1hIiwidmFsaWRhdGlvblNjaGVtYSIsIlByb21pc2UiLCJyZXNvbHZlIiwicmVqZWN0IiwicmVhZEZpbGUiLCJlcnIiLCJjb250ZW50cyIsImNvbXBpbGVkU2NoZW1hIiwiY29tcGlsZSIsIkpTT04iLCJwYXJzZSIsIlBBQ0tBR0UiLCJtb2R1bGUiLCJleHBvcnRzIiwianNvblNjaGVtYVZhbGlkYXRlIiwiaXRlbXMiLCJ0aHJvd0lmRmlsZU5vdEZvdW5kZWQiLCJFcnJvciIsIml0ZW0iLCJlcnJvcnNUZXh0IiwiZXJyb3JzIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQUlBLE1BQU1DLFFBQVEsS0FBUixFQUFlLEVBQUNDLFdBQVcsSUFBWixFQUFmLENBQVY7QUFDQSxJQUFJQyxLQUFLRixRQUFRLElBQVIsQ0FBVDtBQUNBLElBQUlHLG9CQUFvQixTQUFwQkEsaUJBQW9CLENBQUNDLGdCQUFEO0FBQUEsU0FBc0IsSUFBSUMsT0FBSixDQUFZLFVBQUNDLE9BQUQsRUFBVUMsTUFBVixFQUFxQjtBQUM3RUwsT0FBR00sUUFBSCxDQUFZSixnQkFBWixFQUE4QixNQUE5QixFQUFzQyxVQUFVSyxHQUFWLEVBQWVDLFFBQWYsRUFBeUI7QUFDN0QsVUFBSUQsR0FBSixFQUFTLE9BQU9ILFFBQVEsS0FBUixDQUFQO0FBQ1QsVUFBSUssaUJBQWlCWixJQUFJYSxPQUFKLENBQVlDLEtBQUtDLEtBQUwsQ0FBV0osUUFBWCxDQUFaLENBQXJCO0FBQ0FKLGNBQVFLLGNBQVI7QUFDRCxLQUpEO0FBS0QsR0FONkMsQ0FBdEI7QUFBQSxDQUF4Qjs7QUFRQSxJQUFNSSxVQUFVLHFCQUFoQjtBQUNBQyxPQUFPQyxPQUFQLEdBQWlCLFNBQWVDLGtCQUFmO0FBQUEsTUFBb0NDLEtBQXBDLFFBQW9DQSxLQUFwQztBQUFBLE1BQTJDZixnQkFBM0MsUUFBMkNBLGdCQUEzQztBQUFBLG1DQUE2RGdCLHFCQUE3RDtBQUFBLE1BQTZEQSxxQkFBN0QseUNBQW1GLElBQW5GOztBQUFBOztBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLDBDQUVjakIsa0JBQWtCQyxnQkFBbEIsQ0FGZDs7QUFBQTtBQUVUTyx3QkFGUzs7QUFBQSxjQUdSQSxjQUhRO0FBQUE7QUFBQTtBQUFBOztBQUFBLGVBSVBTLHFCQUpPO0FBQUE7QUFBQTtBQUFBOztBQUFBLGdCQUlzQixJQUFJQyxLQUFKLENBQVUseUNBQXVDakIsZ0JBQWpELENBSnRCOztBQUFBO0FBQUEsMkNBS0wsS0FMSzs7QUFBQTtBQUFBLGNBUVJlLEtBUlE7QUFBQTtBQUFBO0FBQUE7O0FBQUEsZ0JBUUssSUFBSUUsS0FBSixpQ0FSTDs7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsc0JBU0lGLEtBVEo7O0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFTSkcsY0FUSTs7QUFBQSxjQVVOWCxlQUFlVyxJQUFmLENBVk07QUFBQTtBQUFBO0FBQUE7O0FBQUEsZ0JBVXNCLElBQUlELEtBQUosQ0FBVSxpQ0FBaUN0QixJQUFJd0IsVUFBSixDQUFlWixlQUFlYSxNQUE5QixDQUEzQyxDQVZ0Qjs7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFBQTtBQUFBO0FBQUE7O0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFBQTtBQUFBO0FBQUE7O0FBQUE7QUFBQTtBQUFBOztBQUFBO0FBQUE7O0FBQUE7QUFBQTtBQUFBO0FBQUE7O0FBQUE7O0FBQUE7QUFBQTs7QUFBQTtBQUFBOztBQUFBO0FBQUEsMkNBWU4sSUFaTTs7QUFBQTtBQUFBO0FBQUE7QUFBQSxnQkFjUCxJQUFJSCxLQUFKLGFBZE87O0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsQ0FBakIiLCJmaWxlIjoidmFsaWRhdGUuanNvblNjaGVtYS5lczYiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgYWp2ID0gcmVxdWlyZSgnYWp2Jykoe2FsbEVycm9yczogdHJ1ZX0pXG52YXIgZnMgPSByZXF1aXJlKCdmcycpXG52YXIgZ2V0Q29tcGlsZWRTY2hlbWEgPSAodmFsaWRhdGlvblNjaGVtYSkgPT4gbmV3IFByb21pc2UoKHJlc29sdmUsIHJlamVjdCkgPT4ge1xuICBmcy5yZWFkRmlsZSh2YWxpZGF0aW9uU2NoZW1hLCAndXRmOCcsIGZ1bmN0aW9uIChlcnIsIGNvbnRlbnRzKSB7XG4gICAgaWYgKGVycikgcmV0dXJuIHJlc29sdmUoZmFsc2UpXG4gICAgdmFyIGNvbXBpbGVkU2NoZW1hID0gYWp2LmNvbXBpbGUoSlNPTi5wYXJzZShjb250ZW50cykpXG4gICAgcmVzb2x2ZShjb21waWxlZFNjaGVtYSlcbiAgfSlcbn0pXG5cbmNvbnN0IFBBQ0tBR0UgPSAndmFsaWRhdGUuanNvblNjaGVtYSdcbm1vZHVsZS5leHBvcnRzID0gYXN5bmMgZnVuY3Rpb24ganNvblNjaGVtYVZhbGlkYXRlICh7aXRlbXMsIHZhbGlkYXRpb25TY2hlbWEsIHRocm93SWZGaWxlTm90Rm91bmRlZD10cnVlfSkge1xuICB0cnkge1xuICAgIHZhciBjb21waWxlZFNjaGVtYSA9IGF3YWl0IGdldENvbXBpbGVkU2NoZW1hKHZhbGlkYXRpb25TY2hlbWEpXG4gICAgaWYgKCFjb21waWxlZFNjaGVtYSl7XG4gICAgICBpZiAodGhyb3dJZkZpbGVOb3RGb3VuZGVkKSB0aHJvdyBuZXcgRXJyb3IoYFJFUVVJUkVEIEpzb24gU2NoZW1hIGZpbGUgbm90IGZvdW5kIGArdmFsaWRhdGlvblNjaGVtYSlcbiAgICAgcmV0dXJuIGZhbHNlIC8vZmlsZSBub3QgZm91bmRlZFxuICB9XG5cbiAgICBpZiAoIWl0ZW1zKSB0aHJvdyBuZXcgRXJyb3IoYEpzb24gU2NoZW1hIGl0ZW1zIGFyZSBtaXNzaW5nYClcbiAgICBmb3IgKHZhciBpdGVtIG9mIGl0ZW1zKSB7XG4gICAgICBpZiAoIWNvbXBpbGVkU2NoZW1hKGl0ZW0pKSB0aHJvdyBuZXcgRXJyb3IoJ0pzb25TY2hlbWFWYWxpZGF0ZSBJbnZhbGlkOiAnICsgYWp2LmVycm9yc1RleHQoY29tcGlsZWRTY2hlbWEuZXJyb3JzKSlcbiAgICB9XG4gICAgcmV0dXJuIHRydWVcbiAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICB0aHJvdyBuZXcgRXJyb3IoZXJyb3IpXG4gIH1cbn1cbiJdfQ==
