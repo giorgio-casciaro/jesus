@@ -16,9 +16,8 @@ module.exports = async function startMicroservice (configOverwrite = {}) {
       }
     }
   }
-  var NET = await require('../net')(CONFIG, DI)
+  var NET = await require('../net')(CONFIG.net, DI)
   DI.emitEvent = NET.emitEvent
-
 
   SERVICE.registerRoute({
     route: 'updateAutorizationsView',
@@ -26,8 +25,8 @@ module.exports = async function startMicroservice (configOverwrite = {}) {
       try {
         var storagePackage = await CONFIG.autorizationsView.storage(CONFIG.autorizationsView, DI)
         DI.warn({msg: `updateView`, debug: {meta, items, itemsIds}})
-        items=R.map(CONFIG.autorizationsView.filterIncomingData, items)
-        items=R.map(R.merge({'_entity': entity}), items)
+        items = R.map(CONFIG.autorizationsView.filterIncomingData, items)
+        items = R.map(R.merge({'_entity': entity}), items)
         await storagePackage.update({
           queriesArray: R.map((itemId) => ({'_id': itemId}), itemsIds),
           dataArray: items,
@@ -41,7 +40,7 @@ module.exports = async function startMicroservice (configOverwrite = {}) {
     route: 'authorize',
     routeFunction: async function authorize ({action, entityName, itemsIds, meta}) {
       try {
-        DI.warn({msg: `authorize`, debug: {action, entityName, itemsIds, meta}})
+        // DI.warn({msg: `authorize`, debug: {action, entityName, itemsIds, meta}})
         return {
           userData: {'userId': '195151662661'}
         }
@@ -52,10 +51,9 @@ module.exports = async function startMicroservice (configOverwrite = {}) {
 
   SERVICE.registerRoute({
     route: 'test',
-    routeFunction: async function test ({meta, items, itemsIds}) {
+    routeFunction: async function test (test) {
       try {
-        DI.warn({msg: `test`, context: 'SERVICE', debug: {items, itemsIds}})
-        return {itemsIds}
+        return test
       } catch (error) {
         return DI.errorResponse({message: 'problems during test', originalError: error})
       }
@@ -83,7 +81,7 @@ module.exports = async function startMicroservice (configOverwrite = {}) {
       try {
         ({itemsIds} = require('../jesus').checkRequestItemsIdsAndItems({items, itemsIds}))
         items = R.map(() => ({'_deleted': true}), itemsIds)
-        console.log({items})
+        //console.log({items})
         var userData = await DI.authorize({action: 'write.delete', entityName: 'UserPermission', items, itemsIds, meta})
         await userPermissionBasePackage.update({items, itemsIds, userData})
         return {itemsIds}
@@ -158,22 +156,24 @@ module.exports = async function startMicroservice (configOverwrite = {}) {
         ({itemsIds} = require('../jesus').checkRequestItemsIdsAndItems({itemsIds}))
         var userData = await DI.authorize({action: 'read', entityName: 'User', itemsIds, meta})
         var items = await userCqrsPackage.read({itemsIds})
-        console.log({itemsIds, items})
+        //console.log({itemsIds, items})
         return {items}
       } catch (error) {
         return DI.errorResponse(error)
       }
     }})
 
-  SERVICE.apiGrpc = require('../api.grpc')(CONFIG, DI)
-  await SERVICE.apiGrpc.start()
-
-  SERVICE.apiRest = require('../api.rest')(CONFIG, DI)
+  SERVICE.apiRest = require('../api.http')(CONFIG, DI)
   await SERVICE.apiRest.start()
-
+  await NET.start()
+  SERVICE.stop = () => {
+    SERVICE.apiRest.stop()
+    NET.stop()
+  }
   return {
     SERVICE,
     CONFIG,
-    DI
+    DI,
+    NET
   }
 }

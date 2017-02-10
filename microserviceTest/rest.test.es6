@@ -20,7 +20,7 @@ t.test('*** JESUS SERVICE ENTITY ***', {
 
     await new Promise((resolve, reject) => {
       request.postJson('http://127.0.0.1:8080/createUser', serviceCreateUserRequest).on('complete', function (serviceCreateResponse, response) {
-        console.log('serviceCreateResponse', serviceCreateResponse)
+        //console.log('serviceCreateResponse', serviceCreateResponse)
         t.type(serviceCreateResponse, 'object', 'Response is object')
         t.type(serviceCreateResponse.itemsIds, 'Array', 'itemsIds is array')
         t.equal(serviceCreateResponse.itemsIds.length, 2, 'itemsIds length is 2')
@@ -30,7 +30,7 @@ t.test('*** JESUS SERVICE ENTITY ***', {
 
     await new Promise((resolve, reject) => {
       request.get('http://127.0.0.1:8080/createUser', {data:serviceCreateUserRequest}).on('complete', function (serviceCreateResponse, response) {
-        console.log('serviceCreateResponse', serviceCreateResponse)
+        //console.log('serviceCreateResponse', serviceCreateResponse)
         t.type(serviceCreateResponse, 'object', 'Response is object')
         t.type(serviceCreateResponse.itemsIds, 'Array', 'itemsIds is array')
         t.equal(serviceCreateResponse.itemsIds.length, 2, 'itemsIds length is 2')
@@ -38,8 +38,7 @@ t.test('*** JESUS SERVICE ENTITY ***', {
       })
     })
 
-    SERVICE_1.apiGrpc.stop()
-    SERVICE_1.apiRest.stop()
+    SERVICE_1.stop()
     t.end()
 
     // } catch (error) {

@@ -1,3 +1,12 @@
+var R = require('ramda')
+var faker = require('faker')
+faker.locale = 'it'
+var zlib = require('zlib')
+// var zstd = require('node-zstd')
+// var LZ4 = require('lz4')
+var jsf = require('json-schema-faker')
+
+var msgpack = require('msgpack')
 if (!global._babelPolyfill) {
   require('babel-polyfill')
 }
@@ -5,35 +14,83 @@ var getMicroservice = require('./microservice')
 var t = require('tap')
 var path = require('path')
 
-t.test('*** JESUS SERVICE ENTITY ***', {
+function bytesToSize (bytes) {
+  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+  if (bytes == 0) return 'n/a'
+  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
+  if (i == 0) return bytes + ' ' + sizes[i]
+  return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i]
+};
+
+t.test('*** NET MESSAGES COMPRESSION TEST ***', {
   autoend: true
 }, async function mainTest (t) {
-  var SERVICE_1, CONFIG_1, DI_1
-  ({ SERVICE: SERVICE_1, CONFIG: CONFIG_1, DI: DI_1 } = await getMicroservice({name: 'testMicroservice', grpcUrl: '0.0.0.0:10000', eventsRegistry: require('./shared/eventsRegistry.json')}))
-
-  var SERVICE_2, CONFIG_2, DI_2
-  ({ SERVICE: SERVICE_2, CONFIG: CONFIG_2, DI: DI_2 } = await getMicroservice({name: 'authorizations', proto: path.join(__dirname, '/shared/services/authorizations.proto'), grpcUrl: '0.0.0.0:10001', restPort: 8081, eventsRegistry: require('./shared/eventsRegistry.json')}))
-  t.plan(1)
-  await t.test('-> ENTITY CREATE', async function (t) {
-    var rapidTest = await DI_2.emitEvent({name: 'viewsUpdated', data: {itemsIds: ['test']}})
-    console.log(rapidTest)
-    var reqData = {action: 'write.test', entityName: 'User'}
-    try {
-      var rapidTest = await DI_1.emitEvent({name: 'authorize', data: reqData})
-      console.log(rapidTest)
-    } catch (error) {
-      console.log({error})
+  var SERVICE_1, CONFIG_1, DI_1, NET_1
+  var service1Config = {
+    name: 'testMicroservice',
+    httpPort: 8080,
+    net: {
+      netRegistry: require('./shared/netRegistry.json'),
+      url: '0.0.0.0:8082'
     }
-    SERVICE_1.apiGrpc.stop()
-    SERVICE_1.apiRest.stop()
-    SERVICE_2.apiGrpc.stop()
-    SERVICE_2.apiRest.stop()
-    t.end()
+  }
+  { ({ SERVICE: SERVICE_1, CONFIG: CONFIG_1, DI: DI_1, NET: NET_1 } = await getMicroservice(service1Config)) }
 
-    // } catch (error) {
-    //   //DI.error(error)
-    //   t.fail('FAIL createEntityTest')
-    //   t.end('FAIL createEntityTest')
-    // }
+  var service2Config = {
+    name: 'authorizations',
+    httpPort: 9090,
+    net: {
+      netRegistry: require('./shared/netRegistry.json'),
+      url: '0.0.0.0:9092'
+    }
+  }
+  var SERVICE_2, CONFIG_2, DI_2, NET_2
+  { ({ SERVICE: SERVICE_2, CONFIG: CONFIG_2, DI: DI_2, NET: NET_2 } = await getMicroservice(service2Config)) }
+
+  t.plan(1)
+
+  var schema = {
+    type: 'object',
+    properties: {
+      id: {
+        type: 'string',
+        "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+      },
+      name: {
+        type: 'string',
+        faker: 'name.findName'
+      },
+      email: {
+        type: 'string',
+        format: 'email',
+        faker: 'internet.email'
+      }
+    },
+    required: ['id', 'name', 'email'],
+
+  }
+  var testDataToSend = []
+  for (let i = 0; i < 1000; i++) {
+    testDataToSend.push(jsf(schema))
+  }
+  //console.log(testDataToSend)
+  async function testEmit () {
+    var start = new Date()
+    NET_1.resetSerializedDataByte()
+    for (var data of testDataToSend) {
+      await DI_1.emitEvent({name: 'test', data})
+    }
+    return { time: (new Date() - start), dataByte: NET_1.getSerializedDataByte()}
+  }
+
+  await t.test('NO COMPRESSION', async function (t) {
+    var result = await testEmit()
+    t.ok(true, 'size ' + bytesToSize(result.dataByte))
+    t.ok(true, 'time ' + (result.time / 1000) + ' s')
+    t.end()
   })
+
+
+  SERVICE_1.stop()
+  SERVICE_2.stop()
 })

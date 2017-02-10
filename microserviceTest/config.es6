@@ -8,26 +8,27 @@ var mainStorageConfig = {
   path: path.join(__dirname, 'fileDb')
 }
 module.exports = {
-  name: 'testMicroservice',
   instanceId: uuidV4(),
+  name: 'testMicroservice',
   tags: 'public permissions',
-  proto: path.join(__dirname, '/shared/services/testMicroservice.proto'),
-  grpcCredentials:()=>require('grpc').credentials.createInsecure(),
-  grpcUrl: '0.0.0.0:10000',
-  restPort: 8080,
+  httpPort: 8080,
+  httpPrivatePort: 8081,
+  net: {
+    netRegistry: require('./shared/netRegistry.json'),
+    url: '0.0.0.0:8082'
+  },
   NODE_ENV: 'development',
   logPath: 'microserviceTest/logs',
   debugActive: true,
-  eventsRegistry: () => false,
   'autorizationsView': {
-    filterData:R.pick(['_id', 'name']), //function per filtrare i fields degli item, tiene solo quelli interessanti per la view
+    filterData: R.pick(['_id', 'name']), // function per filtrare i fields degli item, tiene solo quelli interessanti per la view
     storage: mainStorage,
     storageConfig: mainStorageConfig,
     storageCollection: () => 'autorizationsView'
   },
   'UserPermission': {
     entityName: 'UserPermission',
-    proto: path.join(__dirname, '/shared/entities/Permission/entity.proto'),
+    schema: path.join(__dirname, '/shared/entities/Permission/entity.schema.json'),
     validationsPath: path.join(__dirname, '/shared/entities/Permission/'),
     storage: mainStorage,
     storageConfig: mainStorageConfig,
@@ -40,7 +41,7 @@ module.exports = {
   },
   'User': {
     entityName: 'User',
-    proto: './shared/entities/User/entity.proto',
+    schema: path.join(__dirname, '/shared/entities/User/entity.schema.json'),
     // mutations: {
     //   create: {
     //     validationSchema: () => require('./shared/entities/User/create.schema.json'),

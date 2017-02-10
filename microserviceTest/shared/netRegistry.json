@@ -1,0 +1,22 @@
+{
+    "services": {
+        "testMicroservice": {
+            "url": "0.0.0.0:8082"
+        },
+        "authorizations": {
+            "url": "0.0.0.0:9092"
+        }
+    },
+    "listeners": {
+        "test": [{
+            "service": "authorizations",
+            "route": "test",
+            "haveResponse": true
+        }],
+        "authorize": [{
+            "service": "authorizations",
+            "route": "authorize",
+            "haveResponse": true
+        }]
+    }
+}

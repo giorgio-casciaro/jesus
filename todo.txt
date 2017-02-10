@@ -1,29 +1,38 @@
-
-da valutare
-staccarsi da protobuf per la validazione, problemi quando si necessita di polimorfismo
-al post di protobuf, schema entity.schema.json con solo il controllo sul tipo di dati (no required)
-e service.createUser.schema.json per le chiamate ai servizi
-grpc usato solo per scambio di eventi interni polimorfici (proto)
-
-inserimento cache in moduli sviluppati: basata su storage
-net event basato su registry.json centrale
-
-nuovo test 2 micro: 1 Entity e 1 View ridotta event based
-test net events -> primi test view sincrona
+deastrarre service
+unico json per service con
+name
+methods
+  params description (jsonschema)
+  private
+listen
+  event
+    method
+    filterFields
+    haveResponse
+emit
+  event
+    waitResponses
+    singleResponse
+    addServiceName
 
 views sync ->
 per le nuove entity create event based
 on install get old entitities paginated
 checkViewUpdated: controlla che in un determitato periodo di tempo le views siano in sync,
 
+implementare tracciamento degli eventi api ms-> service ms
+rivedere errori e log
+
 standardizzazione meta riguardanti il client fra varie api
+
+inserimento cache in moduli sviluppati: basata su storage
+net event basato su registry.json centrale
 
 net creation
 nuovo nodo si collega ad un qualsiasi nodo e recupera il registro attuale
 il vecchio nodo aggiorna tutti i nodi con la nuova informazione
 se un nodo non risponde viene eliminato dal registro
 
-rivedere errori e log
 
 PERMESSI -> servizio can
   casi d'uso:

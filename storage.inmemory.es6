@@ -72,7 +72,7 @@ module.exports = async function getStorageTestPackage (CONFIG, DI) {
         dataArray = R.clone(dataArray)
         queriesArray.forEach(async(query, queryIndex) => {
           var queryResults = await find({query})
-          console.log({queryResults})
+          //console.log({queryResults})
           queryResults.forEach((item) => {
             collection[item._id] = R.merge(item, dataArray[queryIndex]) //dataArray[queryIndex]._id
           })

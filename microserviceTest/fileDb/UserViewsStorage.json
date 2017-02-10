@@ -1,22 +1,13 @@
 {
-    "c99220a4-3ae0-41c3-9625-a231bc226627": {
-        "username": "test",
+    "ffd11711-7ff5-4e20-9c23-11b4690d5c24": {
+        "username": "testUpdated",
         "email": "test@test.com",
-        "_id": "c99220a4-3ae0-41c3-9625-a231bc226627"
+        "_id": "ffd11711-7ff5-4e20-9c23-11b4690d5c24",
+        "_deleted": true
     },
-    "1775470d-f3f8-41c5-bedb-cd62d4679709": {
+    "493681ef-b6d2-495a-819c-4623dfb87324": {
         "username": "test2",
         "email": "test@test.com",
-        "_id": "1775470d-f3f8-41c5-bedb-cd62d4679709"
-    },
-    "fcc84f89-bf65-4911-8f76-57cbb095216e": {
-        "username": "test",
-        "email": "test@test.com",
-        "_id": "fcc84f89-bf65-4911-8f76-57cbb095216e"
-    },
-    "5e59c4e2-2235-4611-8a09-306f8030d686": {
-        "username": "test2",
-        "email": "test@test.com",
-        "_id": "5e59c4e2-2235-4611-8a09-306f8030d686"
+        "_id": "493681ef-b6d2-495a-819c-4623dfb87324"
     }
 }

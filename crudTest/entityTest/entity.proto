@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-message Permission {
-  string _id = 1 ;
-  string type = 2 ;
-  string entity= 3 ;
-  string action = 4;
-  map<string, string> args = 5;
-}

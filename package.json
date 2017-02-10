@@ -9,9 +9,10 @@
     "wach_test_single": "nodemon --ext js ./test/tests.js",
     "pm2_wach_test": "pm2 start pm2.js --only worker-app ",
     "wach_test": "nodemon  --ext js --exec \"clear && printf '\\e[3J' && npm --silent test || true\"",
-    "test": "tap *.test.js */*.test.js  --color --reporter=spec",
+    "test": "tap *.test.js */*.test.js --timeout=10000  --color --reporter=spec",
     "test_coverage": "tap *.test.js --color --cov --reporter=spec --coverage-report=html",
-    "debug": "node-debug jesus.test.js"
+    "wach_debug": "nodemon  --ext js --exec \"clear && printf '\\e[3J' && npm --silent run-script debug || true\"",
+    "debug": "node --inspect   microserviceTest/events.test.js "
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -20,18 +21,26 @@
     "babel-polyfill": "^6.20.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-es2017": "^6.16.0",
+    "faker": "^3.1.0",
+    "json-schema-faker": "^0.4.0",
+    "lz4": "^0.5.3",
+    "node-zstd": "^2.0.1",
     "nodemon": "^1.11.0",
     "restler": "^3.4.0",
-    "tap": "^7.1.2",
-    "tingodb": "^0.5.1"
+    "tap": "^7.1.2"
   },
   "dependencies": {
-    "ajv": "^4.10.3",
+    "ajv": "4.11.2",
+    "avsc": "^4.1.11",
     "body-parser": "^1.16.0",
+    "compression": "^1.6.2",
+    "dictionary-compressor": "0.0.2",
     "express-http2": "^4.13.4",
     "grpc": "^1.1.1",
     "helmet": "^3.4.0",
     "mongodb": "^2.2.16",
+    "msgpack": "^1.0.2",
+    "pako": "^1.0.4",
     "ramda": "^0.23.0",
     "sift": "^3.2.6",
     "source-map-support": "^0.4.10",

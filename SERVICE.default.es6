@@ -6,10 +6,11 @@ var R = require('ramda')
 var sourceMapSupport = require('source-map-support')
 sourceMapSupport.install()
 var appError = require('./error.appError')
+var logger
 
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('unhandledRejection Reason: ', promise, reason)
-  logger.trace(promise)
+  //console.trace(promise)
 })
 
 module.exports = function getSERVICE (CONFIG) {
@@ -18,7 +19,7 @@ module.exports = function getSERVICE (CONFIG) {
     events: {}
   }
 
-  var logger
+
   { // LOGGER
     const winston = require('winston')
     const logPath = CONFIG.logPath
@@ -68,7 +69,7 @@ module.exports = function getSERVICE (CONFIG) {
     callRoute: async({route, request}) => await SERVICE.routes[route](request),
     getRoutes: () => SERVICE.routes,
     deregisterRoute: async({route}) => { delete SERVICE.routes[route] },
-    
+
     throwError: (message, originalError, args) => {
       logger.error('throwError', message, originalError, args)
       throw new appError(message, originalError, args)
