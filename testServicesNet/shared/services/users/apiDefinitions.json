@@ -1,0 +1,55 @@
+{
+    "idField": {
+        "type": "string",
+        "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+    },
+    "dataField": {
+        "$ref": "../../entities/User/entity.schema.json#"
+    },
+    "metaField": {
+        "type": "object"
+    },
+    "requestIdAndData": {
+        "type": "object",
+        "properties": {
+            "data": {
+                "$ref": "#dataField"
+            },
+            "id": {
+                "$ref": "#idField"
+            },
+            "meta": {
+                "$ref": "#metaField"
+            }
+        },
+        "anyOf": [{
+            "required": ["id"]
+        }, {
+            "properties": {
+                "data": {
+                    "allOf": [{
+                        "$ref": "#dataField"
+                    }, {
+                        "required": ["_id"]
+                    }]
+                }
+            }
+        }]
+    },
+    "responseId": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "$ref": "#idField"
+            }
+        }
+    },
+    "responseData": {
+        "type": "object",
+        "properties": {
+            "data": {
+                "$ref": "#dataField"
+            }
+        }
+    }
+}

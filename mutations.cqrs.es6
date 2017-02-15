@@ -1,48 +1,7 @@
 var R = require('ramda')
 var path = require('path')
 var fs = require('fs')
-
-function debug () {
-  console.log('\u001b[1;33m' +
-    '<State Mutations>' +
-    '\u001b[0m')
-  console.log.apply(console, arguments)
-}
-// var checkNullId = function checkNullId (instance) {
-//   if (!instance._id) {
-//     delete instance._id
-//   }
-//   return instance
-// }
-
-function createItemsMutation (mutationId, mutationVersion, mutationsItemsIds, mutationsArgs) {
-  var mutations = R.addIndex(R.map)((itemId, index) => {
-    return {
-      itemId,
-      mutation: mutationId,
-      version: mutationVersion,
-      timestamp: new Date().getTime() / 1000,
-      data: (mutationsArgs && mutationsArgs[index])
-        ? mutationsArgs[index]
-        : {}
-    }
-  }, mutationsItemsIds)
-  return mutations
-}
-
-// function applyMutations (mutationsFunctions, mutations, states) {
-//   debug('applyMutations', mutationsFunctions, mutations, states)
-//   states = states || {}
-//   var mutationsByItem = R.groupBy(R.prop('itemId'), mutations)
-//   var statesByItem = R.zipObj(R.map(R.prop('itemId', states)), states)
-//   for (let itemId in mutationsByItem) {
-//     for (let mutation of mutationsByItem[itemId]) {
-//       statesByItem[itemId] = mutationsFunctions[mutation.mutation][mutation.version](statesByItem[itemId] || {}, mutation.data)
-//     }
-//   }
-//   debug('appliedMutations', statesByItem)
-//   return R.values(statesByItem)
-// }
+var LOG = console
 
 function getMutationsFunctions (basePath) {
   var filesJsNoExtension = R.map(R.compose(R.replace('.js', ''), path.basename), R.filter((file) => path.extname(file) === '.js', fs.readdirSync(basePath)))
@@ -62,84 +21,68 @@ function checkMutationFunction (mutationId, mutationsFunctions) {
     throw new Error('mutation non definita')
   }
 }
-
-// function getFunctions (basePath, filterByMutationId, filterByVersion) {
-//   var versions = getVersions(basePath)
-//   if (filterByMutationId) {
-//     versions = {
-//       [filterByMutationId]: versions[filterByMutationId]
-//     }
-//   }
-//   if (filterByVersion) {
-//     versions[filterByMutationId] = [filterByVersion]
-//   }
-//   var mutationsFunctions = R.mapObjIndexed((val, muName, obj) => R.zipObj(val, R.map((muVers) => require(`${basePath}/${muName}.${muVers}`), val)), versions)
-//   debug('getFunctions', mutationsFunctions)
-//   return mutationsFunctions
+var applyMutationsFromPath = function applyMutationsFromPathFunc (originalState, mutations, mutationsPath) {
+  var state = R.clone(originalState)
+  LOG.debug('applyMutationsFromPath',{context: PACKAGE, debug: {state, mutations, mutationsPath}})
+  function applyMutation (state, mutation) {
+    var mutationFile = path.join(mutationsPath, `${mutation.mutation}.${mutation.version}.js`)
+    return require(mutationFile)(state, mutation.data)
+  }
+  return R.reduce(applyMutation, state, mutations)
+}
+// async function validateMutation (mutationName, data, mutationsPath) {
+//   if (!data || !data.length) return null // non ci sono dati da validare
+//   var validate = require('./validate.jsonSchema')
+//   var validationSchema = path.join(mutationsPath, `${mutationName}.schema.json`)
+//   var validationResults = await validate({data, validationSchema, throwIfFileNotFounded: false})
+//   if (validationResults === false) LOG.warn({msg: 'mutation not have a schema expected:' + validationSchema, context: PACKAGE, data: {mutationName, data, mutationsPath}})
 // }
 
-module.exports = async function getMutationsCqrsPackage (CONFIG, DI) {
+const PACKAGE = 'mutations.cqrs'
+const checkRequired = require('./jesus').checkRequired
+module.exports = async function getMutationsCqrsPackage ({mutationsPath, mutationsStoragePackage}) {
   try {
-    const PACKAGE = 'mutations.cqrs'
-    const getValuePromise = require('./jesus').getValuePromise
-    const checkRequired = require('./jesus').checkRequired
-    CONFIG = checkRequired(CONFIG, ['mutationsPath'], PACKAGE)
-    DI = checkRequired(DI, ['mutationsStoragePackage', 'throwError', 'log', 'debug', 'warn'], PACKAGE)
-
-    var applyMutationsFromPath = function applyMutationsFromPathFunc (originalState, mutations, mutationsPath) {
-      var state = R.clone(originalState)
-      DI.debug({msg: 'applyMutationsFromPath', context: PACKAGE, debug: {state, mutations, mutationsPath}})
-      function applyMutation (state, mutation) {
-        var mutationFile = path.join(mutationsPath, `${mutation.mutation}.${mutation.version}.js`)
-        return require(mutationFile)(state, mutation.data)
-      }
-      return R.reduce(applyMutation, state, mutations)
-    }
-    async function validateMutation (mutationName, items, mutationsPath) {
-      if (!items || !items.length) return null // non ci sono dati da validare
-      var validate = require('./validate.jsonSchema')
-      var validationSchema = path.join(mutationsPath, `${mutationName}.schema.json`)
-      var validationResults = await validate({items, validationSchema, throwIfFileNotFounded: false})
-      if (validationResults === false) DI.warn({msg: 'mutation not have a schema expected:' + validationSchema, context: PACKAGE, data: {mutationName, items, mutationsPath}})
-    }
+    checkRequired({mutationsPath, mutationsStoragePackage}, PACKAGE)
     return {
-      mutate: async function mutate ({mutation, itemsIds, items}) {
+      mutate: async function mutate ({mutation, objId, data}) {
         try {
-          // validate mutation
-          var configMutationsPath = await getValuePromise(CONFIG.mutationsPath)
-          await validateMutation(mutation, items, configMutationsPath)
-          var mutationsFunctions = getMutationsFunctions(configMutationsPath)
+          checkRequired({objId, mutation}, PACKAGE)
+          var mutationsFunctions = getMutationsFunctions(mutationsPath)
           checkMutationFunction(mutation, mutationsFunctions)
           var lastMutationVersion = mutationsFunctions[mutation][0].mutationVersion
-          // DI.debug({msg: 'createItemsMutations', context: PACKAGE, debug: {mutation, lastMutationVersion, itemsIds, items}})
-
-          var itemsSingleMutation = createItemsMutation(mutation, lastMutationVersion, itemsIds, items)
-          DI.debug({msg: 'itemsSingleMutation to create', context: PACKAGE, debug: {mutation, lastMutationVersion, itemsIds, items, itemsSingleMutation}})
-          await DI.mutationsStoragePackage.insert({items: itemsSingleMutation})
-          return itemsSingleMutation
+          var mutationState = {
+            objId: objId,
+            mutation,
+            version: lastMutationVersion,
+            timestamp: new Date().getTime() / 1000,
+            data
+          }
+          LOG.debug('dataSingleMutation to create',{ context: PACKAGE, debug: {mutation, lastMutationVersion, objId, data, mutationState}})
+          await mutationsStoragePackage.insert({objs: [mutationState]})
+          return mutationState
         } catch (error) {
-          DI.throwError(PACKAGE + ' mutate(args) Error', error, {mutation, itemsIds, items})
+          LOG.error(PACKAGE, error, {mutation, objId, data})
+          throw new Error(`mutate(args) Error`)
         }
       },
-      getItemMutations: async function getItemMutations ({itemId, minTimestamp = 0}) {
-        var results = await DI.mutationsStoragePackage.find({
+      getObjMutations: async function getObjMutations ({objId, minTimestamp = 0}) {
+        var results = await mutationsStoragePackage.find({
           query: {
-            itemId: itemId,
+            objId: objId,
             timestamp: {$gte: minTimestamp}
           },
           sort: {timestamp: 1}
         })
-        DI.debug({msg: 'getItemMutations', context: PACKAGE, debug: {itemId, minTimestamp, results}})
+        LOG.debug('getObjMutations',{ context: PACKAGE, debug: {objId, minTimestamp, results}})
         return results
       },
       applyMutations: async function applyMutations ({state, mutations}) {
-        var mutationsPath = await getValuePromise(CONFIG.mutationsPath)
-
-        DI.debug({msg: 'applyMutationsFromPath', context: PACKAGE, debug: {state, mutations, mutationsPath}})
+        LOG.debug('applyMutationsFromPath',{context: PACKAGE, debug: {state, mutations, mutationsPath}})
         return applyMutationsFromPath(state, mutations, mutationsPath)
       }
     }
   } catch (error) {
-    DI.throwError('getMutationsCqrsPackage(CONFIG, DI)', error)
+    LOG.error(PACKAGE, error)
+    throw new Error('getMutationsCqrsPackage')
   }
 }

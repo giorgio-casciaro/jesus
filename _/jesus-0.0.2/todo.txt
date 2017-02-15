@@ -1,18 +1,19 @@
-test  microservice in jesus
-log(view non filtrata con risposta a tutti gli eventi), Users(entity normale), auth(view filtrata con risposta a update views)
-
-spostarsi in package ad hoc per test intera rete locale con
-log, Users, Login, auth(Permissions), Dash, Dash Roles & Dash Iscriptions, Dash Msg
-
-
-userdata in mutations
-tag in events per poter filtrare
-rivedere log
-cache
-
-si dovrebbe poter cambiare il servizio mentre è online
-methods dinamico
-api config e json schema dinamico
+deastrarre service
+unico json per service con
+name
+methods
+  params description (jsonschema)
+  private
+listen
+  event
+    method
+    filterFields
+    haveResponse
+emit
+  event
+    waitResponses
+    singleResponse
+    addServiceName
 
 views sync ->
 per le nuove entity create event based
