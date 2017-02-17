@@ -11,7 +11,7 @@ module.exports = async function getViewsCqrsPackage ({viewsSnapshotsMaxMutations
     checkRequired({viewsSnapshotsMaxMutations, viewsStoragePackage, viewsSnapshotsStoragePackage, mutationsPackage}, PACKAGE)
     async function updateView ({objId, loadSnapshot = true, loadMutations = true, addMutations = []}) {
       try {
-        LOG.debug('updateView', { context: PACKAGE, debug: {objId, loadSnapshot, loadMutations, addMutations}})
+        LOG.debug(PACKAGE, 'updateView', {objId, loadSnapshot, loadMutations, addMutations })
         var lastSnapshot = {timestamp: 0, state: {}}
         var mutations = []
         if (loadSnapshot) {
@@ -25,7 +25,7 @@ module.exports = async function getViewsCqrsPackage ({viewsSnapshotsMaxMutations
         mutations = R.uniqBy(R.prop('_id'), mutations)
         var updatedView = await mutationsPackage.applyMutations({state: lastSnapshot.state, mutations})
         viewsStoragePackage.update({queriesArray: [{'_id': objId}], dataArray: [updatedView], insertIfNotExists: true})
-        LOG.debug('updatedView', { context: PACKAGE, debug: {updatedView, mutations}})
+        LOG.debug(PACKAGE, 'updatedView', {updatedView, mutations})
 
         if (viewsSnapshotsMaxMutations < mutations && mutations.length) {
           await viewsSnapshotsStorage.insert({timestamp: Date.now(), state: updatedView}) // update snapshot if required
@@ -33,12 +33,12 @@ module.exports = async function getViewsCqrsPackage ({viewsSnapshotsMaxMutations
         return true
       } catch (error) {
         LOG.error(PACKAGE, error, {objId, loadSnapshot, loadMutations, addMutations})
-        throw new Error(PACKAGE + `updateView`)
+        throw new Error(PACKAGE + ` updateView`)
       }
     }
     return {
       refreshViews: function refreshViews ({objIds, loadSnapshot, loadMutations, addMutations }) {
-        LOG.debug('refreshsViews', { context: PACKAGE, debug: {objIds, loadSnapshot, addMutations}})
+        LOG.debug(PACKAGE, 'refreshsViews', {objIds, loadSnapshot, addMutations })
         function singleView (objId) {
           return updateView({objId, loadSnapshot, loadMutations, addMutations})
         }

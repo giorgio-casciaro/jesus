@@ -30,43 +30,21 @@ var grpcService = {
   }
 }
 
-module.exports =  function getNetClientPackage ({getAllServicesConfig, sharedServicePath}) {
+module.exports = function getNetClientPackage ({getAllServicesConfig, sharedServicePath}) {
   try {
     checkRequired({getAllServicesConfig, sharedServicePath}, PACKAGE)
 
-    // var callServiceApi = ({service, eventListener, data}) => new Promise((resolve, reject) => {
-    //   if (clientCache[service.url]) var client = clientCache[service.url]
-    //   else {
-    //     var clientClass = grpc.makeGenericClientConstructor(grpcService)
-    //     var client = clientCache[service.url] = new clientClass(service.url, grpc.credentials.createInsecure())
-    //   }
-    //   var callTimeout = setTimeout(() => {
-    //     grpc.closeClient(client)
-    //     reject({message: 'Response problems: REQUEST TIMEOUT', service, eventListener, data})
-    //   }, eventListener.timeout || 5000)
-    //   // DI.log('NET MESSAGE SENDING', {route: eventListener.route, data})
-    //   client.message({route: eventListener.route, data}, (error, serviceResponse) => {
-    //     clearTimeout(callTimeout)
-    //     if (error)reject(error)
-    //     resolve(serviceResponse)
-    //   })
-    // })
     var clientCache = {}
     var getGrpcClient = (netUrl) => new Promise((resolve, reject) => {
       if (clientCache[netUrl])resolve(clientCache[netUrl])
       else {
         var ClientClass = grpc.makeGenericClientConstructor(grpcService)
         var client = clientCache[netUrl] = new ClientClass(netUrl, grpc.credentials.createInsecure())
-        // grpc.waitForClientReady(client, 100000000, (error, response) => {
-        //   LOG.debug("waitForClientReady",error, response)
-        //   if (error)reject("GRPC cant connect to server "+netUrl)
-        //   resolve(client)
-        // })
         resolve(client)
       }
     })
     var callServiceApi = ({service, eventListenConfig, eventEmitConfig, data, serviceName}) => new Promise((resolve, reject) => {
-      LOG.debug('callServiceApi', service, eventListenConfig, eventEmitConfig, data, serviceName)
+      LOG.debug(PACKAGE, 'callServiceApi', {service, eventListenConfig, eventEmitConfig, data, serviceName})
       getGrpcClient(service.netUrl).then((client) => {
         var callTimeout = setTimeout(() => {
           grpc.closeClient(client)
@@ -79,7 +57,7 @@ module.exports =  function getNetClientPackage ({getAllServicesConfig, sharedSer
           resolve(serviceResponse)
         })
       }).catch(error => {
-        LOG.warn('callServiceApi error', error)
+        LOG.warn(PACKAGE, 'callServiceApi error', error)
         reject(error)
       })
     })
@@ -108,18 +86,18 @@ module.exports =  function getNetClientPackage ({getAllServicesConfig, sharedSer
         deserializeFunction = newFunc
       },
       emit (name, data) {
-        LOG.debug('emit', name, data,sharedServicePath+"/events.emit.json")
-        var eventsEmitConfig = require(sharedServicePath+"/events.emit.json")
+        LOG.debug(PACKAGE, 'emit', {name, data, sharedServicePath})
+        var eventsEmitConfig = require(sharedServicePath + '/events.emit.json')
         if (!eventsEmitConfig[name]) return LOG.warn(name + ' event not defined in ' + eventsEmitConfigFile)
         var eventEmitConfig = eventsEmitConfig[name]
 
         var eventsListenRegistry = buildServicesRegistry('events.listen.json') // TO FIX ADD CACHE
         if (!eventsListenRegistry[name] || !eventsListenRegistry[name].length) {
-          LOG.warn(name + ' event have no listeners ')
+          LOG.warn(PACKAGE, name + ' event have no listeners ')
           return false
         }
         var servicesRegistry = getAllServicesConfig('service.json') // TO FIX ADD CACHE
-        LOG.debug('servicesRegistry', servicesRegistry)
+        LOG.debug(PACKAGE, 'servicesRegistry', servicesRegistry)
         var waitResponses = []
         eventsListenRegistry[name].forEach((eventListener) => {
           var serviceName = eventListener.serviceName
@@ -128,19 +106,19 @@ module.exports =  function getNetClientPackage ({getAllServicesConfig, sharedSer
           var callServiceApiPromise = callServiceApi({service, eventListenConfig, eventEmitConfig, data, serviceName})
           if (eventListenConfig.haveResponse && eventEmitConfig.waitResponse)waitResponses.push(callServiceApiPromise)
         })
-        LOG.debug('waitResponses', waitResponses)
+        LOG.debug(PACKAGE, 'waitResponses', waitResponses)
         var result
         if (eventEmitConfig.waitResponse) {
           if (eventEmitConfig.singleResponse) result = waitResponses[0]
           else result = Promise.all(waitResponses)
         } else { result = false }
 
-        LOG.debug('emit result', result)
+        LOG.debug(PACKAGE, 'emit result', result)
         return result
       }
     }
   } catch (error) {
     LOG.error(PACKAGE, error)
-    throw new Error('getNetClientPackage')
+    throw PACKAGE + ' getNetClientPackage'
   }
 }

@@ -25,7 +25,7 @@ t.test('*** SERVICES NET ***', {
     console.debug('json schema faker schema', derefOptions, {schemaCreate, schemaRead, schemaUpdate, schemaDelete})
     console.debug('json schema faker schema examples', jsf(schemaCreate), jsf(schemaRead), jsf(schemaUpdate), jsf(schemaDelete),)
     var testDataToSend = []
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 1; i++) {
       console.group(`TEST RIGHT DATA ${i}`)
       console.group(`createUser`)
       var createdResponse

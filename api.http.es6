@@ -9,7 +9,6 @@ const PACKAGE = 'api.http'
 var checkRequired = require('./jesus').checkRequired
 module.exports = function getHttpApiPackage ({privateOnly = false, httpPort = 80, serviceMethodsFile }) {
   try {
-
     var httpApi
     var httpServer
     checkRequired({serviceMethodsFile})
@@ -22,15 +21,12 @@ module.exports = function getHttpApiPackage ({privateOnly = false, httpPort = 80
         var functionName = req.url.replace('/', '')
         var service = require(serviceMethodsFile)
         if (!service[functionName]) throw new Error(functionName + ' is not valid')
-
         LOG.debug(httpPort, serviceMethodsFile)
-
         var data = req.body || req.query
         service[functionName](data)
           .then(response => res.send(response))
           .catch(error => res.send(error))
       })
-
       httpServer = httpApi.listen(httpPort)
     }
     return {

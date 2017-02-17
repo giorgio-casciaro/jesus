@@ -1,7 +1,7 @@
 var grpc = require('grpc')
 var zlib = require('zlib')
 var LOG = console
-const PACKAGE = 'net.client'
+const PACKAGE = 'net.server'
 const checkRequired = require('./jesus').checkRequired
 
 // MESSAGE SERIALIZATION
@@ -39,7 +39,7 @@ module.exports = function getNetServerPackage ({netUrl, serviceMethodsFile}) {
           // DI.log('NET MESSAGE RECEIVED', call.request)
           var methodName = call.request.method
           var service = require(serviceMethodsFile)
-          if (!service[methodName]) throw new Error(methodName + ' is not valid')
+          if (!service[methodName]) throw methodName + ' is not valid'
           var method = service[methodName]
           var data = call.request.data
           method(data)
@@ -51,7 +51,7 @@ module.exports = function getNetServerPackage ({netUrl, serviceMethodsFile}) {
       serviceServer.addService(grpcService, grpcServiceFunctions)
       serviceServer.bind(netUrl, grpc.ServerCredentials.createInsecure())
       serviceServer.start()
-      LOG.debug('Net started on port:', netUrl)
+      LOG.debug(PACKAGE, 'Net started on port:' + netUrl)
     }
     return {
       getSerializedDataByte () {
@@ -76,6 +76,6 @@ module.exports = function getNetServerPackage ({netUrl, serviceMethodsFile}) {
     }
   } catch (error) {
     LOG.error(PACKAGE, error)
-    throw new Error('getNetServerPackage')
+    throw PACKAGE + ' getNetServerPackage'
   }
 }

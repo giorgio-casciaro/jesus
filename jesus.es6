@@ -7,6 +7,7 @@ var ajv = require('ajv')({allErrors: true})
 var LOG = console
 var sourceMapSupport = require('source-map-support')
 sourceMapSupport.install()
+const PACKAGE = 'jesus'
 
 module.exports = {
   getAllServicesConfigFromDir (dir, fileName = 'api.json') {
@@ -19,18 +20,18 @@ module.exports = {
     return services
   },
 
-  validateApiFromConfig (apiConfigFile, apiMethod, data, schemaField ) {
+  validateApiFromConfig (apiConfigFile, apiMethod, data, schemaField) {
       // TO FIX ADD CACHE
     var apiConfigPath = path.dirname(apiConfigFile) + '/'
     var apiConfig = require(apiConfigFile)
-    if(!apiConfig||!apiConfig[apiMethod]||!apiConfig[apiMethod][schemaField])throw `Api validation problem :${apiMethod} ${schemaField} in ${apiConfigFile}`
+    if (!apiConfig || !apiConfig[apiMethod] || !apiConfig[apiMethod][schemaField]) throw `Api validation problem :${apiMethod} ${schemaField} in ${apiConfigFile}`
     var schema = deref(apiConfig[apiMethod][schemaField], {baseFolder: apiConfigPath, failOnMissing: true})
-    LOG.debug('validateApiFromConfig schema', apiConfig, apiMethod, schemaField, apiConfigPath, schema)
+    LOG.debug(PACKAGE, 'validateApiFromConfig schema', {apiConfig, apiMethod, schemaField, apiConfigPath, schema})
     var validate = ajv.compile(schema)
     var valid = validate(data)
 
     if (!valid) {
-      LOG.debug('validate.errors', normalise(validate.errors))
+      LOG.debug(PACKAGE, 'validate.errors', normalise(validate.errors))
       throw normalise(validate.errors)
     }
     return data
@@ -60,7 +61,7 @@ module.exports = {
     var propsNames = Object.keys(PROPS_OBJ)
     propsNames.forEach((propName) => {
       if (!PROPS_OBJ[propName]) {
-        throw new Error(`PACKAGE ${PACKAGE} -> Required Dependency ${propName} is missing`)
+        throw `PACKAGE ${PACKAGE} -> Required Dependency ${propName} is missing`
       }
     })
   },

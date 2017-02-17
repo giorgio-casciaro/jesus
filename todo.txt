@@ -4,10 +4,25 @@ log(view non filtrata con risposta a tutti gli eventi), Users(entity normale), a
 spostarsi in package ad hoc per test intera rete locale con
 log, Users, Login, auth(Permissions), Dash, Dash Roles & Dash Iscriptions, Dash Msg
 
+meta:
 
+from: api, net
+apiRequestIp
+apiRequestHeaders
+event
+fromServciceName
+fromServiceId
+timestamp
+token
+
+
+i meta dovrebbero creare un id sessione se non presente
+e tenere traccia dei vari passaggi fatti dal messaggio
+
+implementare tracciamento degli eventi api ms-> service ms
+standardizzazione meta riguardanti il client fra varie api
 userdata in mutations
 tag in events per poter filtrare
-rivedere log
 cache
 
 si dovrebbe poter cambiare il servizio mentre è online
@@ -18,11 +33,6 @@ views sync ->
 per le nuove entity create event based
 on install get old entitities paginated
 checkViewUpdated: controlla che in un determitato periodo di tempo le views siano in sync,
-
-implementare tracciamento degli eventi api ms-> service ms
-rivedere errori e log
-
-standardizzazione meta riguardanti il client fra varie api
 
 inserimento cache in moduli sviluppati: basata su storage
 net event basato su registry.json centrale
