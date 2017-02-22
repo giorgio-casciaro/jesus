@@ -1,0 +1,26 @@
+{
+    "viewsUpdated": {
+        "singleResponse": true,
+        "waitResponse": false,
+        "responseRequired": false,
+        "timeout": 1000
+    },
+    "authorize": {
+        "singleResponse": true,
+        "waitResponse": true,
+        "responseRequired": true,
+        "timeout": 10000
+    },
+    "apiRequest": {
+        "singleResponse": true,
+        "waitResponse": true,
+        "responseRequired": false,
+        "timeout": 1000
+    },
+    "apiResponse": {
+        "singleResponse": true,
+        "waitResponse": true,
+        "responseRequired": false,
+        "timeout": 1000
+    }
+}

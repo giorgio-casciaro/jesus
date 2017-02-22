@@ -1,0 +1,5 @@
+{
+    "httpPublicApiPort": 1100,
+    "httpPrivateApiPort": 1101,
+    "netUrl": "0.0.0.0:1102"
+}

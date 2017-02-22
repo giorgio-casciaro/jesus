@@ -1,9 +1,9 @@
 var R = require('ramda')
 var path = require('path')
 var fs = require('fs')
-var LOG = console
 const PACKAGE = 'mutations.cqrs'
 const checkRequired = require('./jesus').checkRequired
+var checkRequiredFiles = require('./jesus').checkRequiredFiles
 
 function getMutationsFunctions (basePath) {
   var filesJsNoExtension = R.map(R.compose(R.replace('.js', ''), path.basename), R.filter((file) => path.extname(file) === '.js', fs.readdirSync(basePath)))
@@ -20,22 +20,27 @@ function getMutationsFunctions (basePath) {
 
 function checkMutationFunction (mutationId, mutationsFunctions) {
   if (!mutationsFunctions[mutationId] || !mutationsFunctions[mutationId][0]) {
-    throw new Error('mutation non definita')
+    errorThrow('mutation not defined', {mutationId})
   }
-}
-var applyMutationsFromPath = function applyMutationsFromPathFunc (originalState, mutations, mutationsPath) {
-  var state = R.clone(originalState)
-  LOG.debug(PACKAGE, 'applyMutationsFromPath', {state, mutations, mutationsPath})
-  function applyMutation (state, mutation) {
-    var mutationFile = path.join(mutationsPath, `${mutation.mutation}.${mutation.version}.js`)
-    return require(mutationFile)(state, mutation.data)
-  }
-  return R.reduce(applyMutation, state, mutations)
 }
 
-module.exports = async function getMutationsCqrsPackage ({mutationsPath, mutationsStoragePackage}) {
+module.exports = async function getMutationsCqrsPackage ({serviceName, serviceId, mutationsPath, mutationsStoragePackage}) {
+  var LOG = require('./jesus').LOG(serviceName, serviceId, PACKAGE)
+  var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
+
+  var applyMutationsFromPath = function applyMutationsFromPathFunc (originalState, mutations, mutationsPath) {
+    var state = R.clone(originalState)
+    LOG.debug('applyMutationsFromPath', {state, mutations, mutationsPath})
+    function applyMutation (state, mutation) {
+      var mutationFile = path.join(mutationsPath, `${mutation.mutation}.${mutation.version}.js`)
+      return require(mutationFile)(state, mutation.data)
+    }
+    return R.reduce(applyMutation, state, mutations)
+  }
+
   try {
-    checkRequired({mutationsPath, mutationsStoragePackage}, PACKAGE)
+    checkRequired({serviceName, serviceId, mutationsPath, mutationsStoragePackage}, PACKAGE)
+    checkRequiredFiles([mutationsPath], PACKAGE)
     return {
       mutate: async function mutate ({mutation, objId, data}) {
         try {
@@ -50,12 +55,11 @@ module.exports = async function getMutationsCqrsPackage ({mutationsPath, mutatio
             timestamp: new Date().getTime() / 1000,
             data
           }
-          LOG.debug(PACKAGE, 'dataSingleMutation to create', {mutation, lastMutationVersion, objId, data, mutationState})
+          LOG.debug('dataSingleMutation to create', {mutation, lastMutationVersion, objId, data, mutationState})
           await mutationsStoragePackage.insert({objs: [mutationState]})
           return mutationState
         } catch (error) {
-          LOG.error(PACKAGE, error, {mutation, objId, data})
-          throw 'mutate(args) Error'
+          errorThrow('mutate(args) Error', {error, mutation, objId, data})
         }
       },
       getObjMutations: async function getObjMutations ({objId, minTimestamp = 0}) {
@@ -66,16 +70,15 @@ module.exports = async function getMutationsCqrsPackage ({mutationsPath, mutatio
           },
           sort: {timestamp: 1}
         })
-        LOG.debug(PACKAGE, 'getObjMutations', {objId, minTimestamp, results})
+        LOG.debug('getObjMutations', {objId, minTimestamp, results})
         return results
       },
       applyMutations: async function applyMutations ({state, mutations}) {
-        LOG.debug(PACKAGE, 'applyMutationsFromPath', {state, mutations, mutationsPath})
+        LOG.debug('applyMutationsFromPath', {state, mutations, mutationsPath})
         return applyMutationsFromPath(state, mutations, mutationsPath)
       }
     }
   } catch (error) {
-    LOG.error(PACKAGE, error)
-    throw PACKAGE+' getMutationsCqrsPackage'
+    errorThrow('getMutationsCqrsPackage', {error, mutationsPath, mutationsStoragePackage})
   }
 }

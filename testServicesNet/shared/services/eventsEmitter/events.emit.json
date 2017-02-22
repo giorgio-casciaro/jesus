@@ -1,0 +1,14 @@
+{
+    "apiRequest": {
+        "singleResponse": true,
+        "waitResponse": true,
+        "responseRequired": false,
+        "timeout": 1000
+    },
+    "apiResponse": {
+        "singleResponse": true,
+        "waitResponse": true,
+        "responseRequired": false,
+        "timeout": 1000
+    }
+}

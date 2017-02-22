@@ -6,28 +6,39 @@ const uuidV4 = require('uuid/v4')
 const checkRequired = require('./jesus').checkRequired
 var db = {collections: {}, collectionsSaveTimeout: {}}
 function getReadableDate () { return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') }
-var LOG = console
 const PACKAGE = 'storage.inmemory'
 
-module.exports = async function getStorageTestPackage ({storageCollection, storageConfig}) {
+module.exports = async function getStorageTestPackage ({serviceName, serviceId, storageCollection, storageConfig}) {
   try {
-    checkRequired({storageCollection, storageConfig, 'storageConfig.path': storageConfig.path}, PACKAGE)
+    var LOG = require('./jesus').LOG(serviceName, serviceId, PACKAGE)
+    var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
+
+    checkRequired({ serviceName, serviceId, storageCollection, storageConfig, 'storageConfig.path': storageConfig.path}, PACKAGE)
     var dbFile = path.join(storageConfig.path, storageCollection + '.json')
     if (!db.collections[storageCollection])db.collections[storageCollection] = {}
     var collection = db.collections[storageCollection]
 
-    async function find ({query, sort = null, limit = 1000, start = 0}) {
+    async function find ({query, sort = null, limit = 1000, start = 0, fields = null}) {
       var results = sift(query, R.values(collection))
+      if (fields) {
+        fields._id = 1
+        results = R.map(result => {
+          result=R.clone(result)
+          var unusedKeys = Object.keys(result).filter(key => !fields[key])
+          unusedKeys.forEach(v => delete result[v])
+          return result
+        },results)
+      }
       if (sort) {
         R.forEachObjIndexed((sortValue, sortIndex) => {
-          var before = R.clone(results)
+          // var before = R.clone(results)
           results = R.sortBy(R.prop(sortIndex), results)
           if (!sortValue)results = R.reverse(results)
-          LOG.debug(PACKAGE, `find() sorting`, {sortValue, sortIndex, before, results})
+          // LOG.debug(`find() sorting`, {sortValue, sortIndex, before, results})
         }, sort)
       }
       results = R.slice(start, limit + start, results)
-      LOG.debug(PACKAGE, `find()`, {storageCollection, query, collection, results})
+      LOG.debug(`find()`, {storageCollection, query, collection, results})
       return results
     }
     async function insert ({objs}) {
@@ -44,9 +55,9 @@ module.exports = async function getStorageTestPackage ({storageCollection, stora
       if (!db.collectionsSaveTimeout[storageCollection])db.collectionsSaveTimeout[storageCollection] = {}
       if (db.collectionsSaveTimeout[storageCollection]) clearTimeout(db.collectionsSaveTimeout[storageCollection])
       db.collectionsSaveTimeout[storageCollection] = setTimeout(function () {
-        LOG.debug(PACKAGE, `${storageCollection} WRITING TO LOGSK `, {dbFile, collection})
+        LOG.debug(`${storageCollection} WRITING TO LOGSK `, {dbFile, collection})
         fs.writeFile(dbFile, JSON.stringify(collection, null, 4), 'utf8', () => {
-          LOG.debug(PACKAGE, `${storageCollection} WRITED TO LOGSK `, {dbFile})
+          LOG.debug(`${storageCollection} WRITED TO LOGSK `, {dbFile})
         })
       }, 1000)
       return true
@@ -77,7 +88,7 @@ module.exports = async function getStorageTestPackage ({storageCollection, stora
       }
     }
   } catch (error) {
-    LOG.error(PACKAGE, error)
+    LOG.error(error)
     throw PACKAGE + ` getStorageTingodbPackage`
   }
 }

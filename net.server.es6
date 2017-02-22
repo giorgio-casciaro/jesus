@@ -1,6 +1,5 @@
 var grpc = require('grpc')
 var zlib = require('zlib')
-var LOG = console
 const PACKAGE = 'net.server'
 const checkRequired = require('./jesus').checkRequired
 
@@ -29,29 +28,53 @@ var grpcService = {
   }
 }
 
-module.exports = function getNetServerPackage ({netUrl, serviceMethodsFile}) {
+module.exports = function getNetServerPackage ({serviceName, serviceId, netUrl, serviceMethodsFile, sharedServicePath}) {
+  var LOG = require('./jesus').LOG(serviceName, serviceId, PACKAGE)
+  var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
   try {
     var serviceServer
-    checkRequired({netUrl, serviceMethodsFile})
+    checkRequired({serviceName, serviceId, netUrl, serviceMethodsFile, sharedServicePath})
     async function start () {
       var grpcServiceFunctions = {
         message (call, callback) {
-          // DI.log('NET MESSAGE RECEIVED', call.request)
+          var event = call.request.event
+          var eventsListenConfig = require(sharedServicePath + '/events.listen.json')
+          if (!eventsListenConfig[event] && !eventsListenConfig['*']) return LOG.warn(netUrl, event + ' event not defined in /events.listen.json')
+          var eventConfig = eventsListenConfig[event] || eventsListenConfig['*']
+
+          var serviceName = call.request.serviceName
           var methodName = call.request.method
           var service = require(serviceMethodsFile)
           if (!service[methodName]) throw methodName + ' is not valid'
           var method = service[methodName]
           var data = call.request.data
-          method(data)
-          .then(response => callback(null, response))
-          .catch(error => callback(null, error))
+          var meta = {
+            type: 'netEvent',
+            from: serviceName,
+            event,
+            timestamp: Date.now()
+          }
+          LOG.debug('message received ' + methodName, {eventConfig})
+          if (eventConfig.haveResponse) {
+            method(data, meta).then(response => {
+              LOG.debug('message response ' + methodName, {response})
+              callback(null, response)
+            }).catch(error => {
+              LOG.warn('message error ' + methodName, {error})
+              callback(null, error)
+            })
+          } else {
+            LOG.debug('message aknowlegment ' + methodName)
+            method(data, meta)
+            callback(null, {aknowlegment: true})
+          }
         }
       }
       serviceServer = new grpc.Server()
       serviceServer.addService(grpcService, grpcServiceFunctions)
       serviceServer.bind(netUrl, grpc.ServerCredentials.createInsecure())
       serviceServer.start()
-      LOG.debug(PACKAGE, 'Net started on port:' + netUrl)
+      LOG.debug('Net started on port:' + netUrl)
     }
     return {
       getSerializedDataByte () {
@@ -75,7 +98,6 @@ module.exports = function getNetServerPackage ({netUrl, serviceMethodsFile}) {
       }
     }
   } catch (error) {
-    LOG.error(PACKAGE, error)
-    throw PACKAGE + ' getNetServerPackage'
+    errorThrow('getNetServerPackage', {error, netUrl, serviceMethodsFile, sharedServicePath})
   }
 }

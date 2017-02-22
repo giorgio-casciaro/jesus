@@ -1,0 +1,22 @@
+{
+    "listenEvents": {
+        "public": true,
+        "stream": true,
+        "requestSchema": {
+            "type": "object"
+        },
+        "responseSchema": {
+            "type": "object"
+        }
+    },
+    "capture": {
+        "public": true,
+        "stream": false,
+        "requestSchema": {
+            "type": "object"
+        },
+        "responseSchema": {
+            "type": "object"
+        }
+    }
+}

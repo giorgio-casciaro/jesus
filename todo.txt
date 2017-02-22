@@ -4,6 +4,10 @@ log(view non filtrata con risposta a tutti gli eventi), Users(entity normale), a
 spostarsi in package ad hoc per test intera rete locale con
 log, Users, Login, auth(Permissions), Dash, Dash Roles & Dash Iscriptions, Dash Msg
 
+
+api privateOnly
+required filters
+
 meta:
 
 from: api, net

@@ -1,18 +1,18 @@
-var entityCqrs = require('../../entity.cqrs')
-var jesus = require('../../jesus')
+var entityCqrs = require('../../../entity.cqrs')
+var jesus = require('../../../jesus')
 const uuidV4 = require('uuid/v4')
-var LOG = console
+var LOG = jesus.LOG(serviceName, serviceId, PACKAGE)
 process.on('unhandledRejection', (reason, promise) => LOG.error('unhandledRejection Reason: ', promise, reason))
 
 var CONFIG = require('./config')
 const PACKAGE = 'service.users'
 
 const getAllServicesConfig = (schema) => jesus.getAllServicesConfigFromDir(CONFIG.sharedServicesPath, schema)
-const validateApiRequest = (apiMethod, data) => jesus.validateApiFromConfig(CONFIG.sharedServicePath + '/api.json', apiMethod, data, 'requestSchema')
-const validateApiResponse = (apiMethod, data) => jesus.validateApiFromConfig(CONFIG.sharedServicePath + '/api.json', apiMethod, data, 'responseSchema')
+const validateApiRequest = (apiMethod, data) => jesus.validateApiFromConfig(CONFIG.sharedServicePath + '/methods.json', apiMethod, data, 'requestSchema')
+const validateApiResponse = (apiMethod, data) => jesus.validateApiFromConfig(CONFIG.sharedServicePath + '/methods.json', apiMethod, data, 'responseSchema')
 
 const NET_CLIENT_ARGS = {getAllServicesConfig, sharedServicePath: CONFIG.sharedServicePath}
-var netClient = require('../../net.client')(NET_CLIENT_ARGS)
+var netClient = require('../../../net.client')(NET_CLIENT_ARGS)
 
 module.exports = {
   async  test (test) {
@@ -22,11 +22,11 @@ module.exports = {
       return LOG.error({message: 'problems during test', originalError: error})
     }
   },
-  async  createUser ({meta, data, id}) {
+  async  createUser ({data, id}, meta) {
     try {
       LOG.profile("createUser")
-      LOG.debug(PACKAGE, `start createUser()`, {meta, data, id})
-      validateApiRequest('createUser', {meta, data, id})
+      LOG.debug(PACKAGE, `start createUser()`, {data, id}, meta)
+      validateApiRequest('createUser', {data, id}, meta)
       data._id = id = id || data._id || uuidV4() // generate id if necessary
       var cqrs = await entityCqrs(require('./config.User'))
       var userData = await netClient.emit('authorize', {action: 'write.create', entityName: 'User', meta, data, id})
@@ -39,10 +39,10 @@ module.exports = {
       return {error: 'problems during create', originalError: error}
     }
   },
-  async  updateUser ({meta, data, id}) {
+  async  updateUser ({data, id}, meta) {
     try {
-      LOG.debug(PACKAGE, `start updateUser()`, {meta, data, id})
-      validateApiRequest('updateUser', {meta, data, id})
+      LOG.debug(PACKAGE, `start updateUser()`, {data, id}, meta)
+      validateApiRequest('updateUser', {data, id}, meta)
       data._id = id = id || data._id
       var cqrs = await entityCqrs(require('./config.User'))
       var userData = await netClient.emit('authorize', {action: 'write.update', entityName: 'User', meta, data, id})
@@ -54,10 +54,10 @@ module.exports = {
       return {error: 'problems during update', originalError: error}
     }
   },
-  async  deleteUser ({meta, data, id}) {
+  async  deleteUser ({data, id}, meta) {
     try {
-      LOG.debug(PACKAGE, `start deleteUser()`, {meta, data, id})
-      validateApiRequest('deleteUser', {meta, data, id})
+      LOG.debug(PACKAGE, `start deleteUser()`, {data, id}, meta)
+      validateApiRequest('deleteUser', {data, id}, meta)
       data._id = id = id || data._id
       var cqrs = await entityCqrs(require('./config.User'))
       var userData = await netClient.emit('authorize', {action: 'write.delete', entityName: 'User', meta, data, id})
@@ -69,10 +69,10 @@ module.exports = {
       return {error: 'problems during delete', originalError: error}
     }
   },
-  async  readUser ({meta, data, id}) {
+  async  readUser ({data, id}, meta) {
     try {
-      LOG.debug(PACKAGE, `start readUser()`, {meta, data, id})
-      validateApiRequest('readUser', {meta, data, id})
+      LOG.debug(PACKAGE, `start readUser()`, {data, id}, meta)
+      validateApiRequest('readUser', {data, id}, meta)
       id = id || data._id
       var cqrs = await entityCqrs(require('./config.User'))
       var viewsResult = await cqrs.viewsPackage.get({ids: [id]})

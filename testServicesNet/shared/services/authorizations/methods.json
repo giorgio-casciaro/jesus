@@ -1,0 +1,11 @@
+{
+    "authorize": {
+        "public": true,
+        "requestSchema": {
+            "type": "object"
+        },
+        "responseSchema": {
+            "type": "object"
+        }
+    }
+}

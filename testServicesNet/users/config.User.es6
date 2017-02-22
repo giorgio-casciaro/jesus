@@ -1,12 +1,12 @@
 var path = require('path')
 
-var mainStorage = require('../../storage.inmemory')
+var mainStorage = require('../../../storage.inmemory')
 var mainStorageType = 'inmemory'
 var mainStorageConfig = {
   path: path.join(__dirname, '../fileDb')
 }
 var entityName = 'User'
-var sharedPath = path.join(__dirname, '/../shared/entities/User/')
+var sharedPath = path.join(__dirname, '/../../shared/entities/User/')
 module.exports = {
   entityName,
   schema: path.join(sharedPath, '/entity.schema.json'),
