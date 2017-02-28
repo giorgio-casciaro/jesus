@@ -2,20 +2,25 @@ const R = require('ramda')
 const fs = require('fs')
 const path = require('path')
 var deref = require('json-schema-deref-sync')
+var jsonfile = require('jsonfile')
 // var normalise = require('ajv-error-messages')
 var ajv = require('ajv')({allErrors: true})
-var sourceMapSupport = require('source-map-support')
-sourceMapSupport.install()
+// var sourceMapSupport = require('source-map-support')
+// sourceMapSupport.install()
+//process.on('unhandledRejection', (reason, promise) => console.error('unhandledRejection Reason: ', promise, reason))
+
 const PACKAGE = 'jesus'
 const stringToColor = (string) => {
-  var value = string.split('').map((char) => char.charCodeAt(0)*2).reduce((a, b) => a + b, 0)
+  var value = string.split('').map((char) => char.charCodeAt(0) * 2).reduce((a, b) => a + b, 0)
   return `hsl(${(value) % 255},80%,30%)`
 }
 var LOG = (serviceName, serviceId, pack) => {
   return {
+    profile (name) { if (!console.profile) return false; console.profile(name) },
+    profileEnd (name) { if (!console.profile) return false; console.profileEnd(name) },
     error () { var args = Array.prototype.slice.call(arguments); console.error.apply(this, [serviceName, serviceId, pack].concat(args)) },
     log () { var args = Array.prototype.slice.call(arguments); console.log.apply(this, [serviceName, serviceId, pack].concat(args)) },
-    debug () { var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', serviceId, pack].concat(args)) },
+    debug () { if (!console.debug) return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', serviceId, pack].concat(args)) },
     warn () { var args = Array.prototype.slice.call(arguments); console.warn.apply(this, [serviceName, serviceId, pack].concat(args)) }
   }
 }
@@ -23,10 +28,11 @@ var LOG = (serviceName, serviceId, pack) => {
 function errorThrow (serviceName, serviceId, pack) {
   return (msg, data) => {
     LOG(serviceName, serviceId, pack).warn(msg, data)
-    if (data&&data.error) throw data.error
+    if (data && data.error) throw data.error
     else throw msg
   }
 }
+
 module.exports = {
   getAllServicesConfigFromDir (dir, fileName = 'methods.json') {
     var services = {}
@@ -37,19 +43,65 @@ module.exports = {
     // LOG.debug("getAllServicesConfigFromDir",services)
     return services
   },
+  setSharedConfig (servicesRootDir, service, config, data) {
+    return new Promise((resolve, reject) => {
+      var filePath = path.join(servicesRootDir, service, config)
+      jsonfile.writeFile(filePath + '.json', data, (err) => {
+        if (err) return reject(err)
+        resolve(data)
+      })
+    })
+  },
+  getSharedConfig (servicesRootDir) {
+    return (service, config = 'service', exclude, asObj = false) => {
+      return new Promise((resolve, reject) => {
+        if (service === '*') {
+          fs.readdir(servicesRootDir, (err, dirContents) => {
+            if (err) return reject(err)
+            var allFilePromises = []
+            dirContents.forEach(serviceName => {
+              if (exclude === serviceName) return false
+              const filePath = path.join(servicesRootDir, serviceName, config)
+              allFilePromises.push(new Promise((resolve, reject) => {
+                jsonfile.readFile(filePath + '.json', (err, data) => {
+                  if (err) return reject(err)
+                  data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
+                  data.serviceName = serviceName
+                  return resolve(data)
+                })
+              }))
+            })
+            Promise.all(allFilePromises).then(result => {
+              if (asObj) {
+                var objResult = {}
+                result.forEach(serviceArray => objResult[serviceArray.serviceName] = serviceArray)
+                return resolve(objResult)
+              } else resolve(result)
+            }).catch(reject)
+          })
+        } else {
+          var filePath = path.join(servicesRootDir, service, config)
+          jsonfile.readFile(filePath + '.json', (err, data) => {
+            if (err) return reject(err)
+            data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
+            data.serviceName = service
+            return resolve(data)
+          })
+        }
+      })
+    }
+  },
   errorThrow,
-  validateMethodFromConfig (serviceName, serviceId, apiConfigFile, apiMethod, data, schemaField) {
+  validateMethodFromConfig (serviceName, serviceId, methodsConfig, methodName, data, schemaField) {
       // TO FIX ADD CACHE
-    var apiConfigPath = path.dirname(apiConfigFile) + '/'
-    var apiConfig = require(apiConfigFile)
-    if (!apiConfig || !apiConfig[apiMethod] || !apiConfig[apiMethod][schemaField]) errorThrow(`Method validation problem :${apiMethod} ${schemaField} in ${apiConfigFile}`)
-    var schema = deref(apiConfig[apiMethod][schemaField], {baseFolder: apiConfigPath, failOnMissing: true})
-    LOG(serviceName, serviceId, PACKAGE).debug('validateMethodFromConfig schema', {apiConfig, apiMethod, schemaField, apiConfigPath, schema})
+    if (!methodsConfig || !methodsConfig[methodName] || !methodsConfig[methodName][schemaField]) errorThrow(`Method validation problem :${methodName} ${schemaField} in ${methodsConfigFile}`)
+    var schema = methodsConfig[methodName][schemaField]
+    LOG(serviceName, serviceId, PACKAGE).debug('validateMethodFromConfig schema', {methodsConfig, methodName, schemaField, schema})
     var validate = ajv.compile(schema)
     var valid = validate(data)
 
     if (!valid) {
-      errorThrow(serviceName, serviceId, PACKAGE)('validation errors', {errors: validate.errors, apiConfigFile, apiMethod, data, schemaField})
+      errorThrow(serviceName, serviceId, PACKAGE)('validation errors', {errors: validate.errors, methodsConfig, methodName, data, schemaField})
     }
     return data
   },
@@ -57,8 +109,8 @@ module.exports = {
     return new Promise((resolve, reject) => {
       Promise.resolve(value).then(function (value) {
         if (typeof (value) === 'function') {
-          try { resolve(value()) } catch (error) { reject(error) }
-        } else resolve(value)
+          try { return resolve(value()) } catch (error) { return reject(error) }
+        } else return resolve(value)
       })
     })
   },

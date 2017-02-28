@@ -1,50 +1,33 @@
-test  microservice in jesus
-log(view non filtrata con risposta a tutti gli eventi), Users(entity normale), auth(view filtrata con risposta a update views)
-
-spostarsi in package ad hoc per test intera rete locale con
-log, Users, Login, auth(Permissions), Dash, Dash Roles & Dash Iscriptions, Dash Msg
-
-
-api privateOnly
-required filters
-
-meta:
-
-from: api, net
-apiRequestIp
-apiRequestHeaders
-event
-fromServciceName
-fromServiceId
-timestamp
-token
-
-
-i meta dovrebbero creare un id sessione se non presente
-e tenere traccia dei vari passaggi fatti dal messaggio
-
-implementare tracciamento degli eventi api ms-> service ms
-standardizzazione meta riguardanti il client fra varie api
-userdata in mutations
-tag in events per poter filtrare
-cache
-
+cache e reload dei files
+files json sempre ricaricati,
+methods js senza cache in development,
 si dovrebbe poter cambiare il servizio mentre è online
-methods dinamico
-api config e json schema dinamico
+check su: methods dinamico, api config e json schema dinamico
+cache esplicita basata su profiling
 
-views sync ->
-per le nuove entity create event based
-on install get old entitities paginated
-checkViewUpdated: controlla che in un determitato periodo di tempo le views siano in sync,
+inserimento log, al momento tutti debug
 
-inserimento cache in moduli sviluppati: basata su storage
-net event basato su registry.json centrale
+http streaming > aggiungere timeout alla chiusura della connessione-
 
-net creation
-nuovo nodo si collega ad un qualsiasi nodo e recupera il registro attuale
-il vecchio nodo aggiorna tutti i nodi con la nuova informazione
-se un nodo non risponde viene eliminato dal registro
+LOG VISUALIZER->http streaming continuo,invia i vecchi log e si iscrive allo streaming
+
+test aggiunta e rimozione eventi on the fly
+NET
+
+VIEWS
+json diff
+
+FRONT END CRUD
+form autogenerati in base a json-schema
+ms specializzato
+
+FRONTEND
+usare un global store (backup su browser store)
+i dati vengono recuperati in 3modi
+- tramite una query al servizio di view della Resource -> recupera tutti i dati e aggiorna il global store
+- tramite una query differenziale al servizio di view della Resource -> usa l'ultimo timestamp per recuperare solo i dati aggiornati
+- tramite servizio event emiter ->ogni componente ascolterà event emiter e muterà lo store di conseguenza
+
 
 
 PERMESSI -> servizio can

@@ -42,6 +42,7 @@ module.exports = async function getStorageTestPackage ({serviceName, serviceId, 
       return results
     }
     async function insert ({objs}) {
+      LOG.debug(`${storageCollection} DB INSERT `, objs)
       if (!objs) throw 'No objs'
       objs = R.clone(objs)
       objs.forEach((value) => {

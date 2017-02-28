@@ -3,12 +3,12 @@
         "singleResponse": true,
         "waitResponse": true,
         "responseRequired": false,
-        "timeout": 1000
+        "timeout": 5000
     },
     "apiResponse": {
         "singleResponse": true,
         "waitResponse": true,
         "responseRequired": false,
-        "timeout": 1000
+        "timeout": 5000
     }
 }

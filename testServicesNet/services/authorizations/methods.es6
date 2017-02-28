@@ -1,17 +1,15 @@
+var entityCqrs = require('../../../entity.cqrs')
 var jesus = require('../../../jesus')
+const uuidV4 = require('uuid/v4')
+const netClient = require('../../../net.client')
 
 var serviceName = require('./config').serviceName
 var serviceId = require('./serviceId.json')
-var sharedServicesPath = require('./config').sharedServicesPath
-var sharedServicePath = require('./config').sharedServicePath
-
-process.on('unhandledRejection', (reason, promise) => LOG.error('unhandledRejection Reason: ', promise, reason))
+var getSharedConfig = jesus.getSharedConfig(require('./config').sharedServicesPath)
 
 const PACKAGE = 'methods'
-var LOG = jesus.LOG(serviceName,serviceId,PACKAGE)
-var errorThrow = jesus.errorThrow(serviceName,serviceId,PACKAGE)
-
-
+var LOG = jesus.LOG(serviceName, serviceId, PACKAGE)
+var errorThrow = jesus.errorThrow(serviceName, serviceId, PACKAGE)
 
 module.exports = {
   async  authorize ({action, entityName, id, meta}) {

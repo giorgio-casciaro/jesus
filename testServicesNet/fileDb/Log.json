@@ -1,0 +1,55 @@
+{
+    "3e7298ff-f92a-4654-a712-8ee13c579ca7": {
+        "logData": {
+            "data": {},
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "738c2c0b-02d8-4438-b6fe-f7b161d6634b",
+                "methodName": "listenEvents",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488310444.869
+            }
+        },
+        "timestamp": 1488310447024,
+        "meta": {
+            "type": "netEvent",
+            "from": "eventsEmitter",
+            "requestId": "738c2c0b-02d8-4438-b6fe-f7b161d6634b",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488310447014
+        },
+        "_id": "3e7298ff-f92a-4654-a712-8ee13c579ca7"
+    },
+    "049a011d-d8de-4525-b7e4-dc8dfffbb365": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "pariatur ",
+                    "email": "xixlw@CDc.xin",
+                    "_id": "d9aBfe7F-dbd2-1Db5-4DB1-85dcebC3Bd9F"
+                },
+                "userId": "co",
+                "token": "cillum Ut eu "
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "60a10efb-d496-4827-949e-8726ae28917b",
+                "userId": "co",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488310446.501
+            }
+        },
+        "timestamp": 1488310447055,
+        "meta": {
+            "type": "netEvent",
+            "from": "eventsEmitter",
+            "requestId": "738c2c0b-02d8-4438-b6fe-f7b161d6634b",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488310447034
+        },
+        "_id": "049a011d-d8de-4525-b7e4-dc8dfffbb365"
+    }
+}

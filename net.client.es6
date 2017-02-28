@@ -3,7 +3,6 @@ var grpc = require('grpc')
 var zlib = require('zlib')
 const PACKAGE = 'net.client'
 const checkRequired = require('./jesus').checkRequired
-const checkRequiredFiles = require('./jesus').checkRequiredFiles
 
 // MESSAGE SERIALIZATION
 var serializedDataByte = 0
@@ -27,86 +26,106 @@ var grpcService = {
     requestDeserialize: deserializeJson,
     responseSerialize: serializeJson,
     responseDeserialize: deserializeJson
+  },
+
+  messageMulti: {
+    path: 'messageMulti',
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: serializeJson,
+    requestDeserialize: deserializeJson,
+    responseSerialize: serializeJson,
+    responseDeserialize: deserializeJson
   }
 }
 
-module.exports = function getNetClientPackage ({serviceName, serviceId, sharedServicesPath, sharedServicePath}) {
-  var getAllServicesConfig = (schema) => require('./jesus').getAllServicesConfigFromDir(sharedServicesPath, schema)
+var delayedSendData = global.JESUS_NET_CLIENT_delayedSendData = global.JESUS_NET_CLIENT_delayedSendData || {}
+
+module.exports = function getNetClientPackage ({serviceName, serviceId, getSharedConfig}) {
+  // var getAllServicesConfig = (schema) => require('./jesus').getAllServicesConfigFromDir(sharedServicesPath, schema)
   try {
     var LOG = require('./jesus').LOG(serviceName, serviceId, PACKAGE)
     var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
 
-    checkRequired({serviceName, serviceId, sharedServicesPath, sharedServicePath})
-    checkRequiredFiles([sharedServicePath + '/events.emit.json'])
+    checkRequired({serviceName, serviceId, getSharedConfig})
 
     var clientCache = {}
     var getGrpcClient = (netUrl) => new Promise((resolve, reject) => {
       var client
-      if (clientCache[netUrl])client =clientCache[netUrl]
+      if (clientCache[netUrl])client = clientCache[netUrl]
       else {
         var ClientClass = grpc.makeGenericClientConstructor(grpcService)
-         client = clientCache[netUrl] = new ClientClass(netUrl, grpc.credentials.createInsecure())
+        client = clientCache[netUrl] = new ClientClass(netUrl, grpc.credentials.createInsecure())
       }
       LOG.debug('getGrpcClient ', client)
       resolve(client)
     })
-    var sendMessage = ({name, listenerService, eventListenConfig, eventEmitConfig, data, listenerServiceName}) => new Promise((resolve, reject) => {
-      LOG.debug('sendMessage ' + name + ' to ' + listenerServiceName, {name, listenerService, eventListenConfig, eventEmitConfig, data, listenerServiceName})
-      getGrpcClient(listenerService.netUrl).then((client) => {
+    var sendMessage = ({name, netUrl, timeout = 5000, method, multi = false, haveResponse, data, listenerServiceName, meta}) => new Promise((resolve, reject) => {
+      LOG.debug('sendMessage ' + name + ' to ' + listenerServiceName, {name, data, listenerServiceName, meta})
+      getGrpcClient(netUrl).then((client) => {
         // if (eventListenConfig.haveResponse) {
         var callTimeout
-        var call = client.message({ serviceName, serviceId, event: name, method: eventListenConfig.method, data}, (error, serviceResponse) => {
+        var requestId = meta.requestId
+        var userId = meta.userId
+        var messageFunction = 'message'
+        if (multi) messageFunction = 'messageMulti'
+        var call = client[messageFunction]({ serviceName, serviceId, event: name, method, data, requestId, userId}, (error, serviceResponse) => {
           if (callTimeout)clearTimeout(callTimeout)
           if (error)reject(error)
           resolve(serviceResponse)
         })
         callTimeout = setTimeout(() => {
-          // client.$channel.close()
-          // grpc.closeClient(client)
           call.cancel()
-          LOG.warn('sendMessage timeout ' + name + ' to ' + listenerServiceName, {serviceName, listenerService, timeout: eventEmitConfig.timeout})
-            // grpc.closeClient(client)
-          if (eventListenConfig.haveResponse)reject({message: 'Response problems: REQUEST TIMEOUT', listenerService, eventListenConfig, eventEmitConfig, data, listenerServiceName})
+          LOG.warn('sendMessage timeout ' + name + ' to ' + listenerServiceName, {serviceName, timeout })
+          if (haveResponse)reject({message: 'Response problems: REQUEST TIMEOUT', data, listenerServiceName})
           else resolve()
-        }, eventListenConfig.timeout||5000)
-        // }
-        // DI.log('NET MESSAGE SENDING', {route: eventListener.route, data})
-        // var deadline = 10000000000
-        // deadline.setSeconds(deadline.getSeconds() + 100000)
-        // var deadline = Infinity
-
-        // if (!eventListenConfig.haveResponse)resolve()
+        }, timeout)
       }).catch(error => {
         LOG.warn('sendMessage error' + name + ' to ' + listenerServiceName, error)
         reject(error)
       })
     })
-    const buildServicesRegistry = (schema = 'events.listen.json') => {
-      var services = getAllServicesConfig(schema)
+    const buildServicesRegistry = async (schema = 'events.listen') => {
+      var servicesConfig = await getSharedConfig('*', schema)
       var listeners = {}
-      R.mapObjIndexed((service, serviceName) => {
-        R.mapObjIndexed((event, eventName) => {
+      servicesConfig.forEach(service => {
+        var serviceName = service.serviceName
+        Object.keys(service).forEach(eventName => {
           if (!listeners[eventName])listeners[eventName] = []
-          listeners[eventName].push({serviceName, event, eventName})
+          listeners[eventName].push({serviceName, event: service[eventName], eventName})
         }, service)
-      }, services)
+      })
       return listeners
     }
 
-    function emit (name, data) {
-      LOG.debug('emit ' + name, {name, data, sharedServicePath})
-      var eventsEmitConfig = require(sharedServicePath + '/events.emit.json')
+    function filterByTag (tags) {
+      return (tagFilter) => {
+        if (tagFilter)LOG.debug(`filterByTag()`, tags.indexOf(tagFilter) + 1)
+        return !tags || !tagFilter ? true : tags.indexOf(tagFilter) + 1
+      }
+    }
+    async function rpc (serviceName, method, data, meta, timeout = 5000) {
+      LOG.debug('rpc ' + serviceName + ' ' + method + ' requestId:' + meta.requestId, {data, timeout, meta})
+      var listenerService = await getSharedConfig(serviceName, 'service') // TO FIX ADD CACHE
+      var sendMessageResponse = await sendMessage({name: '_rpcCall', listenerServiceName: serviceName, netUrl: listenerService.netUrl, timeout, method, haveResponse: true, data, meta})
+      return sendMessageResponse
+    }
+    async function emit (name, data, meta) {
+      LOG.debug('emit ' + name + ' requestId:' + meta.requestId, {name, data, meta})
+      var eventsEmitConfig = await getSharedConfig(serviceName, 'events.emit')
       if (!eventsEmitConfig[name]) return LOG.warn(name + ' event not defined in /events.emit.json')
       var eventEmitConfig = eventsEmitConfig[name]
 
-      var eventsListenRegistry = buildServicesRegistry('events.listen.json') // TO FIX ADD CACHE
+      var eventsListenRegistry = await buildServicesRegistry('events.listen') // TO FIX ADD CACHE
 
-      var servicesRegistry = getAllServicesConfig('service.json') // TO FIX ADD CACHE
-      //LOG.debug('emit info', {eventEmitConfig, eventsListenRegistry, servicesRegistry})
+      var servicesRegistry = await getSharedConfig('*', 'service', null, true) // TO FIX ADD CACHE
+      // LOG.debug('emit info', {eventEmitConfig, eventsListenRegistry, servicesRegistry})
       var waitResponses = []
       var eventListeners = []
       if (eventsListenRegistry[name])eventListeners = eventListeners.concat(eventsListenRegistry[name])
       if (eventsListenRegistry['*'])eventListeners = eventListeners.concat(eventsListenRegistry['*'])
+      var filterByTagEventEmit = filterByTag(eventEmitConfig.tags)
+      eventListeners = eventListeners.filter(eventListener => filterByTagEventEmit(eventListener.event.filterByTag))
       if (!eventListeners.length) {
         LOG.debug(name + ' event have no listeners ')
         return false
@@ -115,19 +134,34 @@ module.exports = function getNetClientPackage ({serviceName, serviceId, sharedSe
         var listenerServiceName = eventListener.serviceName
         var listenerService = servicesRegistry[listenerServiceName]
         var eventListenConfig = eventListener.event
-        var sendMessagePromise = sendMessage({name, listenerService, listenerServiceName, eventListenConfig, eventEmitConfig, data, listenerServiceName})
-        if (eventListenConfig.haveResponse && eventEmitConfig.waitResponse)waitResponses.push(sendMessagePromise)
+
+        // var sendMessagePromise = sendMessage({name, listenerService, listenerServiceName, eventListenConfig, eventEmitConfig, data, listenerServiceName, meta})
+        if (eventListenConfig.delayed) {
+          var index = name + listenerServiceName + eventListenConfig.method
+          if (!delayedSendData[index]) {
+            var timeout = setTimeout(() => {
+              var multiEvent = delayedSendData[index]
+              delete delayedSendData[index]
+              sendMessage(multiEvent)
+            }, eventListenConfig.delayed)
+            delayedSendData[index] = {name: '_messageMulti', listenerServiceName, multi: true, timeout:60000, method: eventListenConfig.method, netUrl: listenerService.netUrl, data: {event: name, messages: []}, meta}
+          }
+          delayedSendData[index].data.messages.push({data, meta})
+        } else {
+          var sendMessagePromise = sendMessage({name, listenerServiceName, netUrl: listenerService.netUrl, timeout: eventEmitConfig.timeout, method: eventListenConfig.method, haveResponse: eventListenConfig.haveResponse, data, meta})
+          if (eventListenConfig.haveResponse && eventEmitConfig.waitResponse)waitResponses.push(sendMessagePromise)
+        }
       })
-      LOG.debug('emit ' + name +' waitResponses', waitResponses)
-      var result
+      LOG.debug('emit ' + name + ' waitResponses', waitResponses)
+      var resultPromise
       if (eventEmitConfig.waitResponse) {
         if (eventEmitConfig.responseRequired && !waitResponses.length) errorThrow(name + ' event need a response')
-        if (eventEmitConfig.singleResponse) result = waitResponses[0]
-        else result = Promise.all(waitResponses)
-      } else { result = false }
-
-      LOG.debug('emit ' + name +' results', result)
-      return result
+        if (eventEmitConfig.singleResponse) resultPromise = waitResponses[0]
+        else resultPromise = Promise.all(waitResponses)
+        var result = await resultPromise
+        LOG.debug('emit ' + name + ' results', result)
+        return result
+      }
     }
 
     return {
@@ -143,9 +177,10 @@ module.exports = function getNetClientPackage ({serviceName, serviceId, sharedSe
       setDeserializeFunction (newFunc) {
         deserializeFunction = newFunc
       },
-      emit
+      emit,
+      rpc
     }
   } catch (error) {
-    errorThrow('getNetClientPackage', {error, getAllServicesConfig, sharedServicePath, serviceName})
+    errorThrow('getNetClientPackage', {error, getSharedConfig, serviceName})
   }
 }

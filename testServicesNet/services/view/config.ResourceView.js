@@ -1,9 +1,7 @@
-'use strict';
+var path = require('path')
 
-var path = require('path');
-
-var entityName = 'ResourceView';
-var sharedPath = path.join(__dirname, '/../../shared/entities/', entityName);
+var entityName = 'ResourceView'
+var sharedPath = path.join(__dirname, '/../../shared/entities/', entityName)
 module.exports = {
   entityName: entityName,
   schema: path.join(sharedPath, '/entity.schema.json'),
@@ -12,5 +10,4 @@ module.exports = {
     path: path.join(__dirname, '../../fileDb')
   },
   storageCollection: entityName + 'Views'
-};
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvbmZpZy5SZXNvdXJjZVZpZXcuZXM2Il0sIm5hbWVzIjpbInBhdGgiLCJyZXF1aXJlIiwiZW50aXR5TmFtZSIsInNoYXJlZFBhdGgiLCJqb2luIiwiX19kaXJuYW1lIiwibW9kdWxlIiwiZXhwb3J0cyIsInNjaGVtYSIsInN0b3JhZ2UiLCJzdG9yYWdlQ29uZmlnIiwic3RvcmFnZUNvbGxlY3Rpb24iXSwibWFwcGluZ3MiOiI7O0FBQUEsSUFBSUEsT0FBT0MsUUFBUSxNQUFSLENBQVg7O0FBRUEsSUFBSUMsYUFBYSxjQUFqQjtBQUNBLElBQUlDLGFBQWFILEtBQUtJLElBQUwsQ0FBVUMsU0FBVixFQUFxQix5QkFBckIsRUFBZ0RILFVBQWhELENBQWpCO0FBQ0FJLE9BQU9DLE9BQVAsR0FBaUI7QUFDZkwsd0JBRGU7QUFFZk0sVUFBUVIsS0FBS0ksSUFBTCxDQUFVRCxVQUFWLEVBQXNCLHFCQUF0QixDQUZPO0FBR2ZNLFdBQVNSLFFBQVEsMkJBQVIsQ0FITTtBQUlmUyxpQkFBZTtBQUNiVixVQUFNQSxLQUFLSSxJQUFMLENBQVVDLFNBQVYsRUFBcUIsY0FBckI7QUFETyxHQUpBO0FBT2ZNLHFCQUFtQlQsYUFBYTtBQVBqQixDQUFqQiIsImZpbGUiOiJjb25maWcuUmVzb3VyY2VWaWV3LmVzNiIsInNvdXJjZXNDb250ZW50IjpbInZhciBwYXRoID0gcmVxdWlyZSgncGF0aCcpXG5cbnZhciBlbnRpdHlOYW1lID0gJ1Jlc291cmNlVmlldydcbnZhciBzaGFyZWRQYXRoID0gcGF0aC5qb2luKF9fZGlybmFtZSwgJy8uLi8uLi9zaGFyZWQvZW50aXRpZXMvJywgZW50aXR5TmFtZSlcbm1vZHVsZS5leHBvcnRzID0ge1xuICBlbnRpdHlOYW1lLFxuICBzY2hlbWE6IHBhdGguam9pbihzaGFyZWRQYXRoLCAnL2VudGl0eS5zY2hlbWEuanNvbicpLFxuICBzdG9yYWdlOiByZXF1aXJlKCcuLi8uLi8uLi9zdG9yYWdlLmlubWVtb3J5JyksXG4gIHN0b3JhZ2VDb25maWc6IHtcbiAgICBwYXRoOiBwYXRoLmpvaW4oX19kaXJuYW1lLCAnLi4vLi4vZmlsZURiJylcbiAgfSxcbiAgc3RvcmFnZUNvbGxlY3Rpb246IGVudGl0eU5hbWUgKyAnVmlld3MnXG59XG4iXX0=
+}

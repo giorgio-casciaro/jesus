@@ -1,6 +1,7 @@
 {
-    "*": {
-        "method": "capture",
-        "haveResponse": false
-    }
+  "viewsUpdated": {
+    "method": "capture",
+    "haveResponse": false,
+    "filterByTag": "#service_view"
+  }
 }

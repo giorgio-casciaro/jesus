@@ -1,107 +1,135 @@
 {
-    "createResource": {
-        "public": true,
-        "requestSchema": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "allOf": [{
-                        "$ref": "../../entities/Resource/entity.schema.json#"
-                    }, {
-                        "required": ["title", "email"]
-                    }]
-                },
-                "id": {
-                    "$ref": "../../uuidV4.schema.json#"
-                }
-            },
-            "required": ["data"]
-        },
-        "responseSchema": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "$ref": "../../uuidV4.schema.json#"
-                }
+  "createResource": {
+    "public": true,
+    "requestSchema": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "allOf": [
+            {
+              "$ref": "../../entities/Resource/entity.schema.json#"
+            }, {
+              "required": ["title", "email"]
             }
+          ]
+        },
+        "id": {
+          "$ref": "../../uuidV4.schema.json#"
+        },
+        "userId": {
+          "$ref": "../../userId.schema.json#"
+        },
+        "token": {
+          "$ref": "../../token.schema.json#"
         }
+      },
+      "required": ["data", "userId", "token"]
     },
-    "updateResource": {
-        "public": true,
-        "requestSchema": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "../../entities/Resource/entity.schema.json#"
-                },
-                "id": {
-                    "$ref": "../../uuidV4.schema.json#"
-                }
-            },
-            "required": ["data", "id"]
-        },
-        "responseSchema": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "$ref": "../../uuidV4.schema.json#"
-                }
-            }
+    "responseSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "../../uuidV4.schema.json#"
         }
-    },
-    "deleteResource": {
-        "public": true,
-        "requestSchema": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "$ref": "../../uuidV4.schema.json#"
-                }
-            }
-        },
-        "responseSchema": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "$ref": "../../uuidV4.schema.json#"
-                }
-            }
-        }
-    },
-    "readResource": {
-        "public": true,
-        "requestSchema": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "$ref": "../../uuidV4.schema.json#"
-                }
-            }
-        },
-        "responseSchema": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "../../entities/Resource/entity.schema.json#"
-                }
-            }
-        }
-    },
-    "listResources": {
-        "public": true,
-        "requestSchema": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "type": "integer"
-                },
-                "timestamp": {
-                    "type": "number"
-                }
-            }
-        },
-        "responseSchema": {
-            "type": "array"
-        }
+      }
     }
+  },
+  "updateResource": {
+    "public": true,
+    "requestSchema": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "../../entities/Resource/entity.schema.json#"
+        },
+        "id": {
+          "$ref": "../../uuidV4.schema.json#"
+        },
+        "userId": {
+          "$ref": "../../userId.schema.json#"
+        },
+        "token": {
+          "$ref": "../../token.schema.json#"
+        }
+      },
+      "required": ["data", "id", "userId", "token"]
+    },
+    "responseSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "../../uuidV4.schema.json#"
+        }
+      }
+    }
+  },
+  "deleteResource": {
+    "public": true,
+    "requestSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "../../uuidV4.schema.json#"
+        },
+        "userId": {
+          "$ref": "../../userId.schema.json#"
+        },
+        "token": {
+          "$ref": "../../token.schema.json#"
+        }
+      },
+      "required": ["id", "userId", "token"]
+    },
+    "responseSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "../../uuidV4.schema.json#"
+        }
+      }
+    }
+  },
+  "readResource": {
+    "public": true,
+    "requestSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "../../uuidV4.schema.json#"
+        },
+        "userId": {
+          "$ref": "../../userId.schema.json#"
+        },
+        "token": {
+          "$ref": "../../token.schema.json#"
+        }
+      },
+      "required": ["id", "userId", "token"]
+    },
+    "responseSchema": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "../../entities/Resource/entity.schema.json#"
+        }
+      }
+    }
+  },
+  "listResources": {
+    "public": true,
+    "requestSchema": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer"
+        },
+        "timestamp": {
+          "type": "number"
+        }
+      }
+    },
+    "responseSchema": {
+      "type": "array"
+    }
+  }
 }

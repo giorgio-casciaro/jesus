@@ -42,7 +42,7 @@ module.exports = async function getMutationsCqrsPackage ({serviceName, serviceId
     checkRequired({serviceName, serviceId, mutationsPath, mutationsStoragePackage}, PACKAGE)
     checkRequiredFiles([mutationsPath], PACKAGE)
     return {
-      mutate: async function mutate ({mutation, objId, data}) {
+      mutate: async function mutate ({mutation, objId, data, meta}) {
         try {
           checkRequired({objId, mutation}, PACKAGE)
           var mutationsFunctions = getMutationsFunctions(mutationsPath)
@@ -51,6 +51,7 @@ module.exports = async function getMutationsCqrsPackage ({serviceName, serviceId
           var mutationState = {
             objId: objId,
             mutation,
+            meta,
             version: lastMutationVersion,
             timestamp: new Date().getTime() / 1000,
             data

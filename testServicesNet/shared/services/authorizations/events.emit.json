@@ -7,12 +7,12 @@
         }],
         "waitResponse": true,
         "addServiceName": false,
-        "timeout": 10000
+        "timeout": 50000
     },
     "_authorize": {
         "singleResponse": true,
         "waitResponse": true,
         "addServiceName": false,
-        "timeout": 10000
+        "timeout": 50000
     }
 }
