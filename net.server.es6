@@ -37,8 +37,8 @@ var grpcService = {
   }
 }
 
-module.exports = function getNetServerPackage ({serviceName, serviceId, netUrl, getMethods, getSharedConfig}) {
-  var LOG = require('./jesus').LOG(serviceName, serviceId, PACKAGE)
+module.exports = function getNetServerPackage ({getConsole,serviceName, serviceId, netUrl, getMethods, getSharedConfig}) {
+  var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
   var defaultListeners = {
     '_rpcCall': {
@@ -52,8 +52,8 @@ module.exports = function getNetServerPackage ({serviceName, serviceId, netUrl, 
   async function messageCall (requestData) {
     var event = requestData.event
     var eventsListenConfig = Object.assign({}, defaultListeners, await getSharedConfig(serviceName, 'events.listen'))
-    LOG.debug('eventsListenConfig', {serviceName, getSharedConfig: await getSharedConfig(serviceName, 'events.listen'), eventsListenConfig})
-    if (!eventsListenConfig[event] && !eventsListenConfig['*']) return LOG.warn(netUrl, event + ' event not defined in /events.listen.json')
+    CONSOLE.debug('eventsListenConfig', {serviceName, getSharedConfig: await getSharedConfig(serviceName, 'events.listen'), eventsListenConfig})
+    if (!eventsListenConfig[event] && !eventsListenConfig['*']) return CONSOLE.warn(netUrl, event + ' event not defined in /events.listen.json')
     var eventConfig = eventsListenConfig[event] || eventsListenConfig['*']
 
     var from = requestData.serviceName
@@ -71,18 +71,18 @@ module.exports = function getNetServerPackage ({serviceName, serviceId, netUrl, 
       event,
       timestamp: Date.now()
     }
-    LOG.debug('message received ' + methodName + ' requestId:' + meta.requestId, {eventConfig})
+    CONSOLE.debug('message received ' + methodName + ' requestId:' + meta.requestId, {eventConfig})
     if (eventConfig.haveResponse) {
       try {
         var response = await method(data, meta)
-        LOG.debug('message response ' + methodName, {response})
+        CONSOLE.debug('message response ' + methodName, {response})
         return response
       } catch (error) {
-        LOG.warn('message error ' + methodName, {error})
+        CONSOLE.warn('message error ' + methodName, {error})
         return error
       }
     } else {
-      LOG.debug('message aknowlegment ' + methodName)
+      CONSOLE.debug('message aknowlegment ' + methodName)
       method(data, meta)
       return {aknowlegment: true}
     }
@@ -95,29 +95,30 @@ module.exports = function getNetServerPackage ({serviceName, serviceId, netUrl, 
         async message (call, callback) {
           try {
             var response = await messageCall(call.request)
-            LOG.debug('message response', {request: call.request, response})
+            CONSOLE.debug('message response', {request: call.request, response})
             callback(null, response)
           } catch (error) {
-            LOG.error('message error', error)
+            CONSOLE.error('message error', error)
             callback(error, null)
           }
         },
         async messageMulti (call, callback) {
           callback(null, null)
-          LOG.debug('messageMulti ', call.request)
-          // var promises = []
-          // call.request.data.messages.forEach(({data, meta}) => {
-          //   var reqData = Object.assign({}, call.request, {data, meta})
-          //   promises.push(messageCall(reqData, callback))
-          // })
-          // return await Promise.all(promises)
+
+          var promises = []
+          call.request.data.messages.forEach(({data, meta}) => {
+            var reqData = Object.assign({}, call.request, {data, meta})
+            CONSOLE.debug('messageMulti reqData ', reqData)
+            promises.push(messageCall(reqData, callback))
+          })
+          return await Promise.all(promises)
         }
       }
       serviceServer = new grpc.Server()
       serviceServer.addService(grpcService, grpcServiceFunctions)
       serviceServer.bind(netUrl, grpc.ServerCredentials.createInsecure())
       serviceServer.start()
-      LOG.debug('Net started on port:' + netUrl)
+      CONSOLE.debug('Net started on port:' + netUrl)
     }
     return {
       getSerializedDataByte () {

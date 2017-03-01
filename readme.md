@@ -1,17 +1,19 @@
-cache e reload dei files
-files json sempre ricaricati,
-methods js senza cache in development,
-si dovrebbe poter cambiare il servizio mentre è online
-check su: methods dinamico, api config e json schema dinamico
-cache esplicita basata su profiling
+## TODO IN TEST
+- [X] evitare che un evento sia richiamato sul ms emitter
+- [X] ripulire config
+- [X] getConsole al post di LOG
+- [X] debug attivo basato su config
+- [X] inserimento log, al momento tutti debug
+- [X] http streaming > aggiungere timeout alla chiusura della connessione
+- [X] test aggiunta e rimozione eventi on the fly
+- [X] test solo profiling: no tap solo request
+- [ ] implementare pagina con script di console in express logs:LOG VISUALIZER->http streaming continuo,invia i vecchi log e si iscrive allo streaming
+- [ ] allineare logs (multimessage deiverso da message)
+- [ ] assicurarsi che tutti i file vengano ricaricati quando richiamati (json in config e methods)
+- [ ] eliminare funzioni anonime (non comprensibili in profiling)
+- [ ] astrarre classe storage -> query complessemediante accesso diretto ai db
 
-inserimento log, al momento tutti debug
-
-http streaming > aggiungere timeout alla chiusura della connessione-
-
-LOG VISUALIZER->http streaming continuo,invia i vecchi log e si iscrive allo streaming
-
-test aggiunta e rimozione eventi on the fly
+## TODO SERVICE
 NET
 
 VIEWS
@@ -27,7 +29,6 @@ i dati vengono recuperati in 3modi
 - tramite una query al servizio di view della Resource -> recupera tutti i dati e aggiorna il global store
 - tramite una query differenziale al servizio di view della Resource -> usa l'ultimo timestamp per recuperare solo i dati aggiornati
 - tramite servizio event emiter ->ogni componente ascolterà event emiter e muterà lo store di conseguenza
-
 
 
 PERMESSI -> servizio can
@@ -63,14 +64,6 @@ PERMESSI -> servizio can
   - le varie funzioni accedono direttamente allo storage della view
   - le funzioni di permesso potrebbero essere sul registro delle entities
 
-Net events
-netEmit
-netListen
-insertNetEventsInRegistry -> scrive un file con le info sul servizio (eventi,routes)
-parseNetEvents -> legge tutti i file e ne estrapola gli eventi di interesse riordinadoli
-parseNetEvents dovrebbe essere cachata
-
-Npm cache
 
 
 */

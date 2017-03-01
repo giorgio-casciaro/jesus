@@ -1,55 +1,1789 @@
 {
-    "3e7298ff-f92a-4654-a712-8ee13c579ca7": {
+    "6fffc8e6-5451-47c4-9d49-69be2a64e6ad": {
         "logData": {
             "data": {},
             "meta": {
                 "type": "apiRequest",
-                "requestId": "738c2c0b-02d8-4438-b6fe-f7b161d6634b",
+                "requestId": "efa2a9b9-e5a7-4d4a-92aa-af9fb0c9fee3",
                 "methodName": "listenEvents",
                 "ip": "::ffff:127.0.0.1",
-                "timestamp": 1488310444.869
+                "timestamp": 1488395546.406
             }
         },
-        "timestamp": 1488310447024,
+        "timestamp": 1488395548481,
         "meta": {
             "type": "netEvent",
             "from": "eventsEmitter",
-            "requestId": "738c2c0b-02d8-4438-b6fe-f7b161d6634b",
+            "requestId": "efa2a9b9-e5a7-4d4a-92aa-af9fb0c9fee3",
             "methodName": "log",
             "event": "_messageMulti",
-            "timestamp": 1488310447014
+            "timestamp": 1488395548464
         },
-        "_id": "3e7298ff-f92a-4654-a712-8ee13c579ca7"
+        "_id": "6fffc8e6-5451-47c4-9d49-69be2a64e6ad"
     },
-    "049a011d-d8de-4525-b7e4-dc8dfffbb365": {
+    "4b1214b1-832a-4c72-92e6-d90d8a2c1b91": {
         "logData": {
             "data": {
                 "data": {
-                    "title": "pariatur ",
-                    "email": "xixlw@CDc.xin",
-                    "_id": "d9aBfe7F-dbd2-1Db5-4DB1-85dcebC3Bd9F"
+                    "title": "in dolore mollit",
+                    "email": "61XRXKI-i@xXkspMsSrNdifEJYvRtrZsBwzGSASmjFJ.avr",
+                    "body": "Excepteur mollit deserunt aute esse",
+                    "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                    "_viewHash": "2sXCTc",
+                    "_viewBuilded": 1488395547712
                 },
-                "userId": "co",
-                "token": "cillum Ut eu "
+                "userId": "nulla est ci",
+                "token": "in anim id"
             },
             "meta": {
                 "type": "apiRequest",
-                "requestId": "60a10efb-d496-4827-949e-8726ae28917b",
-                "userId": "co",
+                "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+                "userId": "nulla est ci",
                 "methodName": "createResource",
                 "ip": "::ffff:127.0.0.1",
-                "timestamp": 1488310446.501
+                "timestamp": 1488395547.55
             }
         },
-        "timestamp": 1488310447055,
+        "timestamp": 1488395548490,
         "meta": {
             "type": "netEvent",
             "from": "eventsEmitter",
-            "requestId": "738c2c0b-02d8-4438-b6fe-f7b161d6634b",
+            "requestId": "efa2a9b9-e5a7-4d4a-92aa-af9fb0c9fee3",
             "methodName": "log",
             "event": "_messageMulti",
-            "timestamp": 1488310447034
+            "timestamp": 1488395548484
         },
-        "_id": "049a011d-d8de-4525-b7e4-dc8dfffbb365"
+        "_id": "4b1214b1-832a-4c72-92e6-d90d8a2c1b91"
+    },
+    "2b2117b3-38d4-4c40-b299-56ba8f6007ab": {
+        "logData": {
+            "data": {
+                "id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "userId": "test",
+                "token": "test"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "1ef8a598-ea2a-4a27-9478-56c922605a72",
+                "userId": "test",
+                "methodName": "readResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.771
+            }
+        },
+        "timestamp": 1488395548498,
+        "meta": {
+            "type": "netEvent",
+            "from": "eventsEmitter",
+            "requestId": "efa2a9b9-e5a7-4d4a-92aa-af9fb0c9fee3",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395548493
+        },
+        "_id": "2b2117b3-38d4-4c40-b299-56ba8f6007ab"
+    },
+    "159c4a94-300c-479a-bd52-9da64948d1e5": {
+        "logData": {
+            "data": {
+                "data": {
+                    "body": "dolor minim in eiusmod mollit",
+                    "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                    "email": "E2M9a9idWfE6S@uPUIZC.smsf",
+                    "title": "sed in fugiat non"
+                },
+                "id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "userId": "voluptate consectetur in",
+                "token": "nostrud Ut incidid"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "f353cb60-4f5d-4eb7-835f-18bc78c48ec6",
+                "userId": "voluptate consectetur in",
+                "methodName": "updateResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.861
+            }
+        },
+        "timestamp": 1488395548509,
+        "meta": {
+            "type": "netEvent",
+            "from": "eventsEmitter",
+            "requestId": "efa2a9b9-e5a7-4d4a-92aa-af9fb0c9fee3",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395548504
+        },
+        "_id": "159c4a94-300c-479a-bd52-9da64948d1e5"
+    },
+    "3f2fc707-02b8-4b31-aeb3-5fed3b08c465": {
+        "logData": {
+            "data": {
+                "id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "userId": "test",
+                "token": "test"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "a5118c94-789c-4b7d-bc6d-563cb458aa51",
+                "userId": "test",
+                "methodName": "readResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.961
+            }
+        },
+        "timestamp": 1488395548515,
+        "meta": {
+            "type": "netEvent",
+            "from": "eventsEmitter",
+            "requestId": "efa2a9b9-e5a7-4d4a-92aa-af9fb0c9fee3",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395548511
+        },
+        "_id": "3f2fc707-02b8-4b31-aeb3-5fed3b08c465"
+    },
+    "dc09a5b7-ad6b-4d33-af3c-2061bc0578ba": {
+        "logData": {
+            "action": "read",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "1ef8a598-ea2a-4a27-9478-56c922605a72",
+                "userId": "test",
+                "methodName": "readResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.771
+            },
+            "id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc"
+        },
+        "timestamp": 1488395549699,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549689
+        },
+        "_id": "dc09a5b7-ad6b-4d33-af3c-2061bc0578ba"
+    },
+    "21cda17b-a136-4764-b16f-3286a495f108": {
+        "logData": {
+            "action": "write.update",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "f353cb60-4f5d-4eb7-835f-18bc78c48ec6",
+                "userId": "voluptate consectetur in",
+                "methodName": "updateResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.861
+            },
+            "data": {
+                "body": "dolor minim in eiusmod mollit",
+                "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "email": "E2M9a9idWfE6S@uPUIZC.smsf",
+                "title": "sed in fugiat non"
+            },
+            "id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc"
+        },
+        "timestamp": 1488395549725,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549716
+        },
+        "_id": "21cda17b-a136-4764-b16f-3286a495f108"
+    },
+    "9561eb89-9c4e-45e7-b2fb-c7ba92ad591f": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+                "userId": "nulla est ci",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.55
+            },
+            "data": {
+                "title": "in dolore mollit",
+                "email": "61XRXKI-i@xXkspMsSrNdifEJYvRtrZsBwzGSASmjFJ.avr",
+                "body": "Excepteur mollit deserunt aute esse",
+                "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "_viewHash": "2sXCTc",
+                "_viewBuilded": 1488395547712
+            },
+            "id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc"
+        },
+        "timestamp": 1488395549743,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549732
+        },
+        "_id": "9561eb89-9c4e-45e7-b2fb-c7ba92ad591f"
+    },
+    "582e5704-aa03-47b1-abef-867808ff8de5": {
+        "logData": {
+            "action": "read",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "a5118c94-789c-4b7d-bc6d-563cb458aa51",
+                "userId": "test",
+                "methodName": "readResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.961
+            },
+            "id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc"
+        },
+        "timestamp": 1488395549770,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549760
+        },
+        "_id": "582e5704-aa03-47b1-abef-867808ff8de5"
+    },
+    "3bb9e3a0-521b-4be5-957b-a4c8808504a9": {
+        "logData": [
+            {
+                "title": "in dolore mollit",
+                "email": "61XRXKI-i@xXkspMsSrNdifEJYvRtrZsBwzGSASmjFJ.avr",
+                "body": "Excepteur mollit deserunt aute esse",
+                "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "_viewHash": "2sXCTc",
+                "_viewBuilded": 1488395547712
+            }
+        ],
+        "timestamp": 1488395549842,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549810
+        },
+        "_id": "3bb9e3a0-521b-4be5-957b-a4c8808504a9"
+    },
+    "9fd8bac2-44a4-4fd1-9acf-105c6a33cf5a": {
+        "logData": [
+            {
+                "title": "sed in fugiat non",
+                "email": "E2M9a9idWfE6S@uPUIZC.smsf",
+                "body": "dolor minim in eiusmod mollit",
+                "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "_viewHash": "Z2i3Ky6",
+                "_viewBuilded": 1488395547921
+            }
+        ],
+        "timestamp": 1488395549856,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549848
+        },
+        "_id": "9fd8bac2-44a4-4fd1-9acf-105c6a33cf5a"
+    },
+    "928e53be-eee9-4308-a34e-5356866b1e67": {
+        "logData": {
+            "response": {
+                "id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+                "userId": "nulla est ci",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.55
+            }
+        },
+        "timestamp": 1488395549889,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549872
+        },
+        "_id": "928e53be-eee9-4308-a34e-5356866b1e67"
+    },
+    "61dbc00a-05b3-4d5a-b590-b1bbcdb09d16": {
+        "logData": {
+            "response": {
+                "title": "in dolore mollit",
+                "email": "61XRXKI-i@xXkspMsSrNdifEJYvRtrZsBwzGSASmjFJ.avr",
+                "body": "Excepteur mollit deserunt aute esse",
+                "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "_viewHash": "2sXCTc",
+                "_viewBuilded": 1488395547712
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "1ef8a598-ea2a-4a27-9478-56c922605a72",
+                "userId": "test",
+                "methodName": "readResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.771
+            }
+        },
+        "timestamp": 1488395549912,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549895
+        },
+        "_id": "61dbc00a-05b3-4d5a-b590-b1bbcdb09d16"
+    },
+    "ec66f5e4-a947-493f-bed5-886d69efb3bc": {
+        "logData": {
+            "response": {
+                "id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "f353cb60-4f5d-4eb7-835f-18bc78c48ec6",
+                "userId": "voluptate consectetur in",
+                "methodName": "updateResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.861
+            }
+        },
+        "timestamp": 1488395549931,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549920
+        },
+        "_id": "ec66f5e4-a947-493f-bed5-886d69efb3bc"
+    },
+    "04b0ee1f-f2a9-41e0-954a-4632978402e1": {
+        "logData": {
+            "response": {
+                "title": "sed in fugiat non",
+                "email": "E2M9a9idWfE6S@uPUIZC.smsf",
+                "body": "dolor minim in eiusmod mollit",
+                "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "_viewHash": "Z2i3Ky6",
+                "_viewBuilded": 1488395547921
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "a5118c94-789c-4b7d-bc6d-563cb458aa51",
+                "userId": "test",
+                "methodName": "readResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395547.961
+            }
+        },
+        "timestamp": 1488395549963,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "d3162930-46c0-4430-9d3f-2e336eead19d",
+            "userId": "nulla est ci",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395549947
+        },
+        "_id": "04b0ee1f-f2a9-41e0-954a-4632978402e1"
+    },
+    "e2318642-34cd-4016-bdb9-f62c4565f20e": {
+        "logData": {
+            "data": {},
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "59481bf9-87c2-460d-8f1a-58cf49869aca",
+                "methodName": "rebuildViews",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395550.081
+            }
+        },
+        "timestamp": 1488395552128,
+        "meta": {
+            "type": "netEvent",
+            "from": "view",
+            "requestId": "59481bf9-87c2-460d-8f1a-58cf49869aca",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395552115
+        },
+        "_id": "e2318642-34cd-4016-bdb9-f62c4565f20e"
+    },
+    "b9ee2a6e-a810-42da-9041-87b9fc35a154": {
+        "logData": [
+            {
+                "title": "sed in fugiat non",
+                "body": "dolor minim in eiusmod mollit",
+                "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "_viewBuilded": 1488395547921
+            }
+        ],
+        "timestamp": 1488395552326,
+        "meta": {
+            "type": "netEvent",
+            "from": "view",
+            "requestId": "59481bf9-87c2-460d-8f1a-58cf49869aca",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395552320
+        },
+        "_id": "b9ee2a6e-a810-42da-9041-87b9fc35a154"
+    },
+    "bd38852b-f8d0-4118-8ad3-71720b78fa64": {
+        "logData": {
+            "response": {
+                "success": true
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "59481bf9-87c2-460d-8f1a-58cf49869aca",
+                "methodName": "rebuildViews",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395550.081
+            }
+        },
+        "timestamp": 1488395552332,
+        "meta": {
+            "type": "netEvent",
+            "from": "view",
+            "requestId": "59481bf9-87c2-460d-8f1a-58cf49869aca",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395552329
+        },
+        "_id": "bd38852b-f8d0-4118-8ad3-71720b78fa64"
+    },
+    "cc576a4c-38cb-4597-86b4-f35bfca315a2": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "sunt non et",
+                    "email": "1M6GI0GaX1mha@hYiyuDtHPFiwNrzLuqkNiJvivTTBjbPr.dq",
+                    "_id": "F85C4Af0-ccF2-3e3B-f4BE-B02fDBb096Ce",
+                    "_viewHash": "Z1RWRKI",
+                    "_viewBuilded": 1488395552373
+                },
+                "userId": "ipsum",
+                "token": "",
+                "id": "F85C4Af0-ccF2-3e3B-f4BE-B02fDBb096Ce"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+                "userId": "ipsum",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.317
+            }
+        },
+        "timestamp": 1488395554398,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554376
+        },
+        "_id": "cc576a4c-38cb-4597-86b4-f35bfca315a2"
+    },
+    "2be4bd86-84ac-4c87-9423-7a9d0e06b448": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "dolor",
+                    "email": "I2jNj@qMqySKegSxSYmOILKEDVVnMSBbIILKFKQ.xrq",
+                    "_id": "4144E95F-677b-3394-fcd1-2dFabAdc1a7D",
+                    "body": "minim ipsum ut",
+                    "_viewHash": "Z1uudiV",
+                    "_viewBuilded": 1488395552545
+                },
+                "userId": "ut",
+                "token": "aute",
+                "id": "4144E95F-677b-3394-fcd1-2dFabAdc1a7D"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "24f90f95-66d1-4b31-bc79-f156bdda54c9",
+                "userId": "ut",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.475
+            }
+        },
+        "timestamp": 1488395554430,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554421
+        },
+        "_id": "2be4bd86-84ac-4c87-9423-7a9d0e06b448"
+    },
+    "14aedb3b-f29e-4cf9-94c7-b66e4084da41": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "minim qui",
+                    "email": "ZVRKwc-Npfro6@S.btgr",
+                    "_id": "E0ca95bf-3370-A56E-AfFf-2B46753f826D",
+                    "_viewHash": "1iPMet",
+                    "_viewBuilded": 1488395552658
+                },
+                "userId": "commodo officia magna aliq",
+                "token": "ipsum et proident cupidatat",
+                "id": "E0ca95bf-3370-A56E-AfFf-2B46753f826D"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "4b39cfbe-091d-4570-8cfa-13ebee43bd6c",
+                "userId": "commodo officia magna aliq",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.608
+            }
+        },
+        "timestamp": 1488395554455,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554440
+        },
+        "_id": "14aedb3b-f29e-4cf9-94c7-b66e4084da41"
+    },
+    "99e79c98-edf5-43b7-85e6-df47c47c2015": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "occaecat magna et labore",
+                    "email": "cI8ROuC2ur5e@ORuwLIygtYOfhHZkavnMgPimYFtvDU.qxn",
+                    "body": "qui minim quis",
+                    "_id": "FFcf59B7-C769-BD1c-f61D-A5cfEeE3Fe44",
+                    "_viewHash": "Z2tEIDn",
+                    "_viewBuilded": 1488395552748
+                },
+                "userId": "incididunt exercitation",
+                "token": "enim ea aliquip Lorem"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "1c439fe0-5ac3-48e6-893f-2dff76bbc632",
+                "userId": "incididunt exercitation",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.701
+            }
+        },
+        "timestamp": 1488395554473,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554465
+        },
+        "_id": "99e79c98-edf5-43b7-85e6-df47c47c2015"
+    },
+    "bcd5b28d-5713-452c-a6dc-87eee7163e1a": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "non quis pariatur",
+                    "email": "eEIODvWvDflbs@ifAeZuzPfWgJllrHR.is",
+                    "body": "enim esse qui",
+                    "_id": "d1961de7-ef56-4931-8e18-175f3cef4fd4",
+                    "_viewHash": "1RIQG3",
+                    "_viewBuilded": 1488395552816
+                },
+                "userId": "et laborum mollit ut anim",
+                "token": "proident"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "ae1ba1c7-bdf8-4746-96c9-9302077b8ef4",
+                "userId": "et laborum mollit ut anim",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.778
+            }
+        },
+        "timestamp": 1488395554494,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554480
+        },
+        "_id": "bcd5b28d-5713-452c-a6dc-87eee7163e1a"
+    },
+    "15adfe98-3ef1-4dbb-872c-b8f2d80d9c93": {
+        "logData": {
+            "response": {
+                "id": "F85C4Af0-ccF2-3e3B-f4BE-B02fDBb096Ce"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+                "userId": "ipsum",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.317
+            }
+        },
+        "timestamp": 1488395554555,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554549
+        },
+        "_id": "15adfe98-3ef1-4dbb-872c-b8f2d80d9c93"
+    },
+    "655044f6-d306-4bc3-bebf-83ee947d50d6": {
+        "logData": {
+            "response": {
+                "id": "4144E95F-677b-3394-fcd1-2dFabAdc1a7D"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "24f90f95-66d1-4b31-bc79-f156bdda54c9",
+                "userId": "ut",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.475
+            }
+        },
+        "timestamp": 1488395554570,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554563
+        },
+        "_id": "655044f6-d306-4bc3-bebf-83ee947d50d6"
+    },
+    "e274b62c-d285-4ea6-9c66-2520055299d6": {
+        "logData": {
+            "response": {
+                "id": "E0ca95bf-3370-A56E-AfFf-2B46753f826D"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "4b39cfbe-091d-4570-8cfa-13ebee43bd6c",
+                "userId": "commodo officia magna aliq",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.608
+            }
+        },
+        "timestamp": 1488395554577,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554573
+        },
+        "_id": "e274b62c-d285-4ea6-9c66-2520055299d6"
+    },
+    "bd1a6bee-a760-4a39-a636-cf2908feaa50": {
+        "logData": {
+            "response": {
+                "id": "FFcf59B7-C769-BD1c-f61D-A5cfEeE3Fe44"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "1c439fe0-5ac3-48e6-893f-2dff76bbc632",
+                "userId": "incididunt exercitation",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.701
+            }
+        },
+        "timestamp": 1488395554589,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554583
+        },
+        "_id": "bd1a6bee-a760-4a39-a636-cf2908feaa50"
+    },
+    "56c7da8e-1eab-411f-8c71-a6509826974e": {
+        "logData": {
+            "response": {
+                "id": "d1961de7-ef56-4931-8e18-175f3cef4fd4"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "ae1ba1c7-bdf8-4746-96c9-9302077b8ef4",
+                "userId": "et laborum mollit ut anim",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.778
+            }
+        },
+        "timestamp": 1488395554598,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554593
+        },
+        "_id": "56c7da8e-1eab-411f-8c71-a6509826974e"
+    },
+    "074423ae-c066-41bc-bbfd-59aade72defc": {
+        "logData": [
+            {
+                "title": "sunt non et",
+                "email": "1M6GI0GaX1mha@hYiyuDtHPFiwNrzLuqkNiJvivTTBjbPr.dq",
+                "_id": "F85C4Af0-ccF2-3e3B-f4BE-B02fDBb096Ce",
+                "_viewHash": "Z1RWRKI",
+                "_viewBuilded": 1488395552373
+            }
+        ],
+        "timestamp": 1488395554639,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554629
+        },
+        "_id": "074423ae-c066-41bc-bbfd-59aade72defc"
+    },
+    "001b00ea-0563-4de9-acaa-433a431fdcd5": {
+        "logData": [
+            {
+                "title": "dolor",
+                "email": "I2jNj@qMqySKegSxSYmOILKEDVVnMSBbIILKFKQ.xrq",
+                "_id": "4144E95F-677b-3394-fcd1-2dFabAdc1a7D",
+                "body": "minim ipsum ut",
+                "_viewHash": "Z1uudiV",
+                "_viewBuilded": 1488395552545
+            }
+        ],
+        "timestamp": 1488395554670,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554661
+        },
+        "_id": "001b00ea-0563-4de9-acaa-433a431fdcd5"
+    },
+    "4ab1a9b1-f70e-4c4d-91c8-a759c5445711": {
+        "logData": [
+            {
+                "title": "minim qui",
+                "email": "ZVRKwc-Npfro6@S.btgr",
+                "_id": "E0ca95bf-3370-A56E-AfFf-2B46753f826D",
+                "_viewHash": "1iPMet",
+                "_viewBuilded": 1488395552658
+            }
+        ],
+        "timestamp": 1488395554683,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554676
+        },
+        "_id": "4ab1a9b1-f70e-4c4d-91c8-a759c5445711"
+    },
+    "38c46f9c-e2bb-4988-8cab-26f49b114db9": {
+        "logData": [
+            {
+                "title": "occaecat magna et labore",
+                "email": "cI8ROuC2ur5e@ORuwLIygtYOfhHZkavnMgPimYFtvDU.qxn",
+                "body": "qui minim quis",
+                "_id": "FFcf59B7-C769-BD1c-f61D-A5cfEeE3Fe44",
+                "_viewHash": "Z2tEIDn",
+                "_viewBuilded": 1488395552748
+            }
+        ],
+        "timestamp": 1488395554700,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554689
+        },
+        "_id": "38c46f9c-e2bb-4988-8cab-26f49b114db9"
+    },
+    "8805ec52-7951-4b62-962d-b754fce017ff": {
+        "logData": [
+            {
+                "title": "non quis pariatur",
+                "email": "eEIODvWvDflbs@ifAeZuzPfWgJllrHR.is",
+                "body": "enim esse qui",
+                "_id": "d1961de7-ef56-4931-8e18-175f3cef4fd4",
+                "_viewHash": "1RIQG3",
+                "_viewBuilded": 1488395552816
+            }
+        ],
+        "timestamp": 1488395554717,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554714
+        },
+        "_id": "8805ec52-7951-4b62-962d-b754fce017ff"
+    },
+    "d4bd75db-fb46-4ece-b209-91d0bdb07db4": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+                "userId": "ipsum",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.317
+            },
+            "data": {
+                "title": "sunt non et",
+                "email": "1M6GI0GaX1mha@hYiyuDtHPFiwNrzLuqkNiJvivTTBjbPr.dq",
+                "_id": "F85C4Af0-ccF2-3e3B-f4BE-B02fDBb096Ce",
+                "_viewHash": "Z1RWRKI",
+                "_viewBuilded": 1488395552373
+            },
+            "id": "F85C4Af0-ccF2-3e3B-f4BE-B02fDBb096Ce"
+        },
+        "timestamp": 1488395554733,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554723
+        },
+        "_id": "d4bd75db-fb46-4ece-b209-91d0bdb07db4"
+    },
+    "779c86ca-53c0-456f-948a-ffc33e82e304": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "24f90f95-66d1-4b31-bc79-f156bdda54c9",
+                "userId": "ut",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.475
+            },
+            "data": {
+                "title": "dolor",
+                "email": "I2jNj@qMqySKegSxSYmOILKEDVVnMSBbIILKFKQ.xrq",
+                "_id": "4144E95F-677b-3394-fcd1-2dFabAdc1a7D",
+                "body": "minim ipsum ut",
+                "_viewHash": "Z1uudiV",
+                "_viewBuilded": 1488395552545
+            },
+            "id": "4144E95F-677b-3394-fcd1-2dFabAdc1a7D"
+        },
+        "timestamp": 1488395554743,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554736
+        },
+        "_id": "779c86ca-53c0-456f-948a-ffc33e82e304"
+    },
+    "e9dc03f7-1366-4769-b723-36524c8c8968": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "4b39cfbe-091d-4570-8cfa-13ebee43bd6c",
+                "userId": "commodo officia magna aliq",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.608
+            },
+            "data": {
+                "title": "minim qui",
+                "email": "ZVRKwc-Npfro6@S.btgr",
+                "_id": "E0ca95bf-3370-A56E-AfFf-2B46753f826D",
+                "_viewHash": "1iPMet",
+                "_viewBuilded": 1488395552658
+            },
+            "id": "E0ca95bf-3370-A56E-AfFf-2B46753f826D"
+        },
+        "timestamp": 1488395554757,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554750
+        },
+        "_id": "e9dc03f7-1366-4769-b723-36524c8c8968"
+    },
+    "1fee34cf-a30f-4509-bdfd-73b61b422a09": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "1c439fe0-5ac3-48e6-893f-2dff76bbc632",
+                "userId": "incididunt exercitation",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.701
+            },
+            "data": {
+                "title": "occaecat magna et labore",
+                "email": "cI8ROuC2ur5e@ORuwLIygtYOfhHZkavnMgPimYFtvDU.qxn",
+                "body": "qui minim quis",
+                "_id": "FFcf59B7-C769-BD1c-f61D-A5cfEeE3Fe44",
+                "_viewHash": "Z2tEIDn",
+                "_viewBuilded": 1488395552748
+            },
+            "id": "FFcf59B7-C769-BD1c-f61D-A5cfEeE3Fe44"
+        },
+        "timestamp": 1488395554764,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554760
+        },
+        "_id": "1fee34cf-a30f-4509-bdfd-73b61b422a09"
+    },
+    "edf98627-3aa8-4966-8a3e-705482c8e482": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "ae1ba1c7-bdf8-4746-96c9-9302077b8ef4",
+                "userId": "et laborum mollit ut anim",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395552.778
+            },
+            "data": {
+                "title": "non quis pariatur",
+                "email": "eEIODvWvDflbs@ifAeZuzPfWgJllrHR.is",
+                "body": "enim esse qui",
+                "_id": "d1961de7-ef56-4931-8e18-175f3cef4fd4",
+                "_viewHash": "1RIQG3",
+                "_viewBuilded": 1488395552816
+            },
+            "id": "d1961de7-ef56-4931-8e18-175f3cef4fd4"
+        },
+        "timestamp": 1488395554774,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "07f5b2ef-4ee6-4807-a464-ecd65e7c435e",
+            "userId": "ipsum",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395554769
+        },
+        "_id": "edf98627-3aa8-4966-8a3e-705482c8e482"
+    },
+    "0bcf164e-3d6b-4df1-83c0-08585dc29355": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "sint occaecat ullamco veniam",
+                    "email": "j5W0qkFI@CnLcAZMVjlwJtU.ah",
+                    "_id": "4C1ccb66-bAFf-3bab-Ce12-D66E3C101F5a",
+                    "body": "ut fugiat velit irure adipisicing",
+                    "_viewHash": "Za8JUS",
+                    "_viewBuilded": 1488395563916
+                },
+                "userId": "nostrud adipisicing enim",
+                "token": "labore esse",
+                "id": "4C1ccb66-bAFf-3bab-Ce12-D66E3C101F5a"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+                "userId": "nostrud adipisicing enim",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395563.88
+            }
+        },
+        "timestamp": 1488395565912,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395565909
+        },
+        "_id": "0bcf164e-3d6b-4df1-83c0-08585dc29355"
+    },
+    "03814ca4-32b6-4c06-87a6-1ae267f30feb": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "aliqua",
+                    "email": "rU5OdNMYvsq0@wK.ioc",
+                    "body": "aute ad tempor",
+                    "_id": "e25c42b3-4f65-4567-9e9f-0b67b2476621",
+                    "_viewHash": "ZfsA5B",
+                    "_viewBuilded": 1488395563987
+                },
+                "userId": "commodo consequat",
+                "token": "dolore"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "61672372-2454-4308-ad4e-4a8890cd7df7",
+                "userId": "commodo consequat",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395563.949
+            }
+        },
+        "timestamp": 1488395565918,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395565915
+        },
+        "_id": "03814ca4-32b6-4c06-87a6-1ae267f30feb"
+    },
+    "2687a516-afb9-4fbb-835e-69156dbf0da5": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "nulla qui sed",
+                    "email": "OuTtZ@UgPRbiJsoPnqfHSMaMJnqcjP.ldij",
+                    "_id": "F91fC6E8-29c6-0137-4F1a-a1BfcC4AC4a6",
+                    "body": "veniam pariatur in",
+                    "_viewHash": "7h7QA",
+                    "_viewBuilded": 1488395564045
+                },
+                "userId": "laboris",
+                "token": "aliquip dolor Excepteur elit dolore",
+                "id": "F91fC6E8-29c6-0137-4F1a-a1BfcC4AC4a6"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "16809f42-98fb-4033-929a-f8e84298a3cc",
+                "userId": "laboris",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395564.017
+            }
+        },
+        "timestamp": 1488395565966,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395565921
+        },
+        "_id": "2687a516-afb9-4fbb-835e-69156dbf0da5"
+    },
+    "7fd6e90f-c68e-4ddb-abb8-7786cb6c3b69": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "tempor aute ipsum sit",
+                    "email": "oK2BjbZP@KHKeQBAxNTAaDEkpedOMB.qfsq",
+                    "body": "aliqua tempor velit",
+                    "_id": "25aC2dB0-1EAc-D0fd-EE8e-73bFb99B846a",
+                    "_viewHash": "2ejmkj",
+                    "_viewBuilded": 1488395564115
+                },
+                "userId": "nostrud sunt Ut",
+                "token": "ad",
+                "id": "25aC2dB0-1EAc-D0fd-EE8e-73bFb99B846a"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "84816b59-edff-4058-b589-6fa39b071e27",
+                "userId": "nostrud sunt Ut",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395564.084
+            }
+        },
+        "timestamp": 1488395565976,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395565969
+        },
+        "_id": "7fd6e90f-c68e-4ddb-abb8-7786cb6c3b69"
+    },
+    "2d0f719c-88e0-4917-8ec7-e9101a032216": {
+        "logData": {
+            "data": {
+                "data": {
+                    "title": "fugiat id enim",
+                    "email": "sPSui@RryngsbmaRcvXlEsOTgAALmMoCh.tmtq",
+                    "_id": "d96BaEeC-5eBf-DBdd-95fD-D4DE1daF87f9",
+                    "body": "eni",
+                    "_viewHash": "Z2aGnt4",
+                    "_viewBuilded": 1488395564183
+                },
+                "userId": "eu",
+                "token": "in in Duis ut"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "ced207ab-98fa-4f5d-aa90-8422867f731b",
+                "userId": "eu",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395564.155
+            }
+        },
+        "timestamp": 1488395565991,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395565981
+        },
+        "_id": "2d0f719c-88e0-4917-8ec7-e9101a032216"
+    },
+    "36439988-c37e-4e83-9665-f548ead50764": {
+        "logData": {
+            "data": {},
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "439c7676-5fef-43c6-bf5b-55f80ae40545",
+                "methodName": "syncViews",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395565.221
+            }
+        },
+        "timestamp": 1488395565997,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395565994
+        },
+        "_id": "36439988-c37e-4e83-9665-f548ead50764"
+    },
+    "ca2de4ea-1c83-454e-9d1c-e092573bf964": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+                "userId": "nostrud adipisicing enim",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395563.88
+            },
+            "data": {
+                "title": "sint occaecat ullamco veniam",
+                "email": "j5W0qkFI@CnLcAZMVjlwJtU.ah",
+                "_id": "4C1ccb66-bAFf-3bab-Ce12-D66E3C101F5a",
+                "body": "ut fugiat velit irure adipisicing",
+                "_viewHash": "Za8JUS",
+                "_viewBuilded": 1488395563916
+            },
+            "id": "4C1ccb66-bAFf-3bab-Ce12-D66E3C101F5a"
+        },
+        "timestamp": 1488395566040,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566036
+        },
+        "_id": "ca2de4ea-1c83-454e-9d1c-e092573bf964"
+    },
+    "a4676c91-8cc1-4ec3-87bb-da7ff4fd3e77": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "61672372-2454-4308-ad4e-4a8890cd7df7",
+                "userId": "commodo consequat",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395563.949
+            },
+            "data": {
+                "title": "aliqua",
+                "email": "rU5OdNMYvsq0@wK.ioc",
+                "body": "aute ad tempor",
+                "_id": "e25c42b3-4f65-4567-9e9f-0b67b2476621",
+                "_viewHash": "ZfsA5B",
+                "_viewBuilded": 1488395563987
+            },
+            "id": "e25c42b3-4f65-4567-9e9f-0b67b2476621"
+        },
+        "timestamp": 1488395566052,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566046
+        },
+        "_id": "a4676c91-8cc1-4ec3-87bb-da7ff4fd3e77"
+    },
+    "a1bf4383-81d9-41f3-a938-b324b5a86ded": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "16809f42-98fb-4033-929a-f8e84298a3cc",
+                "userId": "laboris",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395564.017
+            },
+            "data": {
+                "title": "nulla qui sed",
+                "email": "OuTtZ@UgPRbiJsoPnqfHSMaMJnqcjP.ldij",
+                "_id": "F91fC6E8-29c6-0137-4F1a-a1BfcC4AC4a6",
+                "body": "veniam pariatur in",
+                "_viewHash": "7h7QA",
+                "_viewBuilded": 1488395564045
+            },
+            "id": "F91fC6E8-29c6-0137-4F1a-a1BfcC4AC4a6"
+        },
+        "timestamp": 1488395566059,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566055
+        },
+        "_id": "a1bf4383-81d9-41f3-a938-b324b5a86ded"
+    },
+    "017d6138-c7c0-4883-aebe-6a4ac9c16efc": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "84816b59-edff-4058-b589-6fa39b071e27",
+                "userId": "nostrud sunt Ut",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395564.084
+            },
+            "data": {
+                "title": "tempor aute ipsum sit",
+                "email": "oK2BjbZP@KHKeQBAxNTAaDEkpedOMB.qfsq",
+                "body": "aliqua tempor velit",
+                "_id": "25aC2dB0-1EAc-D0fd-EE8e-73bFb99B846a",
+                "_viewHash": "2ejmkj",
+                "_viewBuilded": 1488395564115
+            },
+            "id": "25aC2dB0-1EAc-D0fd-EE8e-73bFb99B846a"
+        },
+        "timestamp": 1488395566068,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566062
+        },
+        "_id": "017d6138-c7c0-4883-aebe-6a4ac9c16efc"
+    },
+    "aee8a7d1-083f-4b75-b3c9-796ad124ec87": {
+        "logData": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "ced207ab-98fa-4f5d-aa90-8422867f731b",
+                "userId": "eu",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395564.155
+            },
+            "data": {
+                "title": "fugiat id enim",
+                "email": "sPSui@RryngsbmaRcvXlEsOTgAALmMoCh.tmtq",
+                "_id": "d96BaEeC-5eBf-DBdd-95fD-D4DE1daF87f9",
+                "body": "eni",
+                "_viewHash": "Z2aGnt4",
+                "_viewBuilded": 1488395564183
+            },
+            "id": "d96BaEeC-5eBf-DBdd-95fD-D4DE1daF87f9"
+        },
+        "timestamp": 1488395566075,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566071
+        },
+        "_id": "aee8a7d1-083f-4b75-b3c9-796ad124ec87"
+    },
+    "e79d922a-d19e-4a92-a185-b43216267e3b": {
+        "logData": [
+            {
+                "title": "sint occaecat ullamco veniam",
+                "email": "j5W0qkFI@CnLcAZMVjlwJtU.ah",
+                "_id": "4C1ccb66-bAFf-3bab-Ce12-D66E3C101F5a",
+                "body": "ut fugiat velit irure adipisicing",
+                "_viewHash": "Za8JUS",
+                "_viewBuilded": 1488395563916
+            }
+        ],
+        "timestamp": 1488395566081,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566078
+        },
+        "_id": "e79d922a-d19e-4a92-a185-b43216267e3b"
+    },
+    "8cac3a47-7d57-49c6-a60a-ba33d0a9e4c7": {
+        "logData": [
+            {
+                "title": "aliqua",
+                "email": "rU5OdNMYvsq0@wK.ioc",
+                "body": "aute ad tempor",
+                "_id": "e25c42b3-4f65-4567-9e9f-0b67b2476621",
+                "_viewHash": "ZfsA5B",
+                "_viewBuilded": 1488395563987
+            }
+        ],
+        "timestamp": 1488395566087,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566084
+        },
+        "_id": "8cac3a47-7d57-49c6-a60a-ba33d0a9e4c7"
+    },
+    "80a752ca-848f-48e4-a4d7-e383baf6761c": {
+        "logData": [
+            {
+                "title": "nulla qui sed",
+                "email": "OuTtZ@UgPRbiJsoPnqfHSMaMJnqcjP.ldij",
+                "_id": "F91fC6E8-29c6-0137-4F1a-a1BfcC4AC4a6",
+                "body": "veniam pariatur in",
+                "_viewHash": "7h7QA",
+                "_viewBuilded": 1488395564045
+            }
+        ],
+        "timestamp": 1488395566093,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566090
+        },
+        "_id": "80a752ca-848f-48e4-a4d7-e383baf6761c"
+    },
+    "b85b4428-7228-4fe7-9361-7beb01cfbd50": {
+        "logData": [
+            {
+                "title": "tempor aute ipsum sit",
+                "email": "oK2BjbZP@KHKeQBAxNTAaDEkpedOMB.qfsq",
+                "body": "aliqua tempor velit",
+                "_id": "25aC2dB0-1EAc-D0fd-EE8e-73bFb99B846a",
+                "_viewHash": "2ejmkj",
+                "_viewBuilded": 1488395564115
+            }
+        ],
+        "timestamp": 1488395566101,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566097
+        },
+        "_id": "b85b4428-7228-4fe7-9361-7beb01cfbd50"
+    },
+    "40a151bd-280f-4ae9-810d-71627c2116d8": {
+        "logData": [
+            {
+                "title": "fugiat id enim",
+                "email": "sPSui@RryngsbmaRcvXlEsOTgAALmMoCh.tmtq",
+                "_id": "d96BaEeC-5eBf-DBdd-95fD-D4DE1daF87f9",
+                "body": "eni",
+                "_viewHash": "Z2aGnt4",
+                "_viewBuilded": 1488395564183
+            }
+        ],
+        "timestamp": 1488395566107,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566103
+        },
+        "_id": "40a151bd-280f-4ae9-810d-71627c2116d8"
+    },
+    "4ab00de3-1a5d-403b-aac6-75661fd39b90": {
+        "logData": {
+            "response": {
+                "id": "4C1ccb66-bAFf-3bab-Ce12-D66E3C101F5a"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+                "userId": "nostrud adipisicing enim",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395563.88
+            }
+        },
+        "timestamp": 1488395566115,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566110
+        },
+        "_id": "4ab00de3-1a5d-403b-aac6-75661fd39b90"
+    },
+    "1e977c58-3d27-429a-bd2b-1ce6e08cf981": {
+        "logData": {
+            "response": {
+                "id": "e25c42b3-4f65-4567-9e9f-0b67b2476621"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "61672372-2454-4308-ad4e-4a8890cd7df7",
+                "userId": "commodo consequat",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395563.949
+            }
+        },
+        "timestamp": 1488395566121,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566117
+        },
+        "_id": "1e977c58-3d27-429a-bd2b-1ce6e08cf981"
+    },
+    "5b829318-8110-4076-822a-23dbac5f6772": {
+        "logData": {
+            "response": {
+                "id": "F91fC6E8-29c6-0137-4F1a-a1BfcC4AC4a6"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "16809f42-98fb-4033-929a-f8e84298a3cc",
+                "userId": "laboris",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395564.017
+            }
+        },
+        "timestamp": 1488395566129,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566123
+        },
+        "_id": "5b829318-8110-4076-822a-23dbac5f6772"
+    },
+    "6bd5294b-f1bd-4d62-bc72-3c708ab39c05": {
+        "logData": {
+            "response": {
+                "id": "25aC2dB0-1EAc-D0fd-EE8e-73bFb99B846a"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "84816b59-edff-4058-b589-6fa39b071e27",
+                "userId": "nostrud sunt Ut",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395564.084
+            }
+        },
+        "timestamp": 1488395566135,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566131
+        },
+        "_id": "6bd5294b-f1bd-4d62-bc72-3c708ab39c05"
+    },
+    "2f2146d1-a50d-409f-bcbc-097b14ccf6a0": {
+        "logData": {
+            "response": {
+                "id": "d96BaEeC-5eBf-DBdd-95fD-D4DE1daF87f9"
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "ced207ab-98fa-4f5d-aa90-8422867f731b",
+                "userId": "eu",
+                "methodName": "createResource",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395564.155
+            }
+        },
+        "timestamp": 1488395566142,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566137
+        },
+        "_id": "2f2146d1-a50d-409f-bcbc-097b14ccf6a0"
+    },
+    "6a803426-10f4-40de-96ba-6b6eb9f232b0": {
+        "logData": {
+            "response": {
+                "success": true
+            },
+            "meta": {
+                "type": "apiRequest",
+                "requestId": "439c7676-5fef-43c6-bf5b-55f80ae40545",
+                "methodName": "syncViews",
+                "ip": "::ffff:127.0.0.1",
+                "timestamp": 1488395565.221
+            }
+        },
+        "timestamp": 1488395566148,
+        "meta": {
+            "type": "netEvent",
+            "from": "resources",
+            "requestId": "9443d28d-80b4-4f5e-8b37-fc541ffc2410",
+            "userId": "nostrud adipisicing enim",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395566144
+        },
+        "_id": "6a803426-10f4-40de-96ba-6b6eb9f232b0"
+    },
+    "05185738-4d37-4375-b78f-ff0b2b6c9c05": {
+        "logData": [
+            {
+                "title": "sed in fugiat non",
+                "body": "dolor minim in eiusmod mollit",
+                "_id": "B02D7e4c-Dbb3-3ec5-31CA-eD9AbECB5fFc",
+                "_viewBuilded": 1488395547921
+            },
+            {
+                "title": "sunt non et",
+                "_id": "F85C4Af0-ccF2-3e3B-f4BE-B02fDBb096Ce",
+                "_viewBuilded": 1488395552373
+            },
+            {
+                "title": "dolor",
+                "_id": "4144E95F-677b-3394-fcd1-2dFabAdc1a7D",
+                "body": "minim ipsum ut",
+                "_viewBuilded": 1488395552545
+            },
+            {
+                "title": "minim qui",
+                "_id": "E0ca95bf-3370-A56E-AfFf-2B46753f826D",
+                "_viewBuilded": 1488395552658
+            },
+            {
+                "title": "occaecat magna et labore",
+                "body": "qui minim quis",
+                "_id": "FFcf59B7-C769-BD1c-f61D-A5cfEeE3Fe44",
+                "_viewBuilded": 1488395552748
+            },
+            {
+                "title": "non quis pariatur",
+                "body": "enim esse qui",
+                "_id": "d1961de7-ef56-4931-8e18-175f3cef4fd4",
+                "_viewBuilded": 1488395552816
+            },
+            {
+                "title": "sint occaecat ullamco veniam",
+                "_id": "4C1ccb66-bAFf-3bab-Ce12-D66E3C101F5a",
+                "body": "ut fugiat velit irure adipisicing",
+                "_viewBuilded": 1488395563916
+            },
+            {
+                "title": "aliqua",
+                "body": "aute ad tempor",
+                "_id": "e25c42b3-4f65-4567-9e9f-0b67b2476621",
+                "_viewBuilded": 1488395563987
+            },
+            {
+                "title": "nulla qui sed",
+                "_id": "F91fC6E8-29c6-0137-4F1a-a1BfcC4AC4a6",
+                "body": "veniam pariatur in",
+                "_viewBuilded": 1488395564045
+            },
+            {
+                "title": "tempor aute ipsum sit",
+                "body": "aliqua tempor velit",
+                "_id": "25aC2dB0-1EAc-D0fd-EE8e-73bFb99B846a",
+                "_viewBuilded": 1488395564115
+            }
+        ],
+        "timestamp": 1488395567383,
+        "meta": {
+            "type": "netEvent",
+            "from": "view",
+            "requestId": "439c7676-5fef-43c6-bf5b-55f80ae40545",
+            "methodName": "log",
+            "event": "_messageMulti",
+            "timestamp": 1488395567345
+        },
+        "_id": "05185738-4d37-4375-b78f-ff0b2b6c9c05"
     }
 }

@@ -7,27 +7,31 @@ var jsonfile = require('jsonfile')
 var ajv = require('ajv')({allErrors: true})
 // var sourceMapSupport = require('source-map-support')
 // sourceMapSupport.install()
-//process.on('unhandledRejection', (reason, promise) => console.error('unhandledRejection Reason: ', promise, reason))
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('unhandledRejection Reason: ', promise, reason)
+  console.trace(reason)
+})
 
 const PACKAGE = 'jesus'
 const stringToColor = (string) => {
   var value = string.split('').map((char) => char.charCodeAt(0) * 2).reduce((a, b) => a + b, 0)
   return `hsl(${(value) % 255},80%,30%)`
 }
-var LOG = (serviceName, serviceId, pack) => {
+
+var getConsole = (config = {debug: false, log: true, error: true, warn: true}, serviceName, serviceId, pack) => {
   return {
     profile (name) { if (!console.profile) return false; console.profile(name) },
     profileEnd (name) { if (!console.profile) return false; console.profileEnd(name) },
-    error () { var args = Array.prototype.slice.call(arguments); console.error.apply(this, [serviceName, serviceId, pack].concat(args)) },
-    log () { var args = Array.prototype.slice.call(arguments); console.log.apply(this, [serviceName, serviceId, pack].concat(args)) },
-    debug () { if (!console.debug) return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', serviceId, pack].concat(args)) },
-    warn () { var args = Array.prototype.slice.call(arguments); console.warn.apply(this, [serviceName, serviceId, pack].concat(args)) }
+    error () { if (!config.error) return false; var args = Array.prototype.slice.call(arguments); console.error.apply(this, [serviceName, serviceId, pack].concat(args)) },
+    log () { if (!config.log) return false; var args = Array.prototype.slice.call(arguments); console.log.apply(this, [serviceName, serviceId, pack].concat(args)) },
+    debug () { if (!config.debug) return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', serviceId, pack].concat(args)) },
+    warn () { if (!config.warn) return false; var args = Array.prototype.slice.call(arguments); console.warn.apply(this, [serviceName, serviceId, pack].concat(args)) }
   }
 }
 
 function errorThrow (serviceName, serviceId, pack) {
   return (msg, data) => {
-    LOG(serviceName, serviceId, pack).warn(msg, data)
+    getConsole(false, serviceName, serviceId, pack).warn(msg, data)
     if (data && data.error) throw data.error
     else throw msg
   }
@@ -40,7 +44,7 @@ module.exports = {
       const filePath = path.join(dir, file, fileName)
       if (fs.existsSync(filePath))services[file] = require(filePath)
     })
-    // LOG.debug("getAllServicesConfigFromDir",services)
+    // CONSOLE.debug("getAllServicesConfigFromDir",services)
     return services
   },
   setSharedConfig (servicesRootDir, service, config, data) {
@@ -93,13 +97,10 @@ module.exports = {
   },
   errorThrow,
   validateMethodFromConfig (serviceName, serviceId, methodsConfig, methodName, data, schemaField) {
-      // TO FIX ADD CACHE
     if (!methodsConfig || !methodsConfig[methodName] || !methodsConfig[methodName][schemaField]) errorThrow(`Method validation problem :${methodName} ${schemaField} in ${methodsConfigFile}`)
     var schema = methodsConfig[methodName][schemaField]
-    LOG(serviceName, serviceId, PACKAGE).debug('validateMethodFromConfig schema', {methodsConfig, methodName, schemaField, schema})
     var validate = ajv.compile(schema)
     var valid = validate(data)
-
     if (!valid) {
       errorThrow(serviceName, serviceId, PACKAGE)('validation errors', {errors: validate.errors, methodsConfig, methodName, data, schemaField})
     }
@@ -144,7 +145,7 @@ module.exports = {
   isEmptyArray (array) {
     return (!array || !array.length)
   },
-  LOG,
+  getConsole,
   addObjectColumn: function (objectsArray, columnName, valuesArray) {
     var addColums = (val, index) => R.merge({
       [columnName]: valuesArray[index]

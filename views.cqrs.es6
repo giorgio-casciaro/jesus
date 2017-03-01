@@ -6,14 +6,14 @@ var jesus = require('./jesus')
 const PACKAGE = 'views.cqrs'
 const checkRequired = require('./jesus').checkRequired
 
-module.exports = async function getViewsCqrsPackage ({serviceName, serviceId, viewsSnapshotsMaxMutations, viewsStoragePackage, viewsSnapshotsStoragePackage, mutationsPackage}) {
-  var LOG = require('./jesus').LOG(serviceName, serviceId, PACKAGE)
+module.exports = async function getViewsCqrsPackage ({getConsole,serviceName, serviceId, viewsSnapshotsMaxMutations, viewsStoragePackage, viewsSnapshotsStoragePackage, mutationsPackage}) {
+  var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
   try {
     checkRequired({serviceName, serviceId, viewsSnapshotsMaxMutations, viewsStoragePackage, viewsSnapshotsStoragePackage, mutationsPackage})
     async function updateView ({objId, loadSnapshot = true, loadMutations = true, addMutations = []}) {
       try {
-        LOG.debug('updateView', {objId, loadSnapshot, loadMutations, addMutations })
+        CONSOLE.debug('updateView', {objId, loadSnapshot, loadMutations, addMutations })
         var lastSnapshot = {timestamp: 0, state: {}}
         var mutations = []
         if (loadSnapshot) {
@@ -32,20 +32,20 @@ module.exports = async function getViewsCqrsPackage ({serviceName, serviceId, vi
         updatedView._viewHash = shorthash(JSON.stringify(updatedView))
         updatedView._viewBuilded = Date.now()
         viewsStoragePackage.update({queriesArray: [{'_id': objId}], dataArray: [updatedView], insertIfNotExists: true})
-        LOG.debug('updatedView', {updatedView, mutations})
+        CONSOLE.debug('updatedView', {updatedView, mutations})
 
         if (viewsSnapshotsMaxMutations < mutations && mutations.length) {
           await viewsSnapshotsStorage.insert({timestamp: Date.now(), state: updatedView}) // update snapshot if required
         }
         return updatedView
       } catch (error) {
-        LOG.error(error, {objId, loadSnapshot, loadMutations, addMutations})
+        CONSOLE.error(error, {objId, loadSnapshot, loadMutations, addMutations})
         throw new Error(PACKAGE + ` updateView`)
       }
     }
     return {
       refreshViews: function refreshViews ({objIds, loadSnapshot, loadMutations, addMutations }) {
-        LOG.debug('refreshsViews', {objIds, loadSnapshot, addMutations })
+        CONSOLE.debug('refreshsViews', {objIds, loadSnapshot, addMutations })
         function singleView (objId) {
           return updateView({objId, loadSnapshot, loadMutations, addMutations})
         }

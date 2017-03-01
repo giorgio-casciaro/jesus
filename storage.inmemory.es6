@@ -8,9 +8,9 @@ var db = {collections: {}, collectionsSaveTimeout: {}}
 function getReadableDate () { return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') }
 const PACKAGE = 'storage.inmemory'
 
-module.exports = async function getStorageTestPackage ({serviceName, serviceId, storageCollection, storageConfig}) {
+module.exports = async function getStorageTestPackage ({getConsole,serviceName, serviceId, storageCollection, storageConfig}) {
   try {
-    var LOG = require('./jesus').LOG(serviceName, serviceId, PACKAGE)
+    var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
     var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
 
     checkRequired({ serviceName, serviceId, storageCollection, storageConfig, 'storageConfig.path': storageConfig.path}, PACKAGE)
@@ -34,15 +34,15 @@ module.exports = async function getStorageTestPackage ({serviceName, serviceId, 
           // var before = R.clone(results)
           results = R.sortBy(R.prop(sortIndex), results)
           if (!sortValue)results = R.reverse(results)
-          // LOG.debug(`find() sorting`, {sortValue, sortIndex, before, results})
+          // CONSOLE.debug(`find() sorting`, {sortValue, sortIndex, before, results})
         }, sort)
       }
       results = R.slice(start, limit + start, results)
-      LOG.debug(`find()`, {storageCollection, query, collection, results})
+      CONSOLE.debug(`find()`, {storageCollection, query, collection, results})
       return results
     }
     async function insert ({objs}) {
-      LOG.debug(`${storageCollection} DB INSERT `, objs)
+      CONSOLE.debug(`${storageCollection} DB INSERT `, objs)
       if (!objs) throw 'No objs'
       objs = R.clone(objs)
       objs.forEach((value) => {
@@ -56,9 +56,9 @@ module.exports = async function getStorageTestPackage ({serviceName, serviceId, 
       if (!db.collectionsSaveTimeout[storageCollection])db.collectionsSaveTimeout[storageCollection] = {}
       if (db.collectionsSaveTimeout[storageCollection]) clearTimeout(db.collectionsSaveTimeout[storageCollection])
       db.collectionsSaveTimeout[storageCollection] = setTimeout(function () {
-        LOG.debug(`${storageCollection} WRITING TO LOGSK `, {dbFile, collection})
+        CONSOLE.debug(`${storageCollection} WRITING TO LOGSK `, {dbFile, collection})
         fs.writeFile(dbFile, JSON.stringify(collection, null, 4), 'utf8', () => {
-          LOG.debug(`${storageCollection} WRITED TO LOGSK `, {dbFile})
+          CONSOLE.debug(`${storageCollection} WRITED TO LOGSK `, {dbFile})
         })
       }, 1000)
       return true
@@ -89,7 +89,7 @@ module.exports = async function getStorageTestPackage ({serviceName, serviceId, 
       }
     }
   } catch (error) {
-    LOG.error(error)
+    CONSOLE.error(error)
     throw PACKAGE + ` getStorageTingodbPackage`
   }
 }

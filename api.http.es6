@@ -8,12 +8,12 @@ const PACKAGE = 'api.http'
 
 var checkRequired = require('./jesus').checkRequired
 
-module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly = true, httpPort = 80, getMethods, getSharedConfig}) {
+module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly = true, httpPort = 80, getMethods, getSharedConfig,getConsole}) {
   var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
   try {
-    checkRequired({serviceName, serviceId, getMethods, getSharedConfig})
-    var LOG = require('./jesus').LOG(serviceName, serviceId, PACKAGE)
-    var netClientPackage = netClient({getSharedConfig, serviceName, serviceId})
+    checkRequired({serviceName, serviceId, getMethods, getSharedConfig,getConsole})
+    var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
+    var netClientPackage = netClient({getSharedConfig, serviceName, serviceId,getConsole})
     var httpApi
     var httpServer
     async function start () {
@@ -40,7 +40,7 @@ module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly
             // headers: req.headers,
             timestamp: Date.now() / 1000
           }
-          LOG.debug('Api request ' + methodName + ' requestId:' + meta.requestId, {methodName, httpPort, serviceMethods, data, meta})
+          CONSOLE.debug('Api request ' + methodName + ' requestId:' + meta.requestId, {methodName, httpPort, serviceMethods, data, meta})
           var eventReqResult = await netClientPackage.emit('apiRequest', {data, meta}, meta)
           if (!serviceMethodsConfig[methodName].stream) {
             var response = await serviceMethods[methodName](eventReqResult || data, meta)
@@ -57,19 +57,20 @@ module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly
               write: (data) => {
                 res.write('data: ' + JSON.stringify(data) + '\n\n')
               },
-              res
+              res,
+              req
             }
             serviceMethods[methodName](eventReqResult || data, meta, stream)
           }
         } catch (error) {
-          LOG.warn('Api error', {error})
+          CONSOLE.warn('Api error', {error})
           res.send({error})
         }
       })
       httpServer = httpApi.on('connection', function (socket) {
         socket.setTimeout(60000)
       }).listen(httpPort)
-      LOG.debug('http Api listening on port' + httpPort)
+      CONSOLE.debug('http Api listening on port' + httpPort)
     }
     return {
       start,

@@ -5,6 +5,7 @@ module.exports = async function startMicroservice (CONFIG, serviceId, methodsFil
   var serviceName = CONFIG.serviceName
 
   var getSharedConfig = jesus.getSharedConfig(CONFIG.sharedServicesPath)
+  var getConsole = (serviceName, serviceId, pack) => jesus.getConsole(CONFIG.console, serviceName, serviceId, pack)
   var getMethods = () => {
     if (CONFIG.NODE_ENV === 'development') delete require.cache[require.resolve(methodsFile)]
     return require(methodsFile)
@@ -13,9 +14,9 @@ module.exports = async function startMicroservice (CONFIG, serviceId, methodsFil
 
   var SERVICE = { serviceId, serviceName, SHARED_CONFIG, CONFIG }
 
-  SERVICE.apiPublic = require('../../api.http')({ serviceId, serviceName, publicOnly: true, httpPort: SHARED_CONFIG.httpPublicApiPort, getMethods, getSharedConfig})
-  SERVICE.apiPrivate = require('../../api.http')({serviceId, serviceName, publicOnly: false, httpPort: SHARED_CONFIG.httpPrivateApiPort, getMethods, getSharedConfig})
-  SERVICE.net = require('../../net.server')({serviceId, serviceName, netUrl: SHARED_CONFIG.netUrl, getMethods, getSharedConfig})
+  SERVICE.apiPublic = require('../../api.http')({ serviceId, serviceName, publicOnly: true, httpPort: SHARED_CONFIG.httpPublicApiPort, getMethods, getSharedConfig, getConsole})
+  SERVICE.apiPrivate = require('../../api.http')({serviceId, serviceName, publicOnly: false, httpPort: SHARED_CONFIG.httpPrivateApiPort, getMethods, getSharedConfig, getConsole})
+  SERVICE.net = require('../../net.server')({serviceId, serviceName, netUrl: SHARED_CONFIG.netUrl, getMethods, getSharedConfig, getConsole})
 
   SERVICE.start = async () => {
     await SERVICE.apiPublic.start()
