@@ -59,7 +59,7 @@ module.exports = function getNetClientPackage ({getConsole,serviceName, serviceI
       CONSOLE.debug('getGrpcClient ', client)
       resolve(client)
     })
-    var sendMessage = ({name, netUrl, timeout = 5000, method, multi = false, haveResponse, data, listenerServiceName, meta}) => new Promise((resolve, reject) => {
+    var sendMessage = ({throwOnErrorResponse,name, netUrl, timeout = 5000, method, multi = false, haveResponse, data, listenerServiceName, meta}) => new Promise((resolve, reject) => {
       CONSOLE.debug('sendMessage ' + name + ' to ' + listenerServiceName, {name, data, listenerServiceName, meta})
       getGrpcClient(netUrl).then((client) => {
         // if (eventListenConfig.haveResponse) {
@@ -109,7 +109,7 @@ module.exports = function getNetClientPackage ({getConsole,serviceName, serviceI
       var sendMessageResponse = await sendMessage({name: '_rpcCall', listenerServiceName: serviceName, netUrl: listenerService.netUrl, timeout, method, haveResponse: true, data, meta})
       return sendMessageResponse
     }
-    async function emit (name, data, meta) {
+    async function emit (name, data, meta,throwOnErrorResponse=true) {
       CONSOLE.debug('emit ' + name + ' requestId:' + meta.requestId, {name, data, meta})
       var eventsEmitConfig = await getSharedConfig(serviceName, 'events.emit')
       if (!eventsEmitConfig[name]) return CONSOLE.warn(name + ' event not defined in /events.emit.json')
@@ -143,7 +143,7 @@ module.exports = function getNetClientPackage ({getConsole,serviceName, serviceI
               delete delayedSendData[index]
               sendMessage(multiEvent)
             }, eventListenConfig.delayed)
-            delayedSendData[index] = {name: '_messageMulti', listenerServiceName, multi: true, timeout: 60000, method: eventListenConfig.method, netUrl: listenerService.netUrl, data: {event: name, messages: []}, meta}
+            delayedSendData[index] = {throwOnErrorResponse, name: '_messageMulti', listenerServiceName, multi: true, timeout: 60000, method: eventListenConfig.method, netUrl: listenerService.netUrl, data: {event: name, messages: []}, meta}
           }
           delayedSendData[index].data.messages.push({data, meta})
         } else {

@@ -7,12 +7,16 @@
 - [X] http streaming > aggiungere timeout alla chiusura della connessione
 - [X] test aggiunta e rimozione eventi on the fly
 - [X] test solo profiling: no tap solo request
-- [ ] eliminare astrazione storage(tenere solo inmemory per i test), storage gestito direttamente in microservice, le librerie come views e mutations si aspettano funzioni per l'inserimento e la lettura del db
+- [X] eliminare astrazione storage(tenere solo inmemory per i test), storage gestito direttamente in microservice, le librerie come views e mutations si aspettano funzioni per l'inserimento e la lettura del db
+- [X] eliminare astrazione entity.cqrs ->lavorare direttameten con view+mutations+ storage in methods
 - [ ] implementare pagina con script di console in express logs:LOG VISUALIZER->http streaming continuo,invia i vecchi log e si iscrive allo streaming
 - [ ] allineare logs (multimessage deiverso da message)
 - [ ] assicurarsi che tutti i file vengano ricaricati quando richiamati (json in config e methods)
-- [ ] eliminare funzioni anonime (non comprensibili in profiling)
 - [ ] profiling e ottimizzazione cache locali: in methods utilizzare solo require con cache
+- [ ] netClient aggiungere parametro throwOnErrorResponse-> riconosce una riposta di errore (resolved ma con errore) e thow l'errore
+- [ ] schemi generici-> error,httpReq,netReq,httpReqMeta,netReqMeta, netMessage, netMessageMulti
+- [ ] MSVIEW le view dovrebbero essere filtrate mediante jsonschema condiviso
+
 
 ## TODO SERVICE
 NET

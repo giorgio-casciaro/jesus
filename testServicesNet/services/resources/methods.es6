@@ -1,26 +1,50 @@
-var entityCqrs = require('../../../entity.cqrs')
-var jesus = require('../../../jesus')
+const jesus = require('../../../jesus')
 const uuidV4 = require('uuid/v4')
-const netClient = require('../../../net.client')
-
-var serviceName = require('./config').serviceName
-var serviceId = require('./serviceId.json')
-var getSharedConfig = jesus.getSharedConfig(require('./config').sharedServicesPath)
-var getConsole = (serviceName, serviceId, pack) => jesus.getConsole(require('./config').console, serviceName, serviceId, pack)
 
 const PACKAGE = 'methods'
-var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
-var errorThrow = jesus.errorThrow(serviceName, serviceId, PACKAGE)
+const serviceName = require('./config').serviceName
+const serviceId = require('./serviceId.json')
+
+const getSharedConfig = jesus.getSharedConfig(require('./config').sharedServicesPath)
+const getConsole = (serviceName, serviceId, pack) => jesus.getConsole(require('./config').console, serviceName, serviceId, pack)
+const CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
 
 const validateMethodRequest = async (methodName, data) => jesus.validateMethodFromConfig(serviceName, serviceId, await getSharedConfig(serviceName, 'methods'), methodName, data, 'requestSchema')
 const validateMethodResponse = async (methodName, data) => jesus.validateMethodFromConfig(serviceName, serviceId, await getSharedConfig(serviceName, 'methods'), methodName, data, 'responseSchema')
+const msNet = require('../../../net.client')({getSharedConfig, serviceName, serviceId, getConsole})
+// const msNet = {emit:()=>true,rpc:()=>true}
 
-var netClientPackage = netClient({getSharedConfig, serviceName, serviceId,getConsole})
+const getStorage = () => require('../../../storage.inmemory')({getConsole, serviceName, serviceId, storageConfig: require('./config').storage})
+const storageGet = (collectionName, ids) => getStorage().get({collectionName, ids}) // ASYNC
+const storageFind = (args) => getStorage().find(args) // ASYNC
+const storageInsert = (collectionName, obj) => getStorage().insert({collectionName, objs: [obj]}) // ASYNC
+const storageUpdate = (collectionName, obj) => getStorage().update({collectionName, queriesArray: [{'_id': obj._id}], dataArray: [obj], insertIfNotExists: true}) // ASYNC
 
-async function authorize (data) {
-  var results = await netClientPackage.emit('authorize', data, data.meta)
-  if (!results) errorThrow(`not authorized`)
-  return results
+const authorize = (data) => msNet.emit('authorize', data, data.meta, true)// ASYNC
+
+var entityConfig = require('./config.Resource')
+
+const getObjMutations = ({entityName, objId, minTimestamp = 0}) => getStorage().find({ collectionName: entityName + 'Mutations', query: { objId, timestamp: {$gte: minTimestamp} }, sort: {timestamp: 1} }) // ASYNC
+const getLastSnapshot = ({entityName, objId}) => getStorage().find({collectionName: entityName + 'MainViewSnapshots', query: {objId: objId}, sort: {timestamp: 1}, limit: 1, start: 0})// ASYNC
+var mutationsCqrsPack = require('../../../mutations.cqrs')({serviceName, serviceId, getConsole, mutationsPath: entityConfig.mutationsPath})
+var viewsCqrsPack = require('../../../views.cqrs')({serviceName, serviceId, getConsole, getObjMutations, applyMutations: mutationsCqrsPack.applyMutations, snapshotsMaxMutations: entityConfig.snapshotsMaxMutations})
+
+const refreshViews = async (args) => {
+  var results = await viewsCqrsPack.refreshViews(args)
+  var views = []
+  results.forEach(({updatedView, newSnapshot}) => {
+    if (updatedView) {
+      views.push(updatedView)
+      storageUpdate(entityConfig.viewsCollection, updatedView)
+    }
+    if (newSnapshot)storageInsert(entityConfig.snapshotsCollection, newSnapshot)
+  })
+  return views
+}
+const mutate = async (args) => {
+  var mutation = mutationsCqrsPack.mutate(args)
+  await storageInsert(entityConfig.mutationsCollection, mutation)
+  return mutation
 }
 
 module.exports = {
@@ -28,14 +52,13 @@ module.exports = {
     try {
       CONSOLE.debug(`start createResource() requestId:` + meta.requestId, {data, id, meta})
       await validateMethodRequest('createResource', {data, id, userId, token})
-      data._id = id = id || data._id || uuidV4() // generate id if necessary
-      var cqrs = await entityCqrs(require('./config.Resource'), {serviceName, serviceId,getConsole})
       await authorize({action: 'write.create', entityName: 'Resource', meta, data, id})
-      var addedMutation = await cqrs.mutationsPackage.mutate({data, objId: id, mutation: 'create', meta})
-      // REFRESH VIEWS
-      cqrs.viewsPackage.refreshViews({objIds: [id], loadSnapshot: false, loadMutations: false, addMutations: [addedMutation]}).then((views) => {
-        netClientPackage.emit('mainViewsUpdated', views, meta)
-      })
+
+      data._id = id = id || data._id || uuidV4() // generate id if necessary
+      var addedMutation = await mutate({data, objId: id, mutation: 'create', meta})
+      var views = refreshViews({objIds: [id], lastSnapshot: false, loadMutations: false, addMutations: [addedMutation]})
+      msNet.emit('mainViewsUpdated', views, meta)
+
       var response = await validateMethodResponse('createResource', {id})
       return response
     } catch (error) {
@@ -47,13 +70,12 @@ module.exports = {
     try {
       CONSOLE.debug(`start updateResource() requestId:` + meta.requestId, {data, id, meta})
       await validateMethodRequest('updateResource', {data, id, userId, token})
+
       data._id = id = id || data._id
-      var cqrs = await entityCqrs(require('./config.Resource'), {serviceName, serviceId,getConsole})
-      await authorize({action: 'write.update', entityName: 'Resource', meta, data, id})
-      var addedMutation = await cqrs.mutationsPackage.mutate({data, objId: id, mutation: 'update', meta})
-      cqrs.viewsPackage.refreshViews({objIds: [id], loadSnapshot: true, loadMutations: true, addMutations: [addedMutation]}).then((views) => {
-        netClientPackage.emit('mainViewsUpdated', views, meta)
-      })
+      var addedMutation = await mutate({data, objId: id, mutation: 'update', meta})
+      var views = refreshViews({objIds: [id], lastSnapshot: getLastSnapshot('Resource', id), loadMutations: true, addMutations: [addedMutation]})
+      msNet.emit('mainViewsUpdated', views, meta)
+
       return await validateMethodResponse('updateResource', {id})
     } catch (error) {
       CONSOLE.warn('problems during update', error)
@@ -65,11 +87,11 @@ module.exports = {
       CONSOLE.debug(`start deleteResource() requestId:` + meta.requestId, {id, meta})
       await validateMethodRequest('deleteResource', {id, userId, token})
       await authorize({action: 'write.delete', entityName: 'Resource', meta, id})
-      var cqrs = await entityCqrs(require('./config.Resource'), {serviceName, serviceId,getConsole})
-      var addedMutation = await cqrs.mutationsPackage.mutate({ objId: id, mutation: 'delete', meta})
-      cqrs.viewsPackage.refreshViews({objIds: [id], loadSnapshot: true, loadMutations: true, addMutations: [addedMutation]}).then((views) => {
-        netClientPackage.emit('mainViewsUpdated', views, meta)
-      })
+
+      var addedMutation = await mutate({ objId: id, mutation: 'delete', meta})
+      var views = refreshViews({objIds: [id], lastSnapshot: getLastSnapshot('Resource', id), loadMutations: true, addMutations: [addedMutation]})
+      msNet.emit('mainViewsUpdated', views, meta)
+
       return await validateMethodResponse('deleteResource', {id})
     } catch (error) {
       CONSOLE.warn('problems during delete', error)
@@ -81,10 +103,10 @@ module.exports = {
       CONSOLE.debug(`start readResource() requestId:` + meta.requestId, {id, meta})
       await validateMethodRequest('readResource', {id, userId, token})
       await authorize({action: 'read', entityName: 'Resource', meta, id})
-      var cqrs = await entityCqrs(require('./config.Resource'), {serviceName, serviceId,getConsole})
-      var viewsResult = await cqrs.viewsPackage.get({ids: [id]})
-      CONSOLE.debug(`readResource viewsResult`, viewsResult)
-      if (viewsResult.length !== 1) throw `id: ${id} Item Not Founded`
+
+      var viewsResult = await storageGet(entityConfig.viewsCollection, [id])
+      if (viewsResult.length !== 1) throw `id: ${id} Item Not Found`
+
       return await validateMethodResponse('readResource', viewsResult[0])
     } catch (error) {
       CONSOLE.warn('problems during read', error)
@@ -96,13 +118,13 @@ module.exports = {
     try {
       CONSOLE.debug(`start listResources() requestId:` + meta.requestId, {page, timestamp}, meta)
       await validateMethodRequest('listResources', {page, timestamp}, meta)
-      var cqrs = await entityCqrs(require('./config.Resource'), {serviceName, serviceId,getConsole})
+
       var fields = (checksumOnly) ? { _viewHash: 1 } : null
       var query = {}
       if (timestamp)query._viewBuilded = {$lt: timestamp}
       if (idIn)query._id = {$in: idIn}
-      var views = await cqrs.viewsPackage.find({query, limit: pageItems, start: (page - 1) * pageItems, fields})
-      CONSOLE.debug(`listResources response`, {views})
+      var views = await storageFind({collectionName:entityConfig.viewsCollection,query, limit: pageItems, start: (page - 1) * pageItems, fields})
+      CONSOLE.debug(`listResources() views:` , views)
       return await validateMethodResponse('listResources', views)
     } catch (error) {
       CONSOLE.warn('problems during listResources', error)

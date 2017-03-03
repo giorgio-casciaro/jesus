@@ -24,7 +24,7 @@ function checkMutationFunction (mutationId, mutationsFunctions) {
   }
 }
 
-module.exports = async function getMutationsCqrsPackage ({getConsole,serviceName, serviceId, mutationsPath, mutationsStoragePackage}) {
+module.exports = function getMutationsCqrsPackage ({getConsole, serviceName, serviceId, mutationsPath}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
 
@@ -39,10 +39,10 @@ module.exports = async function getMutationsCqrsPackage ({getConsole,serviceName
   }
 
   try {
-    checkRequired({serviceName, serviceId, mutationsPath, mutationsStoragePackage}, PACKAGE)
+    checkRequired({serviceName, serviceId, mutationsPath}, PACKAGE)
     checkRequiredFiles([mutationsPath], PACKAGE)
     return {
-      mutate: async function mutate ({mutation, objId, data, meta}) {
+      mutate: function mutate ({mutation, objId, data, meta}) {
         try {
           checkRequired({objId, mutation}, PACKAGE)
           var mutationsFunctions = getMutationsFunctions(mutationsPath)
@@ -57,22 +57,10 @@ module.exports = async function getMutationsCqrsPackage ({getConsole,serviceName
             data
           }
           CONSOLE.debug('dataSingleMutation to create', {mutation, lastMutationVersion, objId, data, mutationState})
-          await mutationsStoragePackage.insert({objs: [mutationState]})
           return mutationState
         } catch (error) {
           errorThrow('mutate(args) Error', {error, mutation, objId, data})
         }
-      },
-      getObjMutations: async function getObjMutations ({objId, minTimestamp = 0}) {
-        var results = await mutationsStoragePackage.find({
-          query: {
-            objId: objId,
-            timestamp: {$gte: minTimestamp}
-          },
-          sort: {timestamp: 1}
-        })
-        CONSOLE.debug('getObjMutations', {objId, minTimestamp, results})
-        return results
       },
       applyMutations: async function applyMutations ({state, mutations}) {
         CONSOLE.debug('applyMutationsFromPath', {state, mutations, mutationsPath})

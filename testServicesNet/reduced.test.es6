@@ -9,21 +9,17 @@ var restler = require('restler')
 var request = require('request')
 var t = require('tap')
 var path = require('path')
-var CONSOLE = require('../jesus').getConsole({debug: true, log: true, error: true, warn: true},'BASE TEST', '----', '-----')
+var CONSOLE = require('../jesus').getConsole(false,'BASE TEST', '----', '-----')
 var jesus = require('../jesus')
 
 t.test('*** SERVICES NET ***', {
 //  autoend: true
 }, async function mainTest (t) {
   var MS_RESOURCES = await require('./services/resources/start')()
-  var MS_EVENTS_EMITTER = await require('./services/eventsEmitter/start')()
-  var MS_AUTHORIZATIONS = await require('./services/authorizations/start')()
-  var MS_LOGS = await require('./services/logs/start')()
-  var MS_EVENTS_EMITTER_URL = `http://127.0.0.1:${MS_EVENTS_EMITTER.SHARED_CONFIG.httpPublicApiPort}/`
 
   await jesus.setSharedConfig(path.join(__dirname, './shared/services/'), 'view', 'events.listen', {})
 
-  t.plan(6)
+  t.plan(1)
 
   async function resourceInsert (t, loops = 10, steps = 100) {
     var methodsConfig = require(path.join(__dirname, './shared/services/resources/methods.json'))
@@ -107,124 +103,16 @@ t.test('*** SERVICES NET ***', {
       // CONSOLE.groupEnd()
     }
   }
-
-  CONSOLE.debug('-------------------------------------- PREPARING -------------------------------------------')
-  await new Promise((resolve) => setTimeout(resolve, 2000))
-
-  CONSOLE.debug('-------------------------------------- TEST 0 - EVENTS_EMITTER chiamata allo streaming degli eventi  ------------------------------------------')
-  var MS_EVENTS_EMITTER_requestHttp
-  var MS_EVENTS_EMITTER_responseHttp
-
-  await t.test('TEST 0', async function (t) {
-    await new Promise((resolve, reject) => {
-      MS_EVENTS_EMITTER_requestHttp = request(
-        { method: 'GET',
-          uri: MS_EVENTS_EMITTER_URL + 'listenEvents'
-        })
-      MS_EVENTS_EMITTER_requestHttp.on('response', function (response) {
-        CONSOLE.debug('TEST HTTP STREAMING RESPONSE', response)
-        MS_EVENTS_EMITTER_responseHttp = response
-        resolve()
-      })
-      .on('error', function (error) {
-        CONSOLE.debug('TEST HTTP STREAMING ERROR', error)
-        reject()
-      })
-      .on('data', function (binData) {
-        var dataString = binData.toString('utf8')
-        var data = JSON.parse(dataString.replace('data: ', ''))
-        CONSOLE.debug('TEST HTTP STREAMING DATA', data, MS_EVENTS_EMITTER_requestHttp)
-      })
-    })
-
-    t.end()
-  })
-  CONSOLE.debug('-------------------------------------- PREPARING -------------------------------------------')
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
   CONSOLE.debug('-------------------------------------- TEST 1 - Inserimento Dati (MS_VIEW spento)-------------------------------------------')
+  await new Promise((resolve) => setTimeout(resolve, 5000))
   await t.test('TEST 1 - Inserimento Dati (MS_VIEW spento)', async function (t) {
     await resourceInsert(t, 1)
     t.end()
   })
-  //
 
-  CONSOLE.debug('-------------------------------------- STOP -------------------------------------------')
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  await new Promise((resolve) => setTimeout(resolve, 100000))
 
-  CONSOLE.debug('-------------------------------------- PREPARING - accendo MS_VIEW-------------------------------------------')
-  var MS_VIEW = await require('./services/view/start')()
-  var MS_VIEW_URL = `http://127.0.0.1:${MS_VIEW.SHARED_CONFIG.httpPrivateApiPort}/`
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  CONSOLE.debug('-------------------------------------- TEST 2.1 - MS_VIEW rebuildViews (MS_VIEW dovrebbe recuperarei dati inseriti in precedenza)-------------------------------------------')
-  await t.test('TEST 2.1', async function (t) {
-    await new Promise((resolve, reject) => {
-      CONSOLE.debug('send rebuildViews', MS_VIEW_URL + 'rebuildViews')
-      restler.postJson(MS_VIEW_URL + 'rebuildViews').on('complete', function (dataResponse, response) {
-        CONSOLE.debug('rebuildViews receive', response, dataResponse)
-        resolve()
-      })
-    })
-    t.end()
-  })
-
-  CONSOLE.debug('-------------------------------------- PREPARING - aggiungo evento viewsUpdated a MS_VIEW-------------------------------------------')
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  await jesus.setSharedConfig(path.join(__dirname, './shared/services/'), 'view', 'events.listen', {
-    'viewsUpdated': {
-      'method': 'viewsUpdated',
-      'haveResponse': false
-    }
-  })
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  CONSOLE.debug('-------------------------------------- TEST 2.2 - Inserimento Dati (MS_VIEW acceso,dovrebbe aggiornarsi live)-------------------------------------------')
-
-  await t.test('TEST 2.2', async function (t) {
-    await resourceInsert(t, 5, 1)
-    t.end()
-  })
-
-  await new Promise((resolve) => setTimeout(resolve, 5000))
-  await jesus.setSharedConfig(path.join(__dirname, './shared/services/'), 'view', 'events.listen', {})
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  MS_VIEW.stop()
-
-  CONSOLE.debug('-------------------------------------- STOP - MS_VIEW stopped------------------------------------------')
-  await new Promise((resolve) => setTimeout(resolve, 5000))
-
-  CONSOLE.debug('-------------------------------------- TEST 3 - Inserimento Dati (MS_VIEW stopped) -------------------------------------------')
-  await t.test('TEST 3', async function (t) {
-    await resourceInsert(t, 5, 1)
-    t.end()
-  })
-
-  CONSOLE.debug('-------------------------------------- PREPARING - MS_VIEW starting-------------------------------------------')
-  await MS_VIEW.start()
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  CONSOLE.debug('-------------------------------------- TEST 4 - MS_VIEW syncViews -------------------------------------------')
-  await t.test('TEST 4', async function (t) {
-    await new Promise((resolve, reject) => {
-      CONSOLE.debug('send syncViews', MS_VIEW_URL + 'syncViews')
-      restler.postJson(MS_VIEW_URL + 'syncViews').on('complete', function (dataResponse, response) {
-        CONSOLE.debug('syncViews receive', response, dataResponse)
-        resolve()
-      })
-    })
-
-    t.end()
-  })
-  await new Promise((resolve) => setTimeout(resolve, 5000))
-  MS_VIEW.stop()
 
   MS_RESOURCES.stop()
-  MS_EVENTS_EMITTER.stop()
-  MS_AUTHORIZATIONS.stop()
-  MS_LOGS.stop()
-  MS_VIEW.stop()
-  MS_EVENTS_EMITTER_responseHttp.destroy()
   t.end()
-  await new Promise((resolve) => setTimeout(resolve, 100000))
 })

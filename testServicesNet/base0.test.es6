@@ -9,7 +9,7 @@ var restler = require('restler')
 var request = require('request')
 var t = require('tap')
 var path = require('path')
-var CONSOLE = require('../jesus').getConsole({debug: true, log: true, error: true, warn: true},'BASE TEST', '----', '-----')
+var CONSOLE = require('../jesus').getConsole(false,'BASE TEST', '----', '-----')
 var jesus = require('../jesus')
 
 t.test('*** SERVICES NET ***', {

@@ -1,16 +1,11 @@
-var entityCqrs = require('../../../entity.cqrs')
-var jesus = require('../../../jesus')
-const uuidV4 = require('uuid/v4')
-const netClient = require('../../../net.client')
-
-var serviceName = require('./config').serviceName
-var serviceId = require('./serviceId.json')
-var getSharedConfig = jesus.getSharedConfig(require('./config').sharedServicesPath)
-var getConsole = (serviceName, serviceId, pack) => jesus.getConsole(require('./config').console, serviceName, serviceId, pack)
-
+const jesus = require('../../../jesus')
 const PACKAGE = 'methods'
-var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
-var errorThrow = jesus.errorThrow(serviceName, serviceId, PACKAGE)
+const serviceName = require('./config').serviceName
+const serviceId = require('./serviceId.json')
+
+const getSharedConfig = jesus.getSharedConfig(require('./config').sharedServicesPath)
+const getConsole = (serviceName, serviceId, pack) => jesus.getConsole(require('./config').console, serviceName, serviceId, pack)
+const CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
 
 module.exports = {
   async  authorize ({action, entityName, id, meta}) {
@@ -20,7 +15,8 @@ module.exports = {
         userData: {'userId': '195151662661'}
       }
     } catch (error) {
-      return DI.errorResponse({message: 'problems during authorize', originalError: error})
+      CONSOLE.warn('problems during listenEvents', error)
+      return {error: 'problems during authorizations', originalError: error}
     }
   }
 }

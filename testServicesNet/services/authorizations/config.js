@@ -5,6 +5,5 @@ module.exports = {
   serviceName: serviceName,
   sharedServicesPath: path.join(__dirname, '/../../shared/services/'),
   NODE_ENV: 'development',
-  logPath: 'microserviceTest/logs'
-
+  console: {debug: true, log: true, error: true, warn: true}
 };

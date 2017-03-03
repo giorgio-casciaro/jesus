@@ -127,11 +127,11 @@ module.exports = {
     }
     return modifiedPackage
   },
-  checkRequired (PROPS_OBJ) {
+  checkRequired (PROPS_OBJ, PACKAGE) {
     var propsNames = Object.keys(PROPS_OBJ)
     propsNames.forEach((propName) => {
       if (!PROPS_OBJ[propName]) {
-        throw `Required Dependency ${propName} is missing`
+        throw `PACKAGE:${PACKAGE}  Required Dependency ${propName} is missing`
       }
     })
   },
