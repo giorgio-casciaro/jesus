@@ -8,12 +8,17 @@ const PACKAGE = 'api.http'
 
 var checkRequired = require('./jesus').checkRequired
 
-module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly = true, httpPort = 80, getMethods, getSharedConfig,getConsole}) {
+module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly = true, httpPort = 80, getMethods, getSharedConfig, getConsole}) {
   var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
+  var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
+
+  var validateMethodRequest = (methodName, serviceMethodsConfig, data) => require('./jesus').validateMethodFromConfig(errorThrow, serviceName, serviceId, serviceMethodsConfig, methodName, data, 'requestSchema')
+  var validateMethodResponse = (methodName, serviceMethodsConfig, data) => require('./jesus').validateMethodFromConfig(errorThrow, serviceName, serviceId, serviceMethodsConfig, methodName, data, 'responseSchema')
+  // var validateMethodRequest = async (methodName, data) => true
+  // var validateMethodResponse = async (methodName, data) => true
   try {
-    checkRequired({serviceName, serviceId, getMethods, getSharedConfig,getConsole})
-    var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
-    var netClientPackage = netClient({getSharedConfig, serviceName, serviceId,getConsole})
+    checkRequired({serviceName, serviceId, getMethods, getSharedConfig, getConsole})
+    var netClientPackage = netClient({getSharedConfig, serviceName, serviceId, getConsole})
     var httpApi
     var httpServer
     async function start () {
@@ -40,11 +45,14 @@ module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly
             // headers: req.headers,
             timestamp: Date.now() / 1000
           }
-          CONSOLE.debug('Api request ' + methodName + ' requestId:' + meta.requestId, {methodName, httpPort, serviceMethods, data, meta})
+        //  CONSOLE.debug('Api request ' + methodName + ' requestId:' + meta.requestId, {methodName, httpPort, serviceMethods, data, meta})
           var eventReqResult = await netClientPackage.emit('apiRequest', {data, meta}, meta)
+          validateMethodRequest(methodName, serviceMethodsConfig, data, meta)
+          var response, eventResResult
           if (!serviceMethodsConfig[methodName].stream) {
-            var response = await serviceMethods[methodName](eventReqResult || data, meta)
-            var eventResResult = await netClientPackage.emit('apiResponse', {response, meta}, meta)
+            response = await serviceMethods[methodName](eventReqResult || data, meta, res)
+            validateMethodResponse(methodName, serviceMethodsConfig, response, meta)
+            eventResResult = await netClientPackage.emit('apiResponse', {response, meta}, meta)
             res.send(eventResResult || response)
           } else {
             // STREAM
@@ -53,14 +61,31 @@ module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly
               'Cache-Control': 'no-cache',
               'Connection': 'keep-alive'
             })
-            var stream = {
-              write: (data) => {
-                res.write('data: ' + JSON.stringify(data) + '\n\n')
-              },
-              res,
-              req
+            var getStream = (onClose, MAX_REQUEST_TIMEOUT = 120000) => {
+              const close = () => { if (timeout)clearTimeout(timeout); onClose() }
+              res.on('close', close)
+              res.on('finish', close)
+              res.on('error', close)
+              var timeout = setTimeout(res.end, MAX_REQUEST_TIMEOUT)
+              return async (data) => {
+              //  CONSOLE.debug('stream callback', data)
+                try {
+                  //validateMethodResponse(methodName, serviceMethodsConfig, data, meta)
+                  var streamEventResult = await netClientPackage.emit('apiStreamResponse', data, meta)
+                  res.write('data: ' + JSON.stringify(streamEventResult || data) + '\n\n')
+                  res.flush()
+                } catch (error) {
+                  errorThrow('apiStreamResponse', {error,methodName, serviceMethodsConfig, data, meta})
+                }
+              }
             }
-            serviceMethods[methodName](eventReqResult || data, meta, stream)
+            response = await serviceMethods[methodName](eventReqResult || data, meta, res, getStream)
+            validateMethodResponse(methodName, serviceMethodsConfig, response, meta)
+            if (response) { // SEND RESPONSE AS FIRST CHUNK
+              eventResResult = await netClientPackage.emit('apiResponse', {response, meta}, meta)
+              res.write('data: ' + JSON.stringify(eventResResult || response) + '\n\n')
+              res.flush()
+            }
           }
         } catch (error) {
           CONSOLE.warn('Api error', {error})
@@ -68,7 +93,7 @@ module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly
         }
       })
       httpServer = httpApi.on('connection', function (socket) {
-        socket.setTimeout(60000)
+        // socket.setTimeout(60000)
       }).listen(httpPort)
       CONSOLE.debug('http Api listening on port' + httpPort)
     }

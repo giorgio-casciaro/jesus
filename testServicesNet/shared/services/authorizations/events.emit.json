@@ -1,18 +1,1 @@
-{
-    "_viewUpdated": {
-        "singleResponse": true,
-        "filters": [{
-            "func": "filterArgs",
-            "args": ["name"]
-        }],
-        "waitResponse": true,
-        "addServiceName": false,
-        "timeout": 50000
-    },
-    "_authorize": {
-        "singleResponse": true,
-        "waitResponse": true,
-        "addServiceName": false,
-        "timeout": 50000
-    }
-}
+{}

@@ -7,9 +7,9 @@ module.exports = async function startMicroservice (CONFIG, serviceId, methodsFil
   var getSharedConfig = jesus.getSharedConfig(CONFIG.sharedServicesPath)
   var getConsole = (serviceName, serviceId, pack) => jesus.getConsole(CONFIG.console, serviceName, serviceId, pack)
   var getMethods = () => {
-    if (CONFIG.NODE_ENV === 'development') delete require.cache[require.resolve(methodsFile)]
     return require(methodsFile)
   }
+  setInterval(() => require.cache = [], 5000)
   var SHARED_CONFIG = await getSharedConfig(serviceName, 'service')
 
   var SERVICE = { serviceId, serviceName, SHARED_CONFIG, CONFIG }

@@ -1,3 +1,4 @@
+
 const jesus = require('../../../jesus')
 const uuidV4 = require('uuid/v4')
 
@@ -9,8 +10,6 @@ const getSharedConfig = jesus.getSharedConfig(require('./config').sharedServices
 const getConsole = (serviceName, serviceId, pack) => jesus.getConsole(require('./config').console, serviceName, serviceId, pack)
 const CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
 
-const validateMethodRequest = async (methodName, data) => jesus.validateMethodFromConfig(serviceName, serviceId, await getSharedConfig(serviceName, 'methods'), methodName, data, 'requestSchema')
-const validateMethodResponse = async (methodName, data) => jesus.validateMethodFromConfig(serviceName, serviceId, await getSharedConfig(serviceName, 'methods'), methodName, data, 'responseSchema')
 const msNet = require('../../../net.client')({getSharedConfig, serviceName, serviceId, getConsole})
 // const msNet = {emit:()=>true,rpc:()=>true}
 
@@ -51,16 +50,13 @@ module.exports = {
   async  createResource ({data, id, userId, token}, meta) {
     try {
       CONSOLE.debug(`start createResource() requestId:` + meta.requestId, {data, id, meta})
-      await validateMethodRequest('createResource', {data, id, userId, token})
       await authorize({action: 'write.create', entityName: 'Resource', meta, data, id})
 
       data._id = id = id || data._id || uuidV4() // generate id if necessary
       var addedMutation = await mutate({data, objId: id, mutation: 'create', meta})
       var views = refreshViews({objIds: [id], lastSnapshot: false, loadMutations: false, addMutations: [addedMutation]})
       msNet.emit('mainViewsUpdated', views, meta)
-
-      var response = await validateMethodResponse('createResource', {id})
-      return response
+      return {id}
     } catch (error) {
       CONSOLE.warn('problems during create', error)
       return {error: 'problems during create', originalError: error}
@@ -69,14 +65,12 @@ module.exports = {
   async  updateResource ({data, id, userId, token}, meta) {
     try {
       CONSOLE.debug(`start updateResource() requestId:` + meta.requestId, {data, id, meta})
-      await validateMethodRequest('updateResource', {data, id, userId, token})
 
       data._id = id = id || data._id
       var addedMutation = await mutate({data, objId: id, mutation: 'update', meta})
       var views = refreshViews({objIds: [id], lastSnapshot: getLastSnapshot('Resource', id), loadMutations: true, addMutations: [addedMutation]})
       msNet.emit('mainViewsUpdated', views, meta)
-
-      return await validateMethodResponse('updateResource', {id})
+      return {id}
     } catch (error) {
       CONSOLE.warn('problems during update', error)
       return {error: 'problems during update', originalError: error}
@@ -92,7 +86,7 @@ module.exports = {
       var views = refreshViews({objIds: [id], lastSnapshot: getLastSnapshot('Resource', id), loadMutations: true, addMutations: [addedMutation]})
       msNet.emit('mainViewsUpdated', views, meta)
 
-      return await validateMethodResponse('deleteResource', {id})
+      return {id}
     } catch (error) {
       CONSOLE.warn('problems during delete', error)
       return {error: 'problems during delete', originalError: error}
@@ -101,13 +95,12 @@ module.exports = {
   async  readResource ({id, userId, token}, meta) {
     try {
       CONSOLE.debug(`start readResource() requestId:` + meta.requestId, {id, meta})
-      await validateMethodRequest('readResource', {id, userId, token})
       await authorize({action: 'read', entityName: 'Resource', meta, id})
 
       var viewsResult = await storageGet(entityConfig.viewsCollection, [id])
       if (viewsResult.length !== 1) throw `id: ${id} Item Not Found`
 
-      return await validateMethodResponse('readResource', viewsResult[0])
+      return  viewsResult[0]
     } catch (error) {
       CONSOLE.warn('problems during read', error)
       return {error: 'problems during read', originalError: error}
@@ -117,15 +110,14 @@ module.exports = {
   async  listResources ({page = 1, timestamp, pageItems = 10, checksumOnly = false, idIn}, meta) {
     try {
       CONSOLE.debug(`start listResources() requestId:` + meta.requestId, {page, timestamp}, meta)
-      await validateMethodRequest('listResources', {page, timestamp}, meta)
 
       var fields = (checksumOnly) ? { _viewHash: 1 } : null
       var query = {}
       if (timestamp)query._viewBuilded = {$lt: timestamp}
       if (idIn)query._id = {$in: idIn}
-      var views = await storageFind({collectionName:entityConfig.viewsCollection,query, limit: pageItems, start: (page - 1) * pageItems, fields})
-      CONSOLE.debug(`listResources() views:` , views)
-      return await validateMethodResponse('listResources', views)
+      var views = await storageFind({collectionName: entityConfig.viewsCollection, query, limit: pageItems, start: (page - 1) * pageItems, fields})
+      CONSOLE.debug(`listResources() views:`, views)
+      return views
     } catch (error) {
       CONSOLE.warn('problems during listResources', error)
       return {error: 'problems during listResources', originalError: error}

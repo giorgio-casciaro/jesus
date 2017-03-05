@@ -37,18 +37,10 @@ var grpcService = {
   }
 }
 
-module.exports = function getNetServerPackage ({getConsole,serviceName, serviceId, netUrl, getMethods, getSharedConfig}) {
+module.exports = function getNetServerPackage ({getConsole, serviceName, serviceId, netUrl, getMethods, getSharedConfig}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
-  var defaultListeners = {
-    '_rpcCall': {
-      'haveResponse': true
-    }
-    // '_messageMulti': {
-    //   'haveResponse': false
-    // }
-  }
-
+  var defaultListeners = require('./default.event.listen.json')
   async function messageCall (requestData) {
     var event = requestData.event
     var eventsListenConfig = Object.assign({}, defaultListeners, await getSharedConfig(serviceName, 'events.listen'))

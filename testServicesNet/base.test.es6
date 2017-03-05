@@ -108,6 +108,7 @@ t.test('*** SERVICES NET ***', {
     }
   }
 
+  console.log("http://127.0.0.1:1090/inspector")
   CONSOLE.debug('-------------------------------------- PREPARING -------------------------------------------')
   await new Promise((resolve) => setTimeout(resolve, 2000))
 
@@ -132,8 +133,7 @@ t.test('*** SERVICES NET ***', {
       })
       .on('data', function (binData) {
         var dataString = binData.toString('utf8')
-        var data = JSON.parse(dataString.replace('data: ', ''))
-        CONSOLE.debug('TEST HTTP STREAMING DATA', data, MS_EVENTS_EMITTER_requestHttp)
+        CONSOLE.debug('TEST HTTP STREAMING DATA', dataString, MS_EVENTS_EMITTER_requestHttp)
       })
     })
 

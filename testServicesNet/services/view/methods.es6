@@ -7,8 +7,6 @@ const getSharedConfig = jesus.getSharedConfig(require('./config').sharedServices
 const getConsole = (serviceName, serviceId, pack) => jesus.getConsole(require('./config').console, serviceName, serviceId, pack)
 const CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
 
-const validateMethodRequest = async (methodName, data) => jesus.validateMethodFromConfig(serviceName, serviceId, await getSharedConfig(serviceName, 'methods'), methodName, data, 'requestSchema')
-const validateMethodResponse = async (methodName, data) => jesus.validateMethodFromConfig(serviceName, serviceId, await getSharedConfig(serviceName, 'methods'), methodName, data, 'responseSchema')
 const msNet = require('../../../net.client')({getSharedConfig, serviceName, serviceId, getConsole})
 // const msNet = {emit: () => true, rpc: () => true}
 
@@ -41,17 +39,16 @@ module.exports = {
   async  viewsUpdated (views, meta) {
     try {
       CONSOLE.debug(`start viewsUpdated()`, {views, meta})
-      await updateViews( views, meta)
+      await updateViews(views, meta)
       return {success: true}
     } catch (error) {
       CONSOLE.warn('problems during viewsUpdated', error)
       return {error: 'problems during viewsUpdated', originalError: error}
     }
   },
-  async  rebuildViews ({}, meta) {
+  async  rebuildViews (data, meta) {
     try {
       CONSOLE.debug(`start rebuildViews() requestId:` + meta.requestId)
-      var entityConfig = require('./config.ResourceView')
       var loop = true
       var page = 0
       var timestamp = Date.now()
@@ -69,10 +66,9 @@ module.exports = {
       return {error: 'problems during rebuildViews', originalError: error}
     }
   },
-  async  syncViews ({}, meta) {
+  async  syncViews (data, meta) {
     try {
       CONSOLE.debug(`start syncViews() requestId:` + meta.requestId)
-      var entityConfig = require('./config.ResourceView')
       var page = 0
       var timestamp = Date.now()
       var pageItems = 10
@@ -85,7 +81,7 @@ module.exports = {
         CONSOLE.debug(`syncViews() listResources checksum response`, {page, timestamp, pageItems, viewsChecksums})
         if (viewsChecksums && viewsChecksums.length) {
           var query = {$or: viewsChecksums}
-          var toNotUpdate = await storageFind({query, fields: { _id: 1 } })
+          var toNotUpdate = await storageFind({ query, fields: { _id: 1 } })
           var viewsChecksumsIds = viewsChecksums.map(view => view._id)
           var idsToNotUpdate = toNotUpdate.map(view => view._id)
           var idsToUpdate = viewsChecksumsIds.filter(viewId => idsToNotUpdate.indexOf(viewId) === -1)

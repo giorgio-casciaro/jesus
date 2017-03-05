@@ -41,12 +41,12 @@ var grpcService = {
 
 var delayedSendData = global.JESUS_NET_CLIENT_delayedSendData = global.JESUS_NET_CLIENT_delayedSendData || {}
 
-module.exports = function getNetClientPackage ({getConsole,serviceName, serviceId, getSharedConfig}) {
+module.exports = function getNetClientPackage ({getConsole, serviceName, serviceId, getSharedConfig}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
   try {
-
     checkRequired({serviceName, serviceId, getSharedConfig})
+    var defaultEventEmit = require('./default.event.emit.json')
 
     var clientCache = {}
     var getGrpcClient = (netUrl) => new Promise((resolve, reject) => {
@@ -59,7 +59,7 @@ module.exports = function getNetClientPackage ({getConsole,serviceName, serviceI
       CONSOLE.debug('getGrpcClient ', client)
       resolve(client)
     })
-    var sendMessage = ({throwOnErrorResponse,name, netUrl, timeout = 5000, method, multi = false, haveResponse, data, listenerServiceName, meta}) => new Promise((resolve, reject) => {
+    var sendMessage = ({throwOnErrorResponse, name, netUrl, timeout = 5000, method, multi = false, haveResponse, data, listenerServiceName, meta}) => new Promise((resolve, reject) => {
       CONSOLE.debug('sendMessage ' + name + ' to ' + listenerServiceName, {name, data, listenerServiceName, meta})
       getGrpcClient(netUrl).then((client) => {
         // if (eventListenConfig.haveResponse) {
@@ -109,9 +109,9 @@ module.exports = function getNetClientPackage ({getConsole,serviceName, serviceI
       var sendMessageResponse = await sendMessage({name: '_rpcCall', listenerServiceName: serviceName, netUrl: listenerService.netUrl, timeout, method, haveResponse: true, data, meta})
       return sendMessageResponse
     }
-    async function emit (name, data, meta,throwOnErrorResponse=true) {
+    async function emit (name, data, meta, throwOnErrorResponse = true) {
       CONSOLE.debug('emit ' + name + ' requestId:' + meta.requestId, {name, data, meta})
-      var eventsEmitConfig = await getSharedConfig(serviceName, 'events.emit')
+      var eventsEmitConfig = Object.assign({}, defaultEventEmit, await getSharedConfig(serviceName, 'events.emit'))
       if (!eventsEmitConfig[name]) return CONSOLE.warn(name + ' event not defined in /events.emit.json')
       var eventEmitConfig = eventsEmitConfig[name]
 

@@ -24,8 +24,8 @@ var getConsole = (config = {debug: false, log: true, error: true, warn: true}, s
     profileEnd (name) { if (!console.profile) return false; console.profileEnd(name) },
     error () { if (!config.error) return false; var args = Array.prototype.slice.call(arguments); console.error.apply(this, [serviceName, serviceId, pack].concat(args)) },
     log () { if (!config.log) return false; var args = Array.prototype.slice.call(arguments); console.log.apply(this, [serviceName, serviceId, pack].concat(args)) },
-    debug () { if (!config.debug) return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', serviceId, pack].concat(args)) },
-    warn () { if (!config.warn) return false; var args = Array.prototype.slice.call(arguments); console.warn.apply(this, [serviceName, serviceId, pack].concat(args)) }
+    debug () { if (!config.debug||!console.debug) return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', serviceId, pack].concat(args)) },
+    warn () { if (!config.warn||!console.warn) return false; var args = Array.prototype.slice.call(arguments); console.warn.apply(this, [serviceName, serviceId, pack].concat(args)) }
   }
 }
 
@@ -67,12 +67,16 @@ module.exports = {
               if (exclude === serviceName) return false
               const filePath = path.join(servicesRootDir, serviceName, config)
               allFilePromises.push(new Promise((resolve, reject) => {
-                jsonfile.readFile(filePath + '.json', (err, data) => {
-                  if (err) return reject(err)
-                  data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
-                  data.serviceName = serviceName
-                  return resolve(data)
-                })
+                // jsonfile.readFile(filePath + '.json', (err, data) => {
+                //   if (err) return reject(err)
+                //   data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
+                //   data.serviceName = serviceName
+                //   return resolve(data)
+                // })
+                var data = require(filePath + '.json')
+                data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
+                data.serviceName = serviceName
+                resolve(data)
               }))
             })
             Promise.all(allFilePromises).then(result => {
@@ -85,24 +89,28 @@ module.exports = {
           })
         } else {
           var filePath = path.join(servicesRootDir, service, config)
-          jsonfile.readFile(filePath + '.json', (err, data) => {
-            if (err) return reject(err)
-            data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
-            data.serviceName = service
-            return resolve(data)
-          })
+          // jsonfile.readFile(filePath + '.json', (err, data) => {
+          //   if (err) return reject(err)
+          //   data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
+          //   data.serviceName = service
+          //   return resolve(data)
+          // })
+          var data = require(filePath + '.json')
+          data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
+          data.serviceName = service
+          resolve(data)
         }
       })
     }
   },
   errorThrow,
-  validateMethodFromConfig (serviceName, serviceId, methodsConfig, methodName, data, schemaField) {
+  validateMethodFromConfig (errorThrow,serviceName, serviceId, methodsConfig, methodName, data, schemaField) {
     if (!methodsConfig || !methodsConfig[methodName] || !methodsConfig[methodName][schemaField]) errorThrow(`Method validation problem :${methodName} ${schemaField} in ${methodsConfigFile}`)
     var schema = methodsConfig[methodName][schemaField]
     var validate = ajv.compile(schema)
     var valid = validate(data)
     if (!valid) {
-      errorThrow(serviceName, serviceId, PACKAGE)('validation errors', {errors: validate.errors, methodsConfig, methodName, data, schemaField})
+      errorThrow('validation errors', {errors: validate.errors, methodsConfig, methodName, data, schemaField})
     }
     return data
   },

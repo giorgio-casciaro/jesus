@@ -9,14 +9,21 @@
 - [X] test solo profiling: no tap solo request
 - [X] eliminare astrazione storage(tenere solo inmemory per i test), storage gestito direttamente in microservice, le librerie come views e mutations si aspettano funzioni per l'inserimento e la lettura del db
 - [X] eliminare astrazione entity.cqrs ->lavorare direttameten con view+mutations+ storage in methods
+- [X] assicurarsi che tutti i file vengano ricaricati ogni 5 sec (json in config e methods)
+- [X] Api request e Api response streamEvent in default events (non necessitano di configurazione in json)
+- [ ] schemi generici-> error,httpReqMeta,netReqMeta, netMessage, netMessageMulti
+- [ ] controllare schemi ms secondari: view potrebbero avere uno schema linkato alla resource principale e prevedere un filter dei parametri
 - [ ] implementare pagina con script di console in express logs:LOG VISUALIZER->http streaming continuo,invia i vecchi log e si iscrive allo streaming
 - [ ] allineare logs (multimessage deiverso da message)
-- [ ] assicurarsi che tutti i file vengano ricaricati quando richiamati (json in config e methods)
 - [ ] profiling e ottimizzazione cache locali: in methods utilizzare solo require con cache
-- [ ] netClient aggiungere parametro throwOnErrorResponse-> riconosce una riposta di errore (resolved ma con errore) e thow l'errore
-- [ ] schemi generici-> error,httpReq,netReq,httpReqMeta,netReqMeta, netMessage, netMessageMulti
-- [ ] MSVIEW le view dovrebbero essere filtrate mediante jsonschema condiviso
+- [ ] rivedere gestione errori, semplice console.error + throw
 
+- [ ] methods config method response type noResponse,aknolegment,response,stream, timeout
+- [ ] methods config method request filter (attiva il filtro data su  jsonschema)
+- [ ] sviluppare rpc e events come serie di rpc basate su transport intercambiabile
+- [ ] grpc diventa un transport di net  (server.grpc,server.grpc), net diventa un'unica classe che in futuro potrà ospitare più transport
+- [ ] netClient aggiungere parametro throwOnErrorResponse a emit-> riconosce una riposta di errore (resolved ma con errore) e thow l'errore
+- [ ] spostare quante più informazioni possibili sul livello methods, responseType:noResponse,aknolegment,response,stream, timeout
 
 ## TODO SERVICE
 NET

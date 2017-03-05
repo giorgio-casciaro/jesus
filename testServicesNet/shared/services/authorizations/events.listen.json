@@ -1,16 +1,7 @@
 {
-    "_test": {
-        "method": "test",
-        "preValidation": true,
-        "filters": [{
-            "func": "filterArgs",
-            "args": ["name"]
-        }],
-        "haveResponse": true
-    },
-    "authorize": {
-        "method": "authorize",
-        "preValidation": true,
-        "haveResponse": true
-    }
+  "authorize": {
+    "method": "authorize",
+    "preValidation": true,
+    "haveResponse": true
+  }
 }

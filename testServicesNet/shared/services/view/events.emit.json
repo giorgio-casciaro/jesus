@@ -1,16 +1,4 @@
 {
-  "apiRequest": {
-    "singleResponse": true,
-    "waitResponse": true,
-    "responseRequired": false,
-    "timeout": 5000
-  },
-  "apiResponse": {
-    "singleResponse": true,
-    "waitResponse": true,
-    "responseRequired": false,
-    "timeout": 5000
-  },
   "viewsUpdated": {
     "singleResponse": true,
     "tags": ["#service_view"],
