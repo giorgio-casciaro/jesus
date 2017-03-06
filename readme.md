@@ -18,12 +18,19 @@
 - [ ] profiling e ottimizzazione cache locali: in methods utilizzare solo require con cache
 - [ ] rivedere gestione errori, semplice console.error + throw
 
-- [ ] methods config method response type noResponse,aknolegment,response,stream, timeout
-- [ ] methods config method request filter (attiva il filtro data su  jsonschema)
-- [ ] sviluppare rpc e events come serie di rpc basate su transport intercambiabile
+- [ ] dividere net in net, transport(grpc,http,udp), serialization (compression)
+
+- [ ] net: sviluppare message e rpc basati su transport e serialization intercambiabile, events diventa una serie di rpc con funzioni extra
+  - [ ] il message preserializzato dovrebbe contenere il contenuto + tipo di serializzazione
+  - [ ] il message deserializzato dovrebbe contenere i meta + il body : tipo di transport, nome evento(opzionale), nome metodo, fromService, fromMethod,
 - [ ] grpc diventa un transport di net  (server.grpc,server.grpc), net diventa un'unica classe che in futuro potrà ospitare più transport
 - [ ] netClient aggiungere parametro throwOnErrorResponse a emit-> riconosce una riposta di errore (resolved ma con errore) e thow l'errore
-- [ ] spostare quante più informazioni possibili sul livello methods, responseType:noResponse,aknolegment,response,stream, timeout
+- [ ] su config net: transports(http,grpc),serializations(noCompression,zlwCompression)
+- [ ] su config event.listen: delay, prevalidation, prefilter
+- [ ] su config method:
+  - [ ] responseType (noResponse,aknolegment,response,stream), responseTimeout, responseSchema, responseSkipValidation
+  - [ ] requestSchema, requestSkipValidation
+  - [ ] privateMethod
 
 ## TODO SERVICE
 NET
