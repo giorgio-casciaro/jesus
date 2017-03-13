@@ -6,19 +6,22 @@ var shorthash = require('shorthash').unique
 const PACKAGE = 'views.cqrs'
 const checkRequired = require('./jesus').checkRequired
 
-module.exports = function getViewsCqrsPackage ({getConsole, serviceName, serviceId, snapshotsMaxMutations = 10, getObjMutations, applyMutations}) {
+module.exports = function getViewsCqrsPackage ({getConsole, serviceName="unknow", serviceId="unknow", snapshotsMaxMutations = 10, getObjMutations, applyMutations}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
   try {
-    checkRequired({serviceName, serviceId, getConsole, getObjMutations, applyMutations})
+    checkRequired({ getConsole, getObjMutations, applyMutations})
     async function updateView ({objId, lastSnapshot = {timestamp: 0, state: {}}, loadMutations = true, addMutations = []}) {
       try {
         // COLLECT MUTATIONS AND UPDATE VIEW
         CONSOLE.debug('updateView', {objId, lastSnapshot, loadMutations, addMutations })
         var mutations = []
         if (loadMutations)mutations = await getObjMutations({objId, minTimestamp: lastSnapshot.timestamp})
+        CONSOLE.debug('loaded Mutations', {mutations })
         mutations = mutations.concat(addMutations)
+        CONSOLE.debug('total Mutations', {mutations })
         mutations = R.uniqBy(R.prop('_id'), mutations)
+        CONSOLE.debug('filtered Mutations', {mutations })
         var updatedView = await applyMutations({state: lastSnapshot.state, mutations})
 
         // VIEW META DATA _view

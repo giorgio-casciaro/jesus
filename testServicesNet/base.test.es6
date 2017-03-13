@@ -9,8 +9,11 @@ var restler = require('restler')
 var request = require('request')
 var t = require('tap')
 var path = require('path')
-var CONSOLE = require('../jesus').getConsole({debug: true, log: true, error: true, warn: true},'BASE TEST', '----', '-----')
+var CONSOLE = require('../jesus').getConsole({debug: true, log: true, error: true, warn: true}, 'BASE TEST', '----', '-----')
 var jesus = require('../jesus')
+
+var MS_EVENTS_EMITTER_requestHttp
+var MS_EVENTS_EMITTER_responseHttp
 
 t.test('*** SERVICES NET ***', {
 //  autoend: true
@@ -19,17 +22,14 @@ t.test('*** SERVICES NET ***', {
   var MS_EVENTS_EMITTER = await require('./services/eventsEmitter/start')()
   var MS_AUTHORIZATIONS = await require('./services/authorizations/start')()
   var MS_LOGS = await require('./services/logs/start')()
-  var MS_EVENTS_EMITTER_URL = `http://127.0.0.1:${MS_EVENTS_EMITTER.SHARED_CONFIG.httpPublicApiPort}/`
 
   await jesus.setSharedConfig(path.join(__dirname, './shared/services/'), 'view', 'events.listen', {})
-
-  t.plan(6)
 
   async function resourceInsert (t, loops = 10, steps = 100) {
     var methodsConfig = require(path.join(__dirname, './shared/services/resources/methods.json'))
     var derefOptions = {baseFolder: path.join(__dirname, './shared/services/resources/'), failOnMissing: true}
     CONSOLE.debug('TEST', 'methodsConfig', methodsConfig)
-    var baseUrl = `http://127.0.0.1:${MS_RESOURCES.SHARED_CONFIG.httpPublicApiPort}/`
+    var baseUrl = 'http://' + MS_RESOURCES.SHARED_NET_CONFIG.transports.httpPublic.url + '/'
     CONSOLE.debug('TEST', 'baseUrl', baseUrl)
     var schemaCreate = deref(methodsConfig.createResource.requestSchema, derefOptions)
     var schemaRead = deref(methodsConfig.readResource.requestSchema, derefOptions)
@@ -67,8 +67,10 @@ t.test('*** SERVICES NET ***', {
       if (steps === 1) continue
       // CONSOLE.groupEnd()
       // CONSOLE.group(`readResource From id`)
+
+      CONSOLE.debug('createdResponse',  createdResponse)
       await new Promise((resolve, reject) => {
-        var data = {id: createdResponse.id, userId: 'test', token: 'test'}
+        var data = {id: createdResponse.id, userid: 'test', token: 'test'}
         CONSOLE.debug('send', schemaRead, JSON.stringify(data))
         restler.postJson(baseUrl + 'readResource', data).on('complete', function (dataResponse, response) {
           CONSOLE.debug('receive', JSON.stringify(dataResponse))
@@ -77,6 +79,7 @@ t.test('*** SERVICES NET ***', {
           resolve()
         })
       })
+      if (steps === 2) continue
       // CONSOLE.groupEnd()
       // CONSOLE.group(`updateResource`)
       schemaUpdate.properties.data.required = ['body']
@@ -91,10 +94,11 @@ t.test('*** SERVICES NET ***', {
           resolve()
         })
       })
+      if (steps === 3) continue
       // CONSOLE.groupEnd()
       // CONSOLE.group(`readResource From data/_id`)
       await new Promise((resolve, reject) => {
-        var data = {id: createdResponse.id, userId: 'test', token: 'test'}
+        var data = {id: createdResponse.id, userid: 'test', token: 'test'}
         CONSOLE.debug('send', schemaRead, JSON.stringify(data))
         restler.postJson(baseUrl + 'readResource', data).on('complete', function (dataResponse, response) {
           CONSOLE.debug('receive', JSON.stringify(dataResponse))
@@ -108,35 +112,39 @@ t.test('*** SERVICES NET ***', {
     }
   }
 
-  console.log("http://127.0.0.1:1090/inspector")
+  //t.plan(1)
+
+  console.log('http://127.0.0.1:8203/inspector')
   CONSOLE.debug('-------------------------------------- PREPARING -------------------------------------------')
   await new Promise((resolve) => setTimeout(resolve, 2000))
 
   CONSOLE.debug('-------------------------------------- TEST 0 - EVENTS_EMITTER chiamata allo streaming degli eventi  ------------------------------------------')
-  var MS_EVENTS_EMITTER_requestHttp
-  var MS_EVENTS_EMITTER_responseHttp
 
   await t.test('TEST 0', async function (t) {
     await new Promise((resolve, reject) => {
+      console.log(MS_EVENTS_EMITTER)
       MS_EVENTS_EMITTER_requestHttp = request(
         { method: 'GET',
-          uri: MS_EVENTS_EMITTER_URL + 'listenEvents'
+          headers: {
+            stream: true
+          },
+          uri: 'http://' + MS_EVENTS_EMITTER.SHARED_NET_CONFIG.transports.httpPublic.url + '/listenEvents'
         })
-      MS_EVENTS_EMITTER_requestHttp.on('response', function (response) {
-        CONSOLE.debug('TEST HTTP STREAMING RESPONSE', response)
-        MS_EVENTS_EMITTER_responseHttp = response
-        resolve()
-      })
+      MS_EVENTS_EMITTER_requestHttp
+      // .on('response', function (response) {
+      //   CONSOLE.debug('TEST HTTP STREAMING RESPONSE', response)
+      //   MS_EVENTS_EMITTER_responseHttp = response
+      //   resolve()
+      // })
       .on('error', function (error) {
         CONSOLE.debug('TEST HTTP STREAMING ERROR', error)
         reject()
       })
-      .on('data', function (binData) {
-        var dataString = binData.toString('utf8')
-        CONSOLE.debug('TEST HTTP STREAMING DATA', dataString, MS_EVENTS_EMITTER_requestHttp)
+      .on('data', function (data) {
+        CONSOLE.debug('TEST HTTP STREAMING DATA', data, MS_EVENTS_EMITTER_requestHttp)
+        resolve(data)
       })
-    })
-
+    }).catch(error => console.error(error))
     t.end()
   })
   CONSOLE.debug('-------------------------------------- PREPARING -------------------------------------------')
@@ -147,14 +155,15 @@ t.test('*** SERVICES NET ***', {
     await resourceInsert(t, 1)
     t.end()
   })
-  //
+
+  //await new Promise((resolve) => setTimeout(resolve, 60000)) // STOP THERE!!!
 
   CONSOLE.debug('-------------------------------------- STOP -------------------------------------------')
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
   CONSOLE.debug('-------------------------------------- PREPARING - accendo MS_VIEW-------------------------------------------')
   var MS_VIEW = await require('./services/view/start')()
-  var MS_VIEW_URL = `http://127.0.0.1:${MS_VIEW.SHARED_CONFIG.httpPrivateApiPort}/`
+  var MS_VIEW_URL = 'http://' + MS_VIEW.SHARED_NET_CONFIG.transports.http.url + '/' //PRIVATE CALL
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
   CONSOLE.debug('-------------------------------------- TEST 2.1 - MS_VIEW rebuildViews (MS_VIEW dovrebbe recuperarei dati inseriti in precedenza)-------------------------------------------')
@@ -223,8 +232,8 @@ t.test('*** SERVICES NET ***', {
   MS_EVENTS_EMITTER.stop()
   MS_AUTHORIZATIONS.stop()
   MS_LOGS.stop()
-  MS_VIEW.stop()
-  MS_EVENTS_EMITTER_responseHttp.destroy()
+  //if(MS_EVENTS_EMITTER_responseHttp)MS_EVENTS_EMITTER_responseHttp.destroy()
   t.end()
   await new Promise((resolve) => setTimeout(resolve, 100000))
+  process.exit()
 })

@@ -42,7 +42,7 @@ function resourceInsert() {
         case 6:
           _context.next = 8;
           return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {
-            restler.postJson(baseUrl + 'readResource', { id: createdResponse.id, userId: 'test', token: 'test' }).on('complete', function (dataResponse, response) {
+            restler.postJson(baseUrl + 'readResource', { id: createdResponse.id, userid: 'test', token: 'test' }).on('complete', function (dataResponse, response) {
               readResponse = dataResponse;
               resolve();
             });
@@ -77,7 +77,7 @@ function resourceInsert() {
         case 15:
           _context.next = 17;
           return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {
-            restler.postJson(baseUrl + 'deleteResource', { id: createdResponse.id, userId: 'test', token: 'test' }).on('complete', function (dataResponse, response) {
+            restler.postJson(baseUrl + 'deleteResource', { id: createdResponse.id, userid: 'test', token: 'test' }).on('complete', function (dataResponse, response) {
               readResponse = dataResponse;
               resolve();
             });
@@ -134,8 +134,8 @@ function start() {
         case 17:
           MS_EVENTS_EMITTER_URL = 'http://127.0.0.1:' + MS_EVENTS_EMITTER.SHARED_CONFIG.httpPublicApiPort + '/';
           baseUrl = 'http://127.0.0.1:' + MS_RESOURCES.SHARED_CONFIG.httpPublicApiPort + '/';
-          createRequest = { data: { title: '123456', body: '123456', email: '123456@vopa.it' }, userId: 'test', token: 'test' };
-          updateRequest = { data: { title: '789456', body: '789456', email: '789456@vopa.it' }, userId: 'test', token: 'test' };
+          createRequest = { data: { title: '123456', body: '123456', email: '123456@vopa.it' }, userid: 'test', token: 'test' };
+          updateRequest = { data: { title: '789456', body: '789456', email: '789456@vopa.it' }, userid: 'test', token: 'test' };
 
           console.profile('processPixels()');
           _context2.next = 24;

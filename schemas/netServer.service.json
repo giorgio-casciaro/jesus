@@ -1,0 +1,29 @@
+{
+    "updateView": {
+        "public": false,
+        "requestSchema": {
+            "type": "object"
+        },
+        "responseSchema": {
+            "type": "object"
+        }
+    },
+    "rebuildViews": {
+        "public": false,
+        "requestSchema": {
+            "type": "object"
+        },
+        "responseSchema": {
+            "type": "object"
+        }
+    },
+    "syncViews": {
+        "public": false,
+        "requestSchema": {
+            "type": "object"
+        },
+        "responseSchema": {
+            "type": "object"
+        }
+    }
+}

@@ -11,21 +11,14 @@ module.exports = async function startMicroservice (CONFIG, serviceId, methodsFil
   }
   setInterval(() => require.cache = [], 5000)
   var SHARED_CONFIG = await getSharedConfig(serviceName, 'service')
-
-  var SERVICE = { serviceId, serviceName, SHARED_CONFIG, CONFIG }
-
-  SERVICE.apiPublic = require('../../api.http')({ serviceId, serviceName, publicOnly: true, httpPort: SHARED_CONFIG.httpPublicApiPort, getMethods, getSharedConfig, getConsole})
-  SERVICE.apiPrivate = require('../../api.http')({serviceId, serviceName, publicOnly: false, httpPort: SHARED_CONFIG.httpPrivateApiPort, getMethods, getSharedConfig, getConsole})
-  SERVICE.net = require('../../net.server')({serviceId, serviceName, netUrl: SHARED_CONFIG.netUrl, getMethods, getSharedConfig, getConsole})
+  var SHARED_NET_CONFIG = await getSharedConfig(serviceName, 'net')
+  var SERVICE = { serviceId, serviceName, SHARED_CONFIG, CONFIG ,SHARED_NET_CONFIG}
+  SERVICE.net = require('../../net.server')({serviceId, serviceName, config: SHARED_NET_CONFIG, getMethods, getSharedConfig, getConsole})
 
   SERVICE.start = async () => {
-    await SERVICE.apiPublic.start()
-    await SERVICE.apiPrivate.start()
     await SERVICE.net.start()
   }
   SERVICE.stop = () => {
-    SERVICE.apiPublic.stop()
-    SERVICE.apiPrivate.stop()
     SERVICE.net.stop()
   }
   await SERVICE.start()

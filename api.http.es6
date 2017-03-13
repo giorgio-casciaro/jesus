@@ -38,14 +38,14 @@ module.exports = function getHttpApiPackage ({serviceName, serviceId, publicOnly
           var data = req.body || req.query
           var meta = {
             type: 'apiRequest',
-            requestId: req.headers.requestId || uuidV4(),
-            userId: data.userId,
+            corrid: req.headers.corrid || uuidV4(),
+            userid: data.userid,
             methodName,
             ip: req.ip,
             // headers: req.headers,
             timestamp: Date.now() / 1000
           }
-        //  CONSOLE.debug('Api request ' + methodName + ' requestId:' + meta.requestId, {methodName, httpPort, serviceMethods, data, meta})
+        //  CONSOLE.debug('Api request ' + methodName + ' corrid:' + meta.corrid, {methodName, httpPort, serviceMethods, data, meta})
           var eventReqResult = await netClientPackage.emit('apiRequest', {data, meta}, meta)
           validateMethodRequest(methodName, serviceMethodsConfig, data, meta)
           var response, eventResResult

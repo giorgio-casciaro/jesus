@@ -14,17 +14,19 @@ const EventEmitter = require('events')
 var eventsStream = global.eventsStream = global.eventsStream || new EventEmitter()
 
 module.exports = {
-  listenEvents (data, meta, res, getStream) { // STREAM
+  listenEvents (data, meta, getStream) { // STREAM
     try {
-      var onStreamClose = () => eventsStream.removeListener('captured', stream)
-      var stream = getStream(onStreamClose, 120000)
-      //eventsStream.on('captured', (data)=>stream(data).catch(error=>errorThrow('problems during streaming', {error})))
-      eventsStream.on('captured', async(data) => {
-        try { stream(data) }
+      var writeStream=async(data) => {
+        try { stream.write(data) }
         catch (error) {
           CONSOLE.warn('problems during stream', error)
         }
-      })
+      }
+      var onStreamClose = () => eventsStream.removeListener('captured', writeStream)
+      var stream = getStream(onStreamClose, 120000)
+      //eventsStream.on('captured', (data)=>stream(data).catch(error=>errorThrow('problems during streaming', {error})))
+      stream.write({_connected:true})
+      eventsStream.on('captured', writeStream)
       return {streamConnected: true}
     } catch (error) {
       CONSOLE.warn('problems during listenEvents', error)
@@ -33,7 +35,7 @@ module.exports = {
   },
   async  capture (data, meta) {
     try {
-      CONSOLE.debug(`capture requestId:` + meta.requestId, {data, meta, eventsStream})
+      CONSOLE.debug(`capture corrid:` + meta.corrid, {data, meta, eventsStream})
       eventsStream.emit('captured', 'captured', {data, meta})
     } catch (error) {
       CONSOLE.warn('problems during listenEvents', error)

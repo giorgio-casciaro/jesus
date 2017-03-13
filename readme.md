@@ -1,36 +1,29 @@
 ## TODO IN TEST
-- [X] evitare che un evento sia richiamato sul ms emitter
-- [X] ripulire config
-- [X] getConsole al post di LOG
-- [X] debug attivo basato su config
-- [X] inserimento log, al momento tutti debug
-- [X] http streaming > aggiungere timeout alla chiusura della connessione
-- [X] test aggiunta e rimozione eventi on the fly
-- [X] test solo profiling: no tap solo request
-- [X] eliminare astrazione storage(tenere solo inmemory per i test), storage gestito direttamente in microservice, le librerie come views e mutations si aspettano funzioni per l'inserimento e la lettura del db
-- [X] eliminare astrazione entity.cqrs ->lavorare direttameten con view+mutations+ storage in methods
-- [X] assicurarsi che tutti i file vengano ricaricati ogni 5 sec (json in config e methods)
-- [X] Api request e Api response streamEvent in default events (non necessitano di configurazione in json)
-- [ ] schemi generici-> error,httpReqMeta,netReqMeta, netMessage, netMessageMulti
+- [ ] dividere jesus in sharedSchema, net e cqrs
 - [ ] controllare schemi ms secondari: view potrebbero avere uno schema linkato alla resource principale e prevedere un filter dei parametri
 - [ ] implementare pagina con script di console in express logs:LOG VISUALIZER->http streaming continuo,invia i vecchi log e si iscrive allo streaming
-- [ ] allineare logs (multimessage deiverso da message)
 - [ ] profiling e ottimizzazione cache locali: in methods utilizzare solo require con cache
-- [ ] rivedere gestione errori, semplice console.error + throw
 
-- [ ] dividere net in net, transport(grpc,http,udp), serialization (compression)
+- [ ] documentation dei metodi pubblici in jsonschema
+- [ ] ripulire config in testservicesnet
+- [X] rivedere gestione errori, semplice console.error + throw
+- [X] log show correlation id
+- [X] dividere net in net e transport(grpc,http,udp)
 
-- [ ] net: sviluppare message e rpc basati su transport e serialization intercambiabile, events diventa una serie di rpc con funzioni extra
-  - [ ] il message preserializzato dovrebbe contenere il contenuto + tipo di serializzazione
-  - [ ] il message deserializzato dovrebbe contenere i meta + il body : tipo di transport, nome evento(opzionale), nome metodo, fromService, fromMethod,
-- [ ] grpc diventa un transport di net  (server.grpc,server.grpc), net diventa un'unica classe che in futuro potrà ospitare più transport
+###net: sviluppare message e rpc basati su transport e serialization intercambiabile, events diventa una serie di rpc con funzioni extra
+- [ ] migliore gestione message con multi call, gestire come eccezione, di base messaggio semplice
+- [ ] migliore gestione dei log, non usare event *, ma modificare CONSOLE.log e aggiungere un log a event
+- [ ] delayed in preferenze method ricevente + rpc attrs
+- [ ] validate in net, anche che per transports (message in, response, errorResposne)
 - [ ] netClient aggiungere parametro throwOnErrorResponse a emit-> riconosce una riposta di errore (resolved ma con errore) e thow l'errore
-- [ ] su config net: transports(http,grpc),serializations(noCompression,zlwCompression)
-- [ ] su config event.listen: delay, prevalidation, prefilter
-- [ ] su config method:
-  - [ ] responseType (noResponse,aknolegment,response,stream), responseTimeout, responseSchema, responseSkipValidation
-  - [ ] requestSchema, requestSkipValidation
-  - [ ] privateMethod
+- [ ] zeromq transport
+- [ ] udp transport
+- [X] preferedTransports in net (non nei singoli metodi)
+- [X] events definiti indipendentemente da methods
+- [X] test net con solo fake transport, test specifici per ogni transport
+- [X] transports sperarati da gestione eventi
+
+
 
 ## TODO SERVICE
 NET

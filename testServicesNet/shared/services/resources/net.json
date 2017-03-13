@@ -1,0 +1,16 @@
+{
+  "transports": {
+    "grpc": {
+      "url": "localhost:8300",
+      "publicOnly": false
+    },
+    "http": {
+      "url": "localhost:8301",
+      "publicOnly": false
+    },
+    "httpPublic": {
+      "url": "localhost:8303",
+      "publicOnly": false
+    }
+  }
+}

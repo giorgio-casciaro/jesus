@@ -1,0 +1,34 @@
+{
+  "rpc": {
+    "public": false,
+    "requestSchema": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "string"
+        },
+        "method": {
+          "string"
+        },
+        "data": {
+          "object"
+        },
+        "meta": {
+          "$ref": "./meta.schema.json#"
+        },
+        "timeout": {
+          "number"
+        }
+      }
+    },
+    "responseSchema": {
+      "oneOf": [
+        {
+          "type": "null"
+        }, {
+          "type": "object"
+        }
+      ]
+    }
+  }
+}

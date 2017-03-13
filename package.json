@@ -8,11 +8,10 @@
     "start": "npm --silent run-script watch_test",
     "watch_test_single": "nodemon --ext js ./test/tests.js",
     "pm2_watch_test": "pm2 start pm2.js --only worker-app ",
-    "watch_test": "nodemon  --ext js --exec \"clear && printf '\\e[3J' && npm --silent test || true\"",
-    "test": "tap testServicesNet/*.test.js */*.test.js --cov --color --reporter=spec",
-    "test_coverage": "tap *.test.js --color --cov --reporter=spec --coverage-report=html",
-    "watch_debug": "nodemon  --ext js  --cov --exec \"clear && printf '\\e[3J' && npm --silent run-script debug || true\"",
-    "debug": "node --inspect   testServicesNet/base.test.js "
+    "watch_test_b": "nodemon  --ext js --exec \"clear && printf '\\e[3J' && tap testServicesNet/base.test.js --cov --color --reporter=spec || true\"",
+    "watch_test": "nodemon  --ext js --exec \"clear && printf '\\e[3J' && tap tests/*.test.js --cov --color --reporter=spec || true\"",
+    "watch_debug_b": "nodemon  --ext js  --cov --exec \"clear && printf '\\e[3J' && node --inspect   testServicesNet/base.test.js || true\"",
+    "watch_debug_t": "nodemon  --ext js  --cov --exec \"clear && printf '\\e[3J' && node --inspect   tests/transports.test.js || true\""
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -33,7 +32,7 @@
     "ajv": "4.11.2",
     "babel-cli": "^6.23.0",
     "babel-polyfill": "^6.23.0",
-    "body-parser": "^1.16.1",
+    "body-parser": "^1.17.1",
     "compression": "^1.6.2",
     "express-http2": "^4.13.4",
     "grpc": "^1.1.2",
@@ -41,9 +40,11 @@
     "json-schema-deref-sync": "^0.3.3",
     "mongodb": "^2.2.24",
     "ramda": "^0.23.0",
+    "request": "^2.80.0",
     "shorthash": "0.0.2",
-    "shortid": "^2.2.6",
+    "shortid": "^2.2.8",
     "sift": "^3.2.7",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "zmq": "^2.15.3"
   }
 }

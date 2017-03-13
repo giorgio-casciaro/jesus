@@ -91,7 +91,7 @@ t.test('*** SERVICES NET ***', {
                   case 19:
                     _context.next = 21;
                     return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {
-                      var data = { id: createdResponse.id, userId: 'test', token: 'test' };
+                      var data = { id: createdResponse.id, userid: 'test', token: 'test' };
                       CONSOLE.debug('send', schemaRead, JSON.stringify(data));
                       restler.postJson(baseUrl + 'readResource', data).on('complete', function (dataResponse, response) {
                         CONSOLE.debug('receive', JSON.stringify(dataResponse));
@@ -122,7 +122,7 @@ t.test('*** SERVICES NET ***', {
                   case 26:
                     _context.next = 28;
                     return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {
-                      var data = { id: createdResponse.id, userId: 'test', token: 'test' };
+                      var data = { id: createdResponse.id, userid: 'test', token: 'test' };
                       CONSOLE.debug('send', schemaRead, JSON.stringify(data));
                       restler.postJson(baseUrl + 'readResource', data).on('complete', function (dataResponse, response) {
                         CONSOLE.debug('receive', JSON.stringify(dataResponse));

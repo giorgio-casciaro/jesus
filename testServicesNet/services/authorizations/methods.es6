@@ -12,7 +12,7 @@ module.exports = {
     try {
         // DI.warn({msg: `authorize`, debug: {action, entityName, itemsIds, meta}})
       return {
-        userData: {'userId': '195151662661'}
+        userData: {'userid': '195151662661'}
       }
     } catch (error) {
       CONSOLE.warn('problems during listenEvents', error)

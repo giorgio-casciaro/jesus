@@ -64,7 +64,7 @@ t.test('*** SERVICES NET ***', {
       // CONSOLE.groupEnd()
       // CONSOLE.group(`readResource From id`)
       await new Promise((resolve, reject) => {
-        var data = {id: createdResponse.id, userId: 'test', token: 'test'}
+        var data = {id: createdResponse.id, userid: 'test', token: 'test'}
         CONSOLE.debug('send', schemaRead, JSON.stringify(data))
         restler.postJson(baseUrl + 'readResource', data).on('complete', function (dataResponse, response) {
           CONSOLE.debug('receive', JSON.stringify(dataResponse))
@@ -90,7 +90,7 @@ t.test('*** SERVICES NET ***', {
       // CONSOLE.groupEnd()
       // CONSOLE.group(`readResource From data/_id`)
       await new Promise((resolve, reject) => {
-        var data = {id: createdResponse.id, userId: 'test', token: 'test'}
+        var data = {id: createdResponse.id, userid: 'test', token: 'test'}
         CONSOLE.debug('send', schemaRead, JSON.stringify(data))
         restler.postJson(baseUrl + 'readResource', data).on('complete', function (dataResponse, response) {
           CONSOLE.debug('receive', JSON.stringify(dataResponse))

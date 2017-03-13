@@ -17,15 +17,16 @@ const stringToColor = (string) => {
   var value = string.split('').map((char) => char.charCodeAt(0) * 2).reduce((a, b) => a + b, 0)
   return `hsl(${(value) % 255},80%,30%)`
 }
-
+var getConsoleInitTime=Date.now()
 var getConsole = (config = {debug: false, log: true, error: true, warn: true}, serviceName, serviceId, pack) => {
+  var initTime=getConsoleInitTime
   return {
     profile (name) { if (!console.profile) return false; console.profile(name) },
     profileEnd (name) { if (!console.profile) return false; console.profileEnd(name) },
-    error () { if (!config.error) return false; var args = Array.prototype.slice.call(arguments); console.error.apply(this, [serviceName, serviceId, pack].concat(args)) },
-    log () { if (!config.log) return false; var args = Array.prototype.slice.call(arguments); console.log.apply(this, [serviceName, serviceId, pack].concat(args)) },
-    debug () { if (!config.debug||!console.debug) return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', serviceId, pack].concat(args)) },
-    warn () { if (!config.warn||!console.warn) return false; var args = Array.prototype.slice.call(arguments); console.warn.apply(this, [serviceName, serviceId, pack].concat(args)) }
+    error () { if (!config.error) return false; var args = Array.prototype.slice.call(arguments);args[0]=args[0].message||args[0];console.error.apply(this, [serviceName,Date.now()-initTime, serviceId, pack].concat(args));console.trace() },
+    log () { if (!config.log) return false; var args = Array.prototype.slice.call(arguments); console.log.apply(this, [serviceName,Date.now()-initTime, serviceId, pack].concat(args)) },
+    debug () { if (!config.debug||typeof(console.debug)!=="function") return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', Date.now()-initTime,serviceId, pack].concat(args)) },
+    warn () { if (!config.warn||!console.warn) return false; var args = Array.prototype.slice.call(arguments); console.warn.apply(this, [serviceName, Date.now()-initTime,serviceId, pack].concat(args)) }
   }
 }
 
@@ -58,6 +59,7 @@ module.exports = {
   },
   getSharedConfig (servicesRootDir) {
     return (service, config = 'service', exclude, asObj = false) => {
+
       return new Promise((resolve, reject) => {
         if (service === '*') {
           fs.readdir(servicesRootDir, (err, dirContents) => {
@@ -75,6 +77,7 @@ module.exports = {
                 // })
                 var data = require(filePath + '.json')
                 data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
+                if(data instanceof Error)reject(data)
                 data.serviceName = serviceName
                 resolve(data)
               }))
@@ -89,6 +92,7 @@ module.exports = {
           })
         } else {
           var filePath = path.join(servicesRootDir, service, config)
+          console.debug("getSharedConfig",{filePath})
           // jsonfile.readFile(filePath + '.json', (err, data) => {
           //   if (err) return reject(err)
           //   data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
@@ -97,6 +101,7 @@ module.exports = {
           // })
           var data = require(filePath + '.json')
           data = deref(data, {baseFolder: path.dirname(filePath), failOnMissing: true})
+          if(data instanceof Error)reject(data)
           data.serviceName = service
           resolve(data)
         }

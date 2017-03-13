@@ -23,7 +23,7 @@ module.exports = {
           case 0:
             _context.prev = 0;
             return _context.abrupt('return', {
-              userData: { 'userId': '195151662661' }
+              userData: { 'userid': '195151662661' }
             });
 
           case 4:

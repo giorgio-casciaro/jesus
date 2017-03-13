@@ -1,6 +1,7 @@
 {
   "createResource": {
     "public": true,
+    "responseType": "response",
     "requestSchema": {
       "type": "object",
       "properties": {
@@ -16,14 +17,14 @@
         "id": {
           "$ref": "../../uuidV4.schema.json#"
         },
-        "userId": {
-          "$ref": "../../userId.schema.json#"
+        "userid": {
+          "$ref": "../../userid.schema.json#"
         },
         "token": {
           "$ref": "../../token.schema.json#"
         }
       },
-      "required": ["data", "userId", "token"]
+      "required": ["data", "userid", "token"]
     },
     "responseSchema": {
       "type": "object",
@@ -36,6 +37,7 @@
   },
   "updateResource": {
     "public": true,
+    "responseType": "response",
     "requestSchema": {
       "type": "object",
       "properties": {
@@ -45,14 +47,14 @@
         "id": {
           "$ref": "../../uuidV4.schema.json#"
         },
-        "userId": {
-          "$ref": "../../userId.schema.json#"
+        "userid": {
+          "$ref": "../../userid.schema.json#"
         },
         "token": {
           "$ref": "../../token.schema.json#"
         }
       },
-      "required": ["data", "id", "userId", "token"]
+      "required": ["data", "id", "userid", "token"]
     },
     "responseSchema": {
       "type": "object",
@@ -65,20 +67,21 @@
   },
   "deleteResource": {
     "public": true,
+    "responseType": "response",
     "requestSchema": {
       "type": "object",
       "properties": {
         "id": {
           "$ref": "../../uuidV4.schema.json#"
         },
-        "userId": {
-          "$ref": "../../userId.schema.json#"
+        "userid": {
+          "$ref": "../../userid.schema.json#"
         },
         "token": {
           "$ref": "../../token.schema.json#"
         }
       },
-      "required": ["id", "userId", "token"]
+      "required": ["id", "userid", "token"]
     },
     "responseSchema": {
       "type": "object",
@@ -91,20 +94,21 @@
   },
   "readResource": {
     "public": true,
+    "responseType": "response",
     "requestSchema": {
       "type": "object",
       "properties": {
         "id": {
           "$ref": "../../uuidV4.schema.json#"
         },
-        "userId": {
-          "$ref": "../../userId.schema.json#"
+        "userid": {
+          "$ref": "../../userid.schema.json#"
         },
         "token": {
           "$ref": "../../token.schema.json#"
         }
       },
-      "required": ["id", "userId", "token"]
+      "required": ["id", "userid", "token"]
     },
     "responseSchema": {
       "type": "object",
@@ -117,6 +121,7 @@
   },
   "listResources": {
     "public": true,
+    "responseType": "response",
     "requestSchema": {
       "type": "object",
       "properties": {

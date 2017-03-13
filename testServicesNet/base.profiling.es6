@@ -13,7 +13,7 @@ async function resourceInsert (loops = 10, steps = 10, baseUrl, createRequest, u
     })
     if (steps === 1) continue
     await new Promise((resolve, reject) => {
-      restler.postJson(baseUrl + 'readResource', {id: createdResponse.id, userId: 'test', token: 'test'}).on('complete', function (dataResponse, response) {
+      restler.postJson(baseUrl + 'readResource', {id: createdResponse.id, userid: 'test', token: 'test'}).on('complete', function (dataResponse, response) {
         readResponse = dataResponse
         resolve()
       })
@@ -28,7 +28,7 @@ async function resourceInsert (loops = 10, steps = 10, baseUrl, createRequest, u
     })
     if (steps === 3) continue
     await new Promise((resolve, reject) => {
-      restler.postJson(baseUrl + 'deleteResource', {id: createdResponse.id, userId: 'test', token: 'test'}).on('complete', function (dataResponse, response) {
+      restler.postJson(baseUrl + 'deleteResource', {id: createdResponse.id, userid: 'test', token: 'test'}).on('complete', function (dataResponse, response) {
         readResponse = dataResponse
         resolve()
       })
@@ -45,8 +45,8 @@ async function start () {
   var MS_EVENTS_EMITTER_URL = `http://127.0.0.1:${MS_EVENTS_EMITTER.SHARED_CONFIG.httpPublicApiPort}/`
 
   var baseUrl = `http://127.0.0.1:${MS_RESOURCES.SHARED_CONFIG.httpPublicApiPort}/`
-  var createRequest = {data: {title: '123456', body: '123456', email: '123456@vopa.it'}, userId: 'test', token: 'test'}
-  var updateRequest = {data: {title: '789456', body: '789456', email: '789456@vopa.it'}, userId: 'test', token: 'test'}
+  var createRequest = {data: {title: '123456', body: '123456', email: '123456@vopa.it'}, userid: 'test', token: 'test'}
+  var updateRequest = {data: {title: '789456', body: '789456', email: '789456@vopa.it'}, userid: 'test', token: 'test'}
   console.profile('processPixels()')
   await resourceInsert(1, 1, baseUrl, createRequest, updateRequest)
   console.profileEnd()

@@ -7,8 +7,18 @@ const getSharedConfig = jesus.getSharedConfig(require('./config').sharedServices
 const getConsole = (serviceName, serviceId, pack) => jesus.getConsole(require('./config').console, serviceName, serviceId, pack)
 const CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
 
-const msNet = require('../../../net.client')({getSharedConfig, serviceName, serviceId, getConsole})
-// const msNet = {emit: () => true, rpc: () => true}
+const getNetClient = async () => {
+  var config = await getSharedConfig(serviceName, 'net')
+  return require('../../../net.client')({getSharedConfig, serviceName, serviceId, getConsole, config})
+}
+const netEmit = async (args) => {
+  var client = await getNetClient()
+  return await client.emit(args)
+}
+const netRpc = async (to,method,data,meta) => {
+  var client = await getNetClient()
+  return await client.rpc({to, method, data, meta})
+}
 
 var entityConfig = require('./config.ResourceView')
 
@@ -16,7 +26,7 @@ const getStorage = () => require('../../../storage.inmemory')({getConsole, servi
 const storageFind = (args) => getStorage().find(Object.assign(args, {collectionName: entityConfig.collection})) // ASYNC
 const storageInsert = (objs) => getStorage().insert({collectionName: entityConfig.collection, objs}) // ASYNC
 
-const authorize = (data) => msNet.emit('authorize', data, data.meta, true)// ASYNC
+const authorize = (data) => netEmit('authorize', data, data.meta, true)// ASYNC
 
 function filterViews (views) {
   views.forEach(view => {
@@ -30,7 +40,7 @@ async function updateViews (views, meta) {
   if (!views || !views.length) return false
   views = filterViews(views)
   CONSOLE.debug(`updateViews() filtered views`, views)
-  msNet.emit('viewsUpdated', views, meta)
+  netEmit('viewsUpdated', views, meta)
   await storageInsert(views)
   return views
 }
@@ -48,14 +58,14 @@ module.exports = {
   },
   async  rebuildViews (data, meta) {
     try {
-      CONSOLE.debug(`start rebuildViews() requestId:` + meta.requestId)
+      CONSOLE.debug(`start rebuildViews() corrid:` + meta.corrid,{data, meta})
       var loop = true
       var page = 0
       var timestamp = Date.now()
       var pageItems = 10
       while (loop) {
         page++
-        var views = await msNet.rpc('resources', 'listResources', {page, timestamp, pageItems}, meta)
+        var views = await netRpc('resources', 'listResources', {page, timestamp, pageItems}, meta)
         CONSOLE.debug(`rebuildViews() listResources response`, views)
         await updateViews(views, meta)
         if (!views || !views.length || views.length < pageItems)loop = false
@@ -68,7 +78,7 @@ module.exports = {
   },
   async  syncViews (data, meta) {
     try {
-      CONSOLE.debug(`start syncViews() requestId:` + meta.requestId)
+      CONSOLE.debug(`start syncViews() `,{data, meta})
       var page = 0
       var timestamp = Date.now()
       var pageItems = 10
@@ -77,7 +87,7 @@ module.exports = {
       var loop = true
       while (loop) {
         page++
-        var viewsChecksums = await msNet.rpc('resources', 'listResources', {page, timestamp, pageItems, checksumOnly: true}, meta)
+        var viewsChecksums = await netRpc('resources', 'listResources', {page, timestamp, pageItems, checksumOnly: true}, meta)
         CONSOLE.debug(`syncViews() listResources checksum response`, {page, timestamp, pageItems, viewsChecksums})
         if (viewsChecksums && viewsChecksums.length) {
           var query = {$or: viewsChecksums}
@@ -91,10 +101,10 @@ module.exports = {
         if (!viewsChecksums || !viewsChecksums.length || viewsChecksums.length < pageItems)loop = false
       }
       // QUERY VIEWS BY ID AND UPDATE
-      CONSOLE.debug(`syncViews() viewsToUpdate requestId:` + meta.requestId, viewsToUpdate)
+      CONSOLE.debug(`syncViews() viewsToUpdate corrid:` + meta.corrid, viewsToUpdate)
       if (viewsToUpdate.length) {
-        var views = await msNet.rpc('resources', 'listResources', {idIn: viewsToUpdate}, meta)
-        // var views = await msNet.emit('listResources', {idIn: viewsToUpdate}, meta)
+        var views = await netRpc('resources', 'listResources', {idIn: viewsToUpdate}, meta)
+        // var views = await netEmit('listResources', {idIn: viewsToUpdate}, meta)
         CONSOLE.debug(`syncViews() listResources response`, views)
         await updateViews(views, meta)
       }

@@ -4,6 +4,7 @@ var fs = require('fs')
 const PACKAGE = 'mutations.cqrs'
 const checkRequired = require('./jesus').checkRequired
 var checkRequiredFiles = require('./jesus').checkRequiredFiles
+const uuidV4 = require('uuid/v4')
 
 function getMutationsFunctions (basePath) {
   var filesJsNoExtension = R.map(R.compose(R.replace('.js', ''), path.basename), R.filter((file) => path.extname(file) === '.js', fs.readdirSync(basePath)))
@@ -24,7 +25,8 @@ function checkMutationFunction (mutationId, mutationsFunctions) {
   }
 }
 
-module.exports = function getMutationsCqrsPackage ({getConsole, serviceName, serviceId, mutationsPath}) {
+function generateId () { return uuidV4() }
+module.exports = function getMutationsCqrsPackage ({getConsole, serviceName = 'unknow', serviceId = 'unknow', mutationsPath}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   var errorThrow = require('./jesus').errorThrow(serviceName, serviceId, PACKAGE)
 
@@ -33,13 +35,14 @@ module.exports = function getMutationsCqrsPackage ({getConsole, serviceName, ser
     CONSOLE.debug('applyMutationsFromPath', {state, mutations, mutationsPath})
     function applyMutation (state, mutation) {
       var mutationFile = path.join(mutationsPath, `${mutation.mutation}.${mutation.version}.js`)
+      CONSOLE.debug('applyMutation', {mutationFile, state, data: mutation.data})
       return require(mutationFile)(state, mutation.data)
     }
     return R.reduce(applyMutation, state, mutations)
   }
 
   try {
-    checkRequired({serviceName, serviceId, mutationsPath}, PACKAGE)
+    checkRequired({mutationsPath}, PACKAGE)
     checkRequiredFiles([mutationsPath], PACKAGE)
     return {
       mutate: function mutate ({mutation, objId, data, meta}) {
@@ -50,6 +53,7 @@ module.exports = function getMutationsCqrsPackage ({getConsole, serviceName, ser
           var lastMutationVersion = mutationsFunctions[mutation][0].mutationVersion
           var mutationState = {
             objId: objId,
+            _id: generateId(),
             mutation,
             meta,
             version: lastMutationVersion,

@@ -1,29 +1,32 @@
 {
-    "updateView": {
-        "public": false,
-        "requestSchema": {
-            "type": "object"
-        },
-        "responseSchema": {
-            "type": "object"
-        }
+  "updateView": {
+    "public": false,
+    "responseType": "response",
+    "requestSchema": {
+      "type": "object"
     },
-    "rebuildViews": {
-        "public": false,
-        "requestSchema": {
-            "type": "object"
-        },
-        "responseSchema": {
-            "type": "object"
-        }
-    },
-    "syncViews": {
-        "public": false,
-        "requestSchema": {
-            "type": "object"
-        },
-        "responseSchema": {
-            "type": "object"
-        }
+    "responseSchema": {
+      "type": "object"
     }
+  },
+  "rebuildViews": {
+    "public": false,
+    "responseType": "response",
+    "requestSchema": {
+      "type": "object"
+    },
+    "responseSchema": {
+      "type": "object"
+    }
+  },
+  "syncViews": {
+    "public": false,
+    "responseType": "response",
+    "requestSchema": {
+      "type": "object"
+    },
+    "responseSchema": {
+      "type": "object"
+    }
+  }
 }

@@ -25,5 +25,5 @@ message contextBasedArgs {
   string ip = 1 ;
 }
 message userBasedArgs {
-  string userId = 1 ;
+  string userid = 1 ;
 }
