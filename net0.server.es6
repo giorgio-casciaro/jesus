@@ -3,21 +3,14 @@ const uuidV4 = require('uuid/v4')
 var ajv = require('ajv')({allErrors: true})
 const PACKAGE = 'net.server'
 const checkRequired = require('./jesus').checkRequired
-var validatorMsg = ajv.compile(require('./schemas/message.schema.json'))
 
 module.exports = function getNetServerPackage ({config, getConsole, serviceName = 'unknow', serviceId = 'unknow', getMethods, getSharedConfig}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   checkRequired({config, getMethods, getSharedConfig, getConsole})
-  var validateMsg = (data) => {
-    if (!validatorMsg(data)) {
-      CONSOLE.error('MESSAGE IS NOT VALID ', {errors: validate.errors})
-      throw new Error('MESSAGE IS NOT VALID', {errors: validatorMsg.errors})
-    } else return data
-  }
   try {
   // var defaultEventListen = require('./default.event.listen.json')
     var validate = (methodConfig, methodName, data, schemaField = 'requestSchema') => {
-      CONSOLE.debug('validate ', { methodConfig, methodName, data, schemaField })
+      CONSOLE.debug('validate ', {methodConfig, methodName, data, schemaField })
       if (!methodConfig[schemaField]) throw new Error(schemaField + ' not defined in methods.json ' + methodName)
       var validate = ajv.compile(methodConfig[schemaField])
       var valid = validate(data)
@@ -39,42 +32,63 @@ module.exports = function getNetServerPackage ({config, getConsole, serviceName 
     }, config)
     CONSOLE.debug('config ', config)
     // ogni method call può avere più dati anche dauserid e requestid diversi
-    var methodCall = async function methodCall (message, getStream, publicApi = true, transport = 'UNKNOW') {
+    var methodCall = async function methodCall (message, getStream, publicApi = true, multiResponse = false) {
       try {
-        CONSOLE.log('=> SERVER IN', {message})
-        validateMsg(message)
+        var singleCall = async (callData) => {
+          try {
+            CONSOLE.debug('singleCall', callData)
+            var corrid = callData.r || uuidV4()
+            var userid = callData.u || 'UNKNOW'
+            var data = callData.d || {}
+            var meta = { corrid, userid, methodName, from, timestamp: Date.now() }
+            CONSOLE.debug('singleCall data ', {data, meta, getStream, publicApi})
+            var response
+            validate(methodConfig, methodName, data, 'requestSchema')
+            if (methodConfig.responseType === 'response') {
+              response = await method(data, meta, getStream || null)
+              validate(methodConfig, methodName, response, 'responseSchema')
+              CONSOLE.debug('singleCall response ' + methodName, {response})
+              return response
+            } else {
+              method(data, meta, getStream || null)
+              return true
+            }
+          } catch (error) {
+            CONSOLE.error(error)
+            throw new Error('message error ' + methodName)
+          }
+        }
 
-        var methodName = message.method
-        var meta = message.meta || {}
-        meta.corrid = meta.corrid || uuidV4()
-        meta.userid = meta.userid || 'UNKNOW'
-        meta.from = meta.from || 'UNKNOW'
-        meta.reqInTimestamp = Date.now()
-        meta.transport = transport
-        var data = message.data || {}
+        var from = message.f
+        var methodName = message.m
+        var callDataArray = message.d
 
         var serviceMethodsConfig = await getSharedConfig(serviceName, 'methods')
         var methods = getMethods()
+        CONSOLE.log('=> SERVER IN', {message})
+        CONSOLE.debug('methodCall', {message, getStream, publicApi, serviceMethodsConfig}, serviceName, getSharedConfig)
+
         if (!serviceMethodsConfig[methodName]) throw new Error(methodName + ' is not valid (not defined in methods config)')
         if (!serviceMethodsConfig[methodName].public && publicApi) throw new Error(methodName + ' is not public')
         if (!methods[methodName]) throw new Error(methodName + ' is not valid (not defined service methods js file)')
+
         var method = methods[methodName]
         var methodConfig = serviceMethodsConfig[methodName]
-        CONSOLE.debug('methodCall', {message, getStream, publicApi, serviceMethodsConfig, methodConfig}, serviceName)
-
-        data = validate(methodConfig, methodName, data, 'requestSchema')
 
         var response
-        // if noResponse not await response on the client side
-        // if aknowlegment await response on the client side but not await response on the server side
-        if (methodConfig.responseType === 'noResponse' || methodConfig.responseType === 'aknowlegment') {
-          method(data, meta, getStream || null)
+        if (methodConfig.responseType === 'noResponse') {
+          // NORESPONSE CAN have multiple CALL PER MESSAGE
+          callDataArray.map(singleCall)
+          response = null
+        } else if (methodConfig.responseType === 'aknowlegment') {
+          await Promise.all(callDataArray.map(singleCall))
           response = null
         } else if (methodConfig.responseType === 'response') {
-          response = await method(data, meta, getStream || null)
-          response = validate(methodConfig, methodName, response, 'responseSchema')
+          response = await Promise.all(callDataArray.map(singleCall))
+          if (!multiResponse)response = response[0]
         } else {
-          response = await method(data, meta, getStream || null)
+          // STREAM CAN have ONLY one CALL PER MESSAGE
+          response = await singleCall(callDataArray[0])
         }
 
         CONSOLE.log('SERVER OUT => ', {response, responseType: methodConfig.responseType})
@@ -86,10 +100,14 @@ module.exports = function getNetServerPackage ({config, getConsole, serviceName 
       }
     }
     return {
-      methodCall,
       start () {
         CONSOLE.log('START TRANSPORTS SERVERS ', {transports: config.transports})
         forEachTransport((transport) => transport.start())
+        var server = net.createServer((socket) => {
+          socket.end('goodbye\n')
+        }).on('error', (err) => {
+          throw err
+        })
       },
       stop () {
         CONSOLE.log('STOP TRANSPORTS SERVERS ', {transports: config.transports})
@@ -101,7 +119,7 @@ module.exports = function getNetServerPackage ({config, getConsole, serviceName 
       }
     }
   } catch (error) {
-    CONSOLE.error(error)
+    CONSOLE.error(error, {methodName})
     throw new Error('Error during getNetServerPackage')
   }
 }

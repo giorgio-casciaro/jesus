@@ -1,16 +1,16 @@
 {
   "transports": {
     "grpc": {
-      "url": "localhost:8100",
-      "publicOnly": false
+      "url": "localhost:8100"
     },
     "http": {
-      "url": "localhost:8101",
-      "publicOnly": false
+      "url": "localhost:8101"
     },
     "httpPublic": {
-      "url": "localhost:8103",
-      "publicOnly": false
+      "url": "localhost:8103"
+    },
+    "socket": {
+      "file": "/tmp/eventsEmiter"
     }
   }
 }

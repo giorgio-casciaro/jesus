@@ -16,39 +16,40 @@ var jesus = require('../jesus')
 const getConsole = (serviceName, serviceId, pack) => jesus.getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
 var CONSOLE = getConsole('BASE TEST', '----', '-----')
 
-var config = {url: 'localhost:8080'}
+var config = {url: 'localhost:8080', file: '/tmp/test'}
 var testCheck = false
 var testStream = false
 var methodCall = async (data, getStream, isPublic) => {
+  CONSOLE.debug('methodCall', data, getStream, isPublic)
   testCheck = true
   if (!getStream) return data
   var stream = getStream(() => console.log('closed'), 120000)
   stream.write({testStreamConnnected: 1})
-  CONSOLE.debug('methodCall', data, stream)
+
   setTimeout(() => stream.write({testStreamData: 1}), 500)
   setTimeout(() => stream.end(), 1000)
   testStream = true
 }
-var testTransports = ['httpPublic', 'grpc','http','test']
+var testTransports = [ 'httpPublic', 'socket', 'grpc', 'http', 'test']
 
 t.plan(testTransports.length)
 var message = {
-  f: 'testService',
-  m: 'testMEthod',
-  d: [{ d: {'testData': 1}, r: 'testcorrid', u: 'userid' }]
+  method: 'testMEthod',
+  data: {'testData': 1},
+  meta: {'corrid': 1, 'userid': 1}
 }
 var mainTest = (testTransport) => t.test('*** ' + testTransport + ' TRANSPORT ***', { autoend: true}, async function mainTest (t) {
   await new Promise((resolve) => setTimeout(resolve, 1000))
   var transportServer = require('../transports/' + testTransport + '.server')({getConsole, methodCall, config})
   var transportClient = require('../transports/' + testTransport + '.client')({getConsole})
   transportServer.start()
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  await new Promise((resolve) => setTimeout(resolve, 2000))
   t.plan(3)
   await t.test('transportClient.send -> testResponse', async function (t) {
     testCheck = false
     var response = await transportClient.send(config, message, 5000, true, false)
-    CONSOLE.debug('testResponse response',response)
-    t.same(response, message, 'response as sended')
+    CONSOLE.debug('testResponse response', response)
+    t.same(response.data, message.data, 'response data as sended')
     t.same(testCheck, true, 'testResponse richiesta ricevuta')
     t.end()
   })
@@ -56,7 +57,7 @@ var mainTest = (testTransport) => t.test('*** ' + testTransport + ' TRANSPORT **
   await t.test('transportClient.send -> testNoResponse', async function (t) {
     testCheck = false
     var response = await transportClient.send(config, message, 5000, false, false)
-    CONSOLE.debug('testNoResponse response',response)
+    CONSOLE.debug('testNoResponse response', response)
     t.same(response, null, 'response null')
     await new Promise((resolve) => setTimeout(resolve, 500))
     t.same(testCheck, true, 'testResponse richiesta ricevuta')

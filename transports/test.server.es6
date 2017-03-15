@@ -9,7 +9,7 @@ module.exports = function getTransportGrpcServerPackage ({serialize, deserialize
     function start () {
       var globalEmitter=globalEmitters[config.url]=globalEmitters[config.url]||new EventEmitter()
       globalEmitter.on('message', async function (message, respond) {
-        var response = await methodCall(message, false, config.public)
+        var response = await methodCall(message, false, publicApi,"test")
         respond(response)
       })
       globalEmitter.on('messageStream', async function (message, respond) {
@@ -25,7 +25,7 @@ module.exports = function getTransportGrpcServerPackage ({serialize, deserialize
           var timeout = setTimeout(close, MAX_REQUEST_TIMEOUT)
           return stream
         }
-        methodCall(message, getStream, publicApi)
+        methodCall(message, getStream, publicApi,"test")
         respond(readableStream)
       })
       CONSOLE.debug('Net started TEST transport')

@@ -1,16 +1,16 @@
 {
   "transports": {
     "grpc": {
-      "url": "localhost:8000",
-      "publicOnly": false
+      "url": "localhost:8000"
     },
     "http": {
-      "url": "localhost:8001",
-      "publicOnly": false
+      "url": "localhost:8001"
     },
     "httpPublic": {
-      "url": "localhost:8003",
-      "publicOnly": false
+      "url": "localhost:8003"
+    },
+    "socket": {
+      "file": "/tmp/authorizations"
     }
   }
 }

@@ -5,6 +5,7 @@ module.exports = async function startMicroservice () {
   var serviceId = require('shortid').generate()
   fs.writeFileSync(path.join(__dirname, './serviceId.json'), JSON.stringify(serviceId))
   var methodsFile=path.join(__dirname, './methods.js')
-  var SERVICE = await require('../start')(CONFIG, serviceId, methodsFile)
+  var logDir = path.join(__dirname, './logs')
+  var SERVICE = await require('../start')({CONFIG, serviceId, methodsFile, logDir})
   return SERVICE
 }

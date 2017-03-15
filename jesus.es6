@@ -18,13 +18,17 @@ const stringToColor = (string) => {
   return `hsl(${(value) % 255},80%,30%)`
 }
 var getConsoleInitTime=Date.now()
-var getConsole = (config = {debug: false, log: true, error: true, warn: true}, serviceName, serviceId, pack) => {
+var getConsole = (config = {debug: false, log: true, error: true, warn: true}, serviceName, serviceId, pack, logDir=false) => {
   var initTime=getConsoleInitTime
   return {
     profile (name) { if (!console.profile) return false; console.profile(name) },
     profileEnd (name) { if (!console.profile) return false; console.profileEnd(name) },
     error () { if (!config.error) return false; var args = Array.prototype.slice.call(arguments);args[0]=args[0].message||args[0];console.error.apply(this, [serviceName,Date.now()-initTime, serviceId, pack].concat(args));console.trace() },
-    log () { if (!config.log) return false; var args = Array.prototype.slice.call(arguments); console.log.apply(this, [serviceName,Date.now()-initTime, serviceId, pack].concat(args)) },
+    log () {
+      if (!config.log) return false;
+      var args = Array.prototype.slice.call(arguments);
+      console.log.apply(this, [serviceName,Date.now()-initTime, serviceId, pack].concat(args))
+    },
     debug () { if (!config.debug||typeof(console.debug)!=="function") return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', Date.now()-initTime,serviceId, pack].concat(args)) },
     warn () { if (!config.warn||!console.warn) return false; var args = Array.prototype.slice.call(arguments); console.warn.apply(this, [serviceName, Date.now()-initTime,serviceId, pack].concat(args)) }
   }

@@ -1,11 +1,11 @@
 var path = require('path')
 var fs = require('fs')
 var jesus = require('../../jesus')
-module.exports = async function startMicroservice (CONFIG, serviceId, methodsFile) {
+module.exports = async function startMicroservice ({CONFIG, serviceId, methodsFile,logDir}) {
   var serviceName = CONFIG.serviceName
 
   var getSharedConfig = jesus.getSharedConfig(CONFIG.sharedServicesPath)
-  var getConsole = (serviceName, serviceId, pack) => jesus.getConsole(CONFIG.console, serviceName, serviceId, pack)
+  var getConsole = (serviceName, serviceId, pack) => jesus.getConsole(CONFIG.console, serviceName, serviceId, pack,logDir)
   var getMethods = () => {
     return require(methodsFile)
   }

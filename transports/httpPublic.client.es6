@@ -11,6 +11,9 @@ module.exports = function getTransportHttpPublicClientPackage ({ getConsole, met
     return {
       send (listener, message, timeout = 120000, waitResponse = true, isStream = false) {
         return new Promise((resolve, reject) => {
+          var newMeta = {}
+          for (var metaK in message.meta)newMeta['app-meta-' + metaK] = message.meta[metaK]
+          newMeta['app-meta-stream']=isStream
           var httpUrl = 'http://' + listener.url.replace('http://', '').replace('//', '')
           CONSOLE.debug('send:', JSON.stringify({ listener, message, timeout, waitResponse, isStream }))
           var callTimeout, call
@@ -19,18 +22,13 @@ module.exports = function getTransportHttpPublicClientPackage ({ getConsole, met
               { method: 'POST',
                 preambleCRLF: true,
                 postambleCRLF: true,
-                body: message.d[0].d,
-                headers: {
-                  stream: true,
-                  from: message.f,
-                  corrid: message.d[0].r,
-                  userid: message.d[0].u
-                },
+                body: message.data,
+                headers: newMeta,
                 json: true,
-                uri: httpUrl + '/' + message.m
+                uri: httpUrl + '/' + message.method
               })
             // stream serializer
-            console.log(call.listeners('data'))
+            //console.log(call.listeners('data'))
             var rectifiedCall = new EventEmitter()
             call.on('data', (data) => {
               rectifiedCall.emit('data', JSON.parse(data))
@@ -43,14 +41,10 @@ module.exports = function getTransportHttpPublicClientPackage ({ getConsole, met
               { method: 'POST',
                 preambleCRLF: true,
                 postambleCRLF: true,
-                body: message.d[0].d,
-                headers: {
-                  from: message.f||false,
-                  corrid: message.d[0].r||false,
-                  userid: message.d[0].u||false
-                },
+                body: message.data,
+                headers: newMeta,
                 json: true,
-                uri: httpUrl + '/' + message.m
+                uri: httpUrl + '/' + message.method
               },
               function (error, response, body) {
                 CONSOLE.debug('Http request response', {error, response, body})

@@ -1,8 +1,7 @@
 const PACKAGE = 'net.client'
 const checkRequired = require('./jesus').checkRequired
-const R = require('ramda')
 var preferedTransports = ['grpc', 'zeromq', 'http']
-// var delayedMessages = global.JESUS_NET_CLIENT_delayedMessages = global.JESUS_NET_CLIENT_delayedMessages || {}
+var delayedMessages = global.JESUS_NET_CLIENT_delayedMessages = global.JESUS_NET_CLIENT_delayedMessages || {}
 
 module.exports = function getNetClientPackage ({getConsole, serviceName = 'unknow', serviceId = 'unknow', getSharedConfig, config}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
@@ -21,27 +20,28 @@ module.exports = function getNetClientPackage ({getConsole, serviceName = 'unkno
       })
       return eventConfig
     }
-    // function filterByTag (tags) {
-    //   return (tagFilter) => {
-    //     if (tagFilter)CONSOLE.debug(`filterByTag()`, tags.indexOf(tagFilter) + 1)
-    //     return !tags || !tagFilter ? true : tags.indexOf(tagFilter) + 1
-    //   }
-    // }
+    function filterByTag (tags) {
+      return (tagFilter) => {
+        if (tagFilter)CONSOLE.debug(`filterByTag()`, tags.indexOf(tagFilter) + 1)
+        return !tags || !tagFilter ? true : tags.indexOf(tagFilter) + 1
+      }
+    }
 
-    async function emit ({event, data = {}, meta = {}, timeout = 5000, singleResponse = true}) {
-      meta.event = event
+    async function emit ({event, data={}, meta={}, timeout = 5000, singleResponse = true}) {
+      meta.event=event;
       var eventConfig = await getServicesEventsConfigByEventName(event)
-      CONSOLE.debug('emit start ' + event, {singleResponse, event, data, meta, timeout, eventConfig})
-      var responses = await Promise.all(eventConfig.map((rpcConfig) => rpc({to: rpcConfig.to, method: rpcConfig.method, data, meta, timeout, log: false })))
+      CONSOLE.debug('emit start '+event, {singleResponse, event, data, meta, timeout, eventConfig})
+      var responses = await Promise.all(eventConfig.map((rpcConfig) => rpc({to: rpcConfig.to, method: rpcConfig.method, data, meta, timeout, log : false })))
       responses = responses.filter((response) => response !== null)
       if (singleResponse)responses = responses[0] || null
-      CONSOLE.debug('emit response' + event, {responses, event, eventConfig})
+      CONSOLE.debug('emit response'+event, {responses, event, eventConfig})
       return responses
     }
 
-    async function rpc ({to, method, data = {}, meta = {}, timeout = 5000, }) {
+    async function rpc ({to, method, data={}, meta={}, timeout = 5000, delayed = false, log = true, logDelay = 5000}) {
       try {
-        CONSOLE.debug('rpc() start', {to, method, data, meta, timeout })
+        //if(log)rpc ({to:"logs", method:"log", data, meta, timeout, delayed:logDelay, log:false})
+        CONSOLE.debug('rpc() start', {to, method, data, meta, timeout , delayed  })
         var senderNetConfig = await getSharedConfig(serviceName, 'net')
         var listenerNetConfig = await getSharedConfig(to, 'net')
         var listenerMethodsConfig = await getSharedConfig(to, 'methods')
@@ -60,20 +60,33 @@ module.exports = function getNetClientPackage ({getConsole, serviceName = 'unkno
         var sendTo = listenerNetConfig.transports[commonTransports[0]]
         var waitResponse = (listenerMethodConfig.responseType !== 'noResponse')
         var isStream = (listenerMethodConfig.responseType === 'stream')
-        var meta = R.clone(meta)
-        meta.reqOutTimestamp = Date.now()
-        meta.from = serviceName
-        meta.stream = isStream
-        meta.to = to
-        var message = {method, meta, data}
 
+        var message = {
+          f: serviceName,
+          m: method,
+          d: [{ d: data, r: meta.corrid, u: meta.userid }]
+        }
+
+        if (delayed) {
+          var index = to + method
+          if (!delayedMessages[index]) {
+            setTimeout(() => {
+              var delayedMessage = delayedMessages[index]
+              delete delayedMessages[index]
+              CONSOLE.log('=> CLIENT OUT', {to: sendTo, message: delayedMessage, waitResponse})
+              transport.send(sendTo, delayedMessage, listenerMethodConfig.timeout, waitResponse).then((response) => CONSOLE.log('=> CLIENT IN RESPONSE', {response}))
+            }, delayed)
+            delayedMessages[index] = message
+          } else delayedMessages[index].d.push({ d: data, r: meta.corrid, u: meta.userid })
+        } else {
           // if streaming return eventEmiter con on data,on error,on end altrimenti risposta
-        CONSOLE.log('=> CLIENT OUT STREAM', {to: sendTo, message, waitResponse})
-        var response = await transport.send(sendTo, message, listenerMethodConfig.timeout, waitResponse, isStream)
-        CONSOLE.log('=> CLIENT IN STREAM RESPONSE', {response})
+          CONSOLE.log('=> CLIENT OUT STREAM', {to: sendTo, message, waitResponse})
+          var response = await transport.send(sendTo, message, listenerMethodConfig.timeout, waitResponse, isStream)
+          CONSOLE.log('=> CLIENT IN STREAM RESPONSE', {response})
           // if (singleResponse && response && response[0])response = response[0]
-        CONSOLE.debug('rpc to ' + to + ' ' + method + ' corrid:' + meta.corrid, JSON.stringify({response, sendTo, message, waitResponse}))
-        return response
+          CONSOLE.debug('rpc to ' + to + ' ' + method + ' corrid:' + meta.corrid, JSON.stringify({response, sendTo, message, waitResponse}))
+          return response
+        }
       } catch (error) {
         CONSOLE.error(error, {to, method, data, meta, timeout})
         throw new Error('Error during rpc')

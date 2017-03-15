@@ -1,615 +1,633 @@
 {
-    "17e5ed6b-7624-417d-ad00-5e74be580843": {
+    "ab2d5bda-9cf3-4f5c-b372-a432585d5be1": {
         "data": {
             "action": "write.create",
             "entityName": "Resource",
             "meta": {
-                "corrid": "d0546baa-4d62-433c-ba60-bf5e30b13867",
+                "corrid": "6d5b9632-fd3a-405e-95fb-783522a7c2ea",
                 "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442316118,
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508073997,
+                "transport": "httpPublic",
                 "event": "authorize"
             },
             "data": {
-                "title": "esse ipsum Ut",
-                "email": "itx5BgDCsxW701c@gOTSFkLrfUyjyMxpZbOhGLXLH.nm",
-                "_id": "9f8bAfA1-aA41-3EcE-F5c6-8D074E0df7FC",
-                "body": "in in consectetur"
-            },
-            "id": "F6BB8eAf-1911-75De-2a79-89a934770A0d"
+                "title": "nulla incididunt dolore fugiat",
+                "email": "zEU@qWgyTBmDTZvDQ.rlkp"
+            }
         },
-        "timestamp": 1489442316233,
+        "timestamp": 1489508074148,
         "meta": {
-            "corrid": "d0546baa-4d62-433c-ba60-bf5e30b13867",
+            "corrid": "6d5b9632-fd3a-405e-95fb-783522a7c2ea",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442316229
+            "reqInTimestamp": 1489508074132,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508074098,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "17e5ed6b-7624-417d-ad00-5e74be580843"
+        "_id": "ab2d5bda-9cf3-4f5c-b372-a432585d5be1"
     },
-    "f1f9b035-b7bb-4327-a5aa-a49509af6409": {
+    "21f0a0c7-e873-4945-939d-0cff31762e02": {
         "data": {},
-        "timestamp": 1489442316439,
+        "timestamp": 1489508074430,
         "meta": {
-            "corrid": "d0546baa-4d62-433c-ba60-bf5e30b13867",
+            "corrid": "6d5b9632-fd3a-405e-95fb-783522a7c2ea",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442316435
+            "reqInTimestamp": 1489508074424,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508074297,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "f1f9b035-b7bb-4327-a5aa-a49509af6409"
+        "_id": "21f0a0c7-e873-4945-939d-0cff31762e02"
     },
-    "ef1aed1e-e35c-4d8f-b39e-28bee33a5af7": {
+    "3b02fcb9-5901-4184-8439-4aa1f2c164e3": {
         "data": {
             "action": "read",
             "entityName": "Resource",
             "meta": {
-                "corrid": "0c56f335-2bda-4dc6-8d07-1515f10f4bb3",
+                "corrid": "5e74b1f3-66d1-4841-bbfc-093c0bf64b63",
                 "userid": "UNKNOW",
-                "methodName": "readResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442316398,
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508074345,
+                "transport": "httpPublic",
                 "event": "authorize"
             },
-            "id": "F6BB8eAf-1911-75De-2a79-89a934770A0d"
+            "id": "715171c3-69e8-47f5-8ffd-d84bb48a6a56"
         },
-        "timestamp": 1489442316522,
+        "timestamp": 1489508074471,
         "meta": {
-            "corrid": "0c56f335-2bda-4dc6-8d07-1515f10f4bb3",
+            "corrid": "5e74b1f3-66d1-4841-bbfc-093c0bf64b63",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442316519
+            "reqInTimestamp": 1489508074462,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508074404,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "ef1aed1e-e35c-4d8f-b39e-28bee33a5af7"
+        "_id": "3b02fcb9-5901-4184-8439-4aa1f2c164e3"
     },
-    "e80f21c2-b801-4a96-afa5-7536333b165f": {
+    "9cdf7786-0e02-47fa-aee4-90a4dbbaa2fb": {
         "data": {},
-        "timestamp": 1489442316728,
+        "timestamp": 1489508074781,
         "meta": {
-            "corrid": "a9f4468e-8ca3-4e47-99db-0c5bb228e08f",
+            "corrid": "ba1c454b-e88b-4460-978a-5fd7e5cff84b",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442316725
+            "reqInTimestamp": 1489508074769,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508074731,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "e80f21c2-b801-4a96-afa5-7536333b165f"
+        "_id": "9cdf7786-0e02-47fa-aee4-90a4dbbaa2fb"
     },
-    "844e4d49-4c2c-4159-b07f-5d1a296685b3": {
+    "85599aaa-2136-43f3-93ec-52b98abd2b52": {
         "data": {
             "action": "read",
             "entityName": "Resource",
             "meta": {
-                "corrid": "5bb9fe2a-aeec-44fd-8f10-e1c4097fcbf9",
+                "corrid": "f0d69ef0-5900-42dd-9ca4-38ad7b47b32b",
                 "userid": "UNKNOW",
-                "methodName": "readResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442316713,
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508074755,
+                "transport": "httpPublic",
                 "event": "authorize"
             },
-            "id": "F6BB8eAf-1911-75De-2a79-89a934770A0d"
+            "id": "715171c3-69e8-47f5-8ffd-d84bb48a6a56"
         },
-        "timestamp": 1489442316815,
+        "timestamp": 1489508074859,
         "meta": {
-            "corrid": "5bb9fe2a-aeec-44fd-8f10-e1c4097fcbf9",
+            "corrid": "f0d69ef0-5900-42dd-9ca4-38ad7b47b32b",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442316812
+            "reqInTimestamp": 1489508074849,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508074822,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "844e4d49-4c2c-4159-b07f-5d1a296685b3"
+        "_id": "85599aaa-2136-43f3-93ec-52b98abd2b52"
     },
-    "0e534b9e-198c-4be2-bb96-ad469272e0d0": {
+    "7b3971fc-a847-498b-91d2-5fb53d49c24b": {
         "data": {},
-        "timestamp": 1489442319116,
+        "timestamp": 1489508077145,
         "meta": {
-            "corrid": "21609111-9d82-4f2d-b875-c95265fcfce6",
-            "userid": "UNKNOW",
-            "methodName": "log",
+            "reqOutTimestamp": 1489508077112,
             "from": "view",
-            "timestamp": 1489442319112
+            "stream": false,
+            "to": "logs",
+            "corrid": "fbc0f00c-9845-4342-8837-f1b5ce11fa4f",
+            "userid": "UNKNOW",
+            "reqInTimestamp": 1489508077140,
+            "transport": "http"
         },
-        "_id": "0e534b9e-198c-4be2-bb96-ad469272e0d0"
+        "_id": "7b3971fc-a847-498b-91d2-5fb53d49c24b"
     },
-    "87bd0da3-1969-4aae-ab6c-ba37dbf2d3e3": {
+    "0f289e4d-daba-47ad-ad89-5eef921762fd": {
         "data": {
             "action": "write.create",
             "entityName": "Resource",
             "meta": {
-                "corrid": "e3396d06-3ce5-4191-9074-ba75510af4ba",
+                "corrid": "d5c41dfb-7fb7-4fba-8af9-fc7391ee6e0e",
                 "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442321145,
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508079181,
+                "transport": "httpPublic",
                 "event": "authorize"
             },
             "data": {
-                "title": "irure in ullamco anim magna",
-                "email": "ZHoxT3Q@EzdkoGEegtkwp.pt"
-            },
-            "id": "aE9467bF-B90c-2be8-648d-CEeAA249cFEB"
-        },
-        "timestamp": 1489442321311,
-        "meta": {
-            "corrid": "e3396d06-3ce5-4191-9074-ba75510af4ba",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442321308
-        },
-        "_id": "87bd0da3-1969-4aae-ab6c-ba37dbf2d3e3"
-    },
-    "fcb26d50-eb1b-4f96-bb45-ac38d9ddf6b3": {
-        "data": {},
-        "timestamp": 1489442321366,
-        "meta": {
-            "corrid": "e3396d06-3ce5-4191-9074-ba75510af4ba",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442321363
-        },
-        "_id": "fcb26d50-eb1b-4f96-bb45-ac38d9ddf6b3"
-    },
-    "52b4dce5-d8c9-43c1-a0a1-95360c548bc3": {
-        "data": {
-            "action": "write.create",
-            "entityName": "Resource",
-            "meta": {
-                "corrid": "96dd217b-d65d-4af2-9556-d7b06cf3d2e2",
-                "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442321352,
-                "event": "authorize"
-            },
-            "data": {
-                "title": "in",
-                "email": "PXAj2@EZLqmNtyNZbbgQZUhV.xvn",
-                "_id": "AbAE4089-a08B-Ae76-EEcE-3fCAAa6fDeFe",
-                "body": "Excepteur"
-            },
-            "id": "fFD6420E-0740-D63d-77a3-C8D581A6Ee85"
-        },
-        "timestamp": 1489442321459,
-        "meta": {
-            "corrid": "96dd217b-d65d-4af2-9556-d7b06cf3d2e2",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442321456
-        },
-        "_id": "52b4dce5-d8c9-43c1-a0a1-95360c548bc3"
-    },
-    "6b6cbb74-d6af-4083-92e7-d8bc06109cc4": {
-        "data": {},
-        "timestamp": 1489442321628,
-        "meta": {
-            "corrid": "96dd217b-d65d-4af2-9556-d7b06cf3d2e2",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442321625
-        },
-        "_id": "6b6cbb74-d6af-4083-92e7-d8bc06109cc4"
-    },
-    "cce7a318-4a9a-4dcc-8a66-d9fecc98f537": {
-        "data": {
-            "action": "write.create",
-            "entityName": "Resource",
-            "meta": {
-                "corrid": "71d8c27e-3fb6-4db7-b818-14e928961018",
-                "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442321606,
-                "event": "authorize"
-            },
-            "data": {
-                "title": "adipisicing tempor",
-                "email": "ppmT@SfrdRLYUDpzLvcOdEnWViZKemiyoQLiqX.wqvs",
-                "_id": "1b61fD6E-EcAF-36Fa-9fbD-E655E6D9b345",
-                "body": "id dolor amet ipsum"
-            },
-            "id": "a30F269d-EEC3-AAb5-5EDD-6cEA69B98AaA"
-        },
-        "timestamp": 1489442321713,
-        "meta": {
-            "corrid": "71d8c27e-3fb6-4db7-b818-14e928961018",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442321711
-        },
-        "_id": "cce7a318-4a9a-4dcc-8a66-d9fecc98f537"
-    },
-    "753b43d7-ebc6-42cd-b440-67c8492a57d6": {
-        "data": {},
-        "timestamp": 1489442321829,
-        "meta": {
-            "corrid": "71d8c27e-3fb6-4db7-b818-14e928961018",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442321825
-        },
-        "_id": "753b43d7-ebc6-42cd-b440-67c8492a57d6"
-    },
-    "a9237cc4-76f1-4e32-8f1a-f69b3f896cd2": {
-        "data": {
-            "action": "write.create",
-            "entityName": "Resource",
-            "meta": {
-                "corrid": "81fc1455-60c2-4e8e-a46e-2624d52104be",
-                "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442321813,
-                "event": "authorize"
-            },
-            "data": {
-                "title": "sit ea commodo veniam elit",
-                "email": "P1zkIcMysG@liHjAtyyChgcQLtNNhwTElfSuUWJ.gd",
-                "body": "elit dolor dolore",
-                "_id": "5d5b673f-50D1-Dfb2-c7db-C7E8f2a59CDf"
-            },
-            "id": "F806bB3f-7057-A6db-E67e-b361BaCA6eEC"
-        },
-        "timestamp": 1489442321893,
-        "meta": {
-            "corrid": "81fc1455-60c2-4e8e-a46e-2624d52104be",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442321891
-        },
-        "_id": "a9237cc4-76f1-4e32-8f1a-f69b3f896cd2"
-    },
-    "2380db63-0490-4c6a-985e-f3f51f34be6f": {
-        "data": {},
-        "timestamp": 1489442322001,
-        "meta": {
-            "corrid": "81fc1455-60c2-4e8e-a46e-2624d52104be",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442321999
-        },
-        "_id": "2380db63-0490-4c6a-985e-f3f51f34be6f"
-    },
-    "d35ea2f7-f87d-429c-b79a-a5c662702643": {
-        "data": {
-            "action": "write.create",
-            "entityName": "Resource",
-            "meta": {
-                "corrid": "3b0e0a70-2d0f-487b-941d-7a857da4fc6c",
-                "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442321988,
-                "event": "authorize"
-            },
-            "data": {
-                "title": "aute et",
-                "email": "OnVzcFSlR@WSbKYAirxfpzhpBuxRdB.rloo"
-            },
-            "id": "249904D2-b8DE-b8eC-c109-FEFCb7dA33Bc"
-        },
-        "timestamp": 1489442322063,
-        "meta": {
-            "corrid": "3b0e0a70-2d0f-487b-941d-7a857da4fc6c",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442322060
-        },
-        "_id": "d35ea2f7-f87d-429c-b79a-a5c662702643"
-    },
-    "6deb9200-4774-4c7a-9f1e-cf7963924119": {
-        "data": {},
-        "timestamp": 1489442322156,
-        "meta": {
-            "corrid": "3b0e0a70-2d0f-487b-941d-7a857da4fc6c",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442322152
-        },
-        "_id": "6deb9200-4774-4c7a-9f1e-cf7963924119"
-    },
-    "8933302f-56fd-4d12-a5aa-9ec87fe32399": {
-        "data": {
-            "page": 1,
-            "timestamp": 1489442318958,
-            "pageItems": 10
-        },
-        "timestamp": 1489442324006,
-        "meta": {
-            "corrid": "ea43bcb7-15c6-4f4e-8f3e-1be6ca55c034",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "view",
-            "timestamp": 1489442324003
-        },
-        "_id": "8933302f-56fd-4d12-a5aa-9ec87fe32399"
-    },
-    "fedcae4e-194e-43d6-a512-0144ddcd2f83": {
-        "data": {
-            "action": "write.create",
-            "entityName": "Resource",
-            "meta": {
-                "corrid": "6396c166-09ff-41f8-bd08-d6c93d016737",
-                "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442333202,
-                "event": "authorize"
-            },
-            "data": {
-                "title": "do eiusmod ex nulla sed",
-                "email": "uJqC@MfbQQqJzXNTQut.chie",
-                "body": "consectetur cupidatat sit dolor"
+                "title": "et elit",
+                "email": "7Yn8@J.udv",
+                "_id": "b1B7b1Fe-436e-11EE-f7ac-138a13c8F291",
+                "body": "fugiat cupidatat"
             }
         },
-        "timestamp": 1489442333272,
+        "timestamp": 1489508079293,
         "meta": {
-            "corrid": "6396c166-09ff-41f8-bd08-d6c93d016737",
+            "corrid": "d5c41dfb-7fb7-4fba-8af9-fc7391ee6e0e",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442333269
+            "reqInTimestamp": 1489508079285,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508079237,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "fedcae4e-194e-43d6-a512-0144ddcd2f83"
+        "_id": "0f289e4d-daba-47ad-ad89-5eef921762fd"
     },
-    "eb19d805-d6af-4098-b7ab-062d5b3d8c9a": {
+    "d8cbb972-ae8c-4767-a29a-5a852cc29ec6": {
         "data": {},
-        "timestamp": 1489442333416,
+        "timestamp": 1489508079433,
         "meta": {
-            "corrid": "6396c166-09ff-41f8-bd08-d6c93d016737",
+            "corrid": "d5c41dfb-7fb7-4fba-8af9-fc7391ee6e0e",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442333413
+            "reqInTimestamp": 1489508079416,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508079372,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "eb19d805-d6af-4098-b7ab-062d5b3d8c9a"
+        "_id": "d8cbb972-ae8c-4767-a29a-5a852cc29ec6"
     },
-    "67df6fb8-3513-4e25-8345-92814be77e19": {
+    "4aa87462-570d-40aa-9d62-522d473d4966": {
         "data": {
             "action": "write.create",
             "entityName": "Resource",
             "meta": {
-                "corrid": "e49818c2-2a96-47be-b871-7052bfb269cb",
+                "corrid": "5928c964-3824-4980-a6c5-11704905391f",
                 "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442333398,
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508079403,
+                "transport": "httpPublic",
                 "event": "authorize"
             },
             "data": {
-                "title": "exercitation esse proident",
-                "email": "hqON-qoc8wnOOE5@vguvExbAtdnVOs.qgi",
-                "body": "eiusmod sed deserunt elit consectetur"
-            },
-            "id": "8C4BB8E3-22Bf-E675-F7c7-ab5FeD94bA9F"
-        },
-        "timestamp": 1489442333678,
-        "meta": {
-            "corrid": "e49818c2-2a96-47be-b871-7052bfb269cb",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442333671
-        },
-        "_id": "67df6fb8-3513-4e25-8345-92814be77e19"
-    },
-    "adaf0c92-3618-4ea0-8e0c-9af223cddda1": {
-        "data": {},
-        "timestamp": 1489442333820,
-        "meta": {
-            "corrid": "e49818c2-2a96-47be-b871-7052bfb269cb",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442333803
-        },
-        "_id": "adaf0c92-3618-4ea0-8e0c-9af223cddda1"
-    },
-    "43eacc34-5f2a-47f8-820a-1dd7745a7bda": {
-        "data": {
-            "action": "write.create",
-            "entityName": "Resource",
-            "meta": {
-                "corrid": "66a845c3-8d59-4c94-9a26-42e7099298eb",
-                "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442333760,
-                "event": "authorize"
-            },
-            "data": {
-                "title": "in aliquip occaecat id sin",
-                "email": "k8Aw@opEzVcYKyodMCh.ni",
-                "_id": "C768D584-c9b6-5E27-1Ba3-9Dd9CcF85B5a",
-                "body": "ut in fugiat nost"
-            },
-            "id": "dEd2DF36-E8BB-A0af-A6BC-8feb8B0Eb838"
-        },
-        "timestamp": 1489442334003,
-        "meta": {
-            "corrid": "66a845c3-8d59-4c94-9a26-42e7099298eb",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442333995
-        },
-        "_id": "43eacc34-5f2a-47f8-820a-1dd7745a7bda"
-    },
-    "e2de1886-1b01-4f20-a703-9e736fa6d391": {
-        "data": {},
-        "timestamp": 1489442334290,
-        "meta": {
-            "corrid": "66a845c3-8d59-4c94-9a26-42e7099298eb",
-            "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "resources",
-            "timestamp": 1489442334287
-        },
-        "_id": "e2de1886-1b01-4f20-a703-9e736fa6d391"
-    },
-    "13b67dae-e7a3-4e73-9f45-dc9ebe2efb82": {
-        "data": {
-            "action": "write.create",
-            "entityName": "Resource",
-            "meta": {
-                "corrid": "c60947f1-f88f-4a8f-925c-c28c95426cd5",
-                "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442334274,
-                "event": "authorize"
-            },
-            "data": {
-                "title": "pariatur esse deserunt est reprehenderit",
-                "email": "iQfPq8@acYcrevbVtBLsmewKODOYFYrjJUBBfnNd.abqq",
-                "_id": "aEd2cEF5-59aB-dc03-1d6e-de9DcAe574bb",
-                "body": "Ut"
+                "title": "in in eu ex labore",
+                "email": "bK5@jkDlIOyNHKyqoMtI.xsgg"
             }
         },
-        "timestamp": 1489442334367,
+        "timestamp": 1489508079537,
         "meta": {
-            "corrid": "c60947f1-f88f-4a8f-925c-c28c95426cd5",
+            "corrid": "5928c964-3824-4980-a6c5-11704905391f",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442334364
+            "reqInTimestamp": 1489508079526,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508079487,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "13b67dae-e7a3-4e73-9f45-dc9ebe2efb82"
+        "_id": "4aa87462-570d-40aa-9d62-522d473d4966"
     },
-    "5f600cb7-c0eb-4942-b368-4fa34d99d086": {
+    "6b0ce947-51a9-4415-a463-ad73d13a5b77": {
         "data": {},
-        "timestamp": 1489442334509,
+        "timestamp": 1489508079707,
         "meta": {
-            "corrid": "c60947f1-f88f-4a8f-925c-c28c95426cd5",
+            "corrid": "5928c964-3824-4980-a6c5-11704905391f",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442334504
+            "reqInTimestamp": 1489508079689,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508079624,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "5f600cb7-c0eb-4942-b368-4fa34d99d086"
+        "_id": "6b0ce947-51a9-4415-a463-ad73d13a5b77"
     },
-    "f3fbdc62-8619-4865-8c4a-a5682d593afa": {
+    "2060f08e-79ba-41b1-a5c4-8deb1adea3d0": {
         "data": {
             "action": "write.create",
             "entityName": "Resource",
             "meta": {
-                "corrid": "6a178162-bad7-4155-979e-14f00582913e",
+                "corrid": "23614bee-0ec2-4800-8ed0-1abb0ad81685",
                 "userid": "UNKNOW",
-                "methodName": "createResource",
-                "from": "__HTTP_CLIENT__",
-                "timestamp": 1489442334492,
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508079671,
+                "transport": "httpPublic",
                 "event": "authorize"
             },
             "data": {
-                "title": "est in",
-                "email": "Qqt3cU81E@dbBONdJWyTTlLcn.mmq",
-                "body": "cupidatat veniam dolore",
-                "_id": "EFB6AF3d-726C-d1AC-2503-2EdF462f0ac9"
+                "title": "laborum sit eu in",
+                "email": "KCMt@YGjaBYxzwgXYEVXTxMWCGNOYukaUslA.mbh",
+                "body": "nulla minim officia aliqua eu",
+                "_id": "2D4bdcE4-2Ce2-dA5c-80E3-c7B92D7b7aed"
+            },
+            "id": "015dA363-2343-1E4E-EcEA-2F0dE2fa34B4"
+        },
+        "timestamp": 1489508079793,
+        "meta": {
+            "corrid": "23614bee-0ec2-4800-8ed0-1abb0ad81685",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508079786,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508079761,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "2060f08e-79ba-41b1-a5c4-8deb1adea3d0"
+    },
+    "422e347e-eccd-414f-aa08-e60475a73464": {
+        "data": {},
+        "timestamp": 1489508079939,
+        "meta": {
+            "corrid": "23614bee-0ec2-4800-8ed0-1abb0ad81685",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508079917,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508079866,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "422e347e-eccd-414f-aa08-e60475a73464"
+    },
+    "526a08eb-e179-495a-b6b6-d86f2ffe8b17": {
+        "data": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "corrid": "e89b4657-05a7-404b-bb21-e88fd5f0ccca",
+                "userid": "UNKNOW",
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508079902,
+                "transport": "httpPublic",
+                "event": "authorize"
+            },
+            "data": {
+                "title": "ipsum aliquip anim dolor ea",
+                "email": "rezGcH5kD@UmMwLqrQNqnzYs.uz"
+            },
+            "id": "a1802CCe-ccfD-8942-462a-043be45ec3Ee"
+        },
+        "timestamp": 1489508080044,
+        "meta": {
+            "corrid": "e89b4657-05a7-404b-bb21-e88fd5f0ccca",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508080036,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508079990,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "526a08eb-e179-495a-b6b6-d86f2ffe8b17"
+    },
+    "ad6eb8a1-4179-4c71-82e4-b90db4bed33c": {
+        "data": {},
+        "timestamp": 1489508080218,
+        "meta": {
+            "corrid": "e89b4657-05a7-404b-bb21-e88fd5f0ccca",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508080211,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508080120,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "ad6eb8a1-4179-4c71-82e4-b90db4bed33c"
+    },
+    "e196f646-812d-4764-aa94-8dfc61c4bec7": {
+        "data": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "corrid": "5f2e2aff-e90d-484a-a6b4-3eed233eddd3",
+                "userid": "UNKNOW",
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508080151,
+                "transport": "httpPublic",
+                "event": "authorize"
+            },
+            "data": {
+                "title": "aute incididunt",
+                "email": "DdOLwnR@tScewhWqlgitDaikHhBQodnO.dt",
+                "body": "aute",
+                "_id": "1549cAc5-76B6-85f4-cD0a-df11eD056743"
             }
         },
-        "timestamp": 1489442334587,
+        "timestamp": 1489508080253,
         "meta": {
-            "corrid": "6a178162-bad7-4155-979e-14f00582913e",
+            "corrid": "5f2e2aff-e90d-484a-a6b4-3eed233eddd3",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442334583
+            "reqInTimestamp": 1489508080239,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508080192,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "f3fbdc62-8619-4865-8c4a-a5682d593afa"
+        "_id": "e196f646-812d-4764-aa94-8dfc61c4bec7"
     },
-    "7cfd6cd9-b174-48a0-a509-bedacec59ab9": {
+    "0d205090-2cf6-46ef-9873-d426700fb251": {
         "data": {},
-        "timestamp": 1489442334699,
+        "timestamp": 1489508080348,
         "meta": {
-            "corrid": "6a178162-bad7-4155-979e-14f00582913e",
+            "corrid": "5f2e2aff-e90d-484a-a6b4-3eed233eddd3",
             "userid": "UNKNOW",
-            "methodName": "log",
             "from": "resources",
-            "timestamp": 1489442334695
+            "reqInTimestamp": 1489508080342,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508080324,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "7cfd6cd9-b174-48a0-a509-bedacec59ab9"
+        "_id": "0d205090-2cf6-46ef-9873-d426700fb251"
     },
-    "9d4d9523-222b-48ac-853e-9f269ee87bd8": {
+    "55426e59-82d4-4aaf-86b4-1cb97f254b76": {
+        "data": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "corrid": "4d28c383-b99a-46f1-918b-b3f181608829",
+                "userid": "UNKNOW",
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508091387,
+                "transport": "httpPublic",
+                "event": "authorize"
+            },
+            "data": {
+                "title": "adipisicing Ut quis consequat minim",
+                "email": "4LQ@yyzzOqwYWyoogx.un"
+            }
+        },
+        "timestamp": 1489508091479,
+        "meta": {
+            "corrid": "4d28c383-b99a-46f1-918b-b3f181608829",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508091469,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508091434,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "55426e59-82d4-4aaf-86b4-1cb97f254b76"
+    },
+    "cf2ea03b-026b-4db3-aecb-17cf34b69737": {
         "data": {},
-        "timestamp": 1489442336219,
+        "timestamp": 1489508091701,
         "meta": {
-            "corrid": "7f1b216d-4ffd-4e3e-a32e-8abe710ec2c1",
+            "corrid": "4d28c383-b99a-46f1-918b-b3f181608829",
             "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "view",
-            "timestamp": 1489442336216
+            "from": "resources",
+            "reqInTimestamp": 1489508091693,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508091580,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "9d4d9523-222b-48ac-853e-9f269ee87bd8"
+        "_id": "cf2ea03b-026b-4db3-aecb-17cf34b69737"
     },
-    "b2b8f946-884c-43c0-867d-2ebcbea3bf8c": {
+    "eaecb043-8e32-4b37-b079-dee9544a6e84": {
         "data": {
-            "page": 1,
-            "timestamp": 1489442335727,
-            "pageItems": 10,
-            "checksumOnly": true
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "corrid": "b36b78c9-4bcc-452a-8855-3041b8b19204",
+                "userid": "UNKNOW",
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508091607,
+                "transport": "httpPublic",
+                "event": "authorize"
+            },
+            "data": {
+                "title": "eiusmod ipsum ali",
+                "email": "NcfvPG8yCT@LHNOfHAnVzGUBKZFxrRpOUNhUOP.zkr"
+            }
         },
-        "timestamp": 1489442340796,
+        "timestamp": 1489508091749,
         "meta": {
-            "corrid": "14b9ab50-4302-46df-8630-26687d7ef062",
+            "corrid": "b36b78c9-4bcc-452a-8855-3041b8b19204",
             "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "view",
-            "timestamp": 1489442340792
+            "from": "resources",
+            "reqInTimestamp": 1489508091740,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508091674,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "b2b8f946-884c-43c0-867d-2ebcbea3bf8c"
+        "_id": "eaecb043-8e32-4b37-b079-dee9544a6e84"
     },
-    "82d7ce4c-a136-4dc5-89c3-230f794d5879": {
-        "data": {
-            "page": 2,
-            "timestamp": 1489442335727,
-            "pageItems": 10,
-            "checksumOnly": true
-        },
-        "timestamp": 1489442340806,
+    "ffb3a749-7e50-408a-b6a9-3410226c8b85": {
+        "data": {},
+        "timestamp": 1489508091910,
         "meta": {
-            "corrid": "14b9ab50-4302-46df-8630-26687d7ef062",
+            "corrid": "b36b78c9-4bcc-452a-8855-3041b8b19204",
             "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "view",
-            "timestamp": 1489442340802
+            "from": "resources",
+            "reqInTimestamp": 1489508091881,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508091833,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "82d7ce4c-a136-4dc5-89c3-230f794d5879"
+        "_id": "ffb3a749-7e50-408a-b6a9-3410226c8b85"
     },
-    "2e6ee6fc-58bd-499b-8b5d-1bdf6bd9f848": {
+    "e2449388-5198-4d73-aaf8-965e1e644300": {
         "data": {
-            "idIn": [
-                "F6BB8eAf-1911-75De-2a79-89a934770A0d",
-                "aE9467bF-B90c-2be8-648d-CEeAA249cFEB",
-                "fFD6420E-0740-D63d-77a3-C8D581A6Ee85",
-                "a30F269d-EEC3-AAb5-5EDD-6cEA69B98AaA",
-                "F806bB3f-7057-A6db-E67e-b361BaCA6eEC",
-                "249904D2-b8DE-b8eC-c109-FEFCb7dA33Bc",
-                "b01887b5-c499-4eb1-aaac-765c84b9ee42",
-                "8C4BB8E3-22Bf-E675-F7c7-ab5FeD94bA9F",
-                "dEd2DF36-E8BB-A0af-A6BC-8feb8B0Eb838",
-                "aEd2cEF5-59aB-dc03-1d6e-de9DcAe574bb",
-                "EFB6AF3d-726C-d1AC-2503-2EdF462f0ac9"
-            ]
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "corrid": "0436085b-4dae-4aa8-bd9f-94f779ea899b",
+                "userid": "UNKNOW",
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508091862,
+                "transport": "httpPublic",
+                "event": "authorize"
+            },
+            "data": {
+                "title": "deserunt consequat nulla",
+                "email": "0CZp@dYgoqpOV.hdp",
+                "_id": "4fFFB048-a8D1-7915-bdfd-Dc24EBeCEd95",
+                "body": "dolore dolor irure esse"
+            }
         },
-        "timestamp": 1489442340816,
+        "timestamp": 1489508091993,
         "meta": {
-            "corrid": "14b9ab50-4302-46df-8630-26687d7ef062",
+            "corrid": "0436085b-4dae-4aa8-bd9f-94f779ea899b",
             "userid": "UNKNOW",
-            "methodName": "log",
-            "from": "view",
-            "timestamp": 1489442340812
+            "from": "resources",
+            "reqInTimestamp": 1489508091982,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508091953,
+            "stream": false,
+            "to": "logs"
         },
-        "_id": "2e6ee6fc-58bd-499b-8b5d-1bdf6bd9f848"
+        "_id": "e2449388-5198-4d73-aaf8-965e1e644300"
+    },
+    "83072c4e-cc46-4592-a571-887b5e5ef1aa": {
+        "data": {},
+        "timestamp": 1489508092193,
+        "meta": {
+            "corrid": "0436085b-4dae-4aa8-bd9f-94f779ea899b",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508092178,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508092096,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "83072c4e-cc46-4592-a571-887b5e5ef1aa"
+    },
+    "9832add0-28d8-4e26-a4c7-8070cfe1a108": {
+        "data": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "corrid": "2f3ba41d-ccff-4f11-bdbb-6c581e76999b",
+                "userid": "UNKNOW",
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508092160,
+                "transport": "httpPublic",
+                "event": "authorize"
+            },
+            "data": {
+                "title": "sit",
+                "email": "eHZ-Q8xfvzNJ@ZTZLq.jv",
+                "body": "veniam elit nulla fugiat sunt"
+            }
+        },
+        "timestamp": 1489508092280,
+        "meta": {
+            "corrid": "2f3ba41d-ccff-4f11-bdbb-6c581e76999b",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508092270,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508092245,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "9832add0-28d8-4e26-a4c7-8070cfe1a108"
+    },
+    "125c1d76-e768-4f08-b8bf-e4a94f8ab573": {
+        "data": {},
+        "timestamp": 1489508092451,
+        "meta": {
+            "corrid": "2f3ba41d-ccff-4f11-bdbb-6c581e76999b",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508092435,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508092372,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "125c1d76-e768-4f08-b8bf-e4a94f8ab573"
+    },
+    "cf7091f8-b113-46ff-b216-1d793bb7888a": {
+        "data": {
+            "action": "write.create",
+            "entityName": "Resource",
+            "meta": {
+                "corrid": "4278a58d-45e6-443a-9048-266dded61af4",
+                "userid": "UNKNOW",
+                "from": "UNKNOW",
+                "reqInTimestamp": 1489508092400,
+                "transport": "httpPublic",
+                "event": "authorize"
+            },
+            "data": {
+                "title": "in sed",
+                "email": "vQScmFeE7dD-NQh@KMqZRnkdGFygDTForeQGH.iyx"
+            },
+            "id": "fE2d3bD1-BAb9-E83A-0219-dE4dd7CAfC83"
+        },
+        "timestamp": 1489508092561,
+        "meta": {
+            "corrid": "4278a58d-45e6-443a-9048-266dded61af4",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508092552,
+            "transport": "http",
+            "event": "authorize",
+            "reqOutTimestamp": 1489508092500,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "cf7091f8-b113-46ff-b216-1d793bb7888a"
+    },
+    "f069552a-dcee-4a1a-9e71-881ba108b099": {
+        "data": {},
+        "timestamp": 1489508092712,
+        "meta": {
+            "corrid": "4278a58d-45e6-443a-9048-266dded61af4",
+            "userid": "UNKNOW",
+            "from": "resources",
+            "reqInTimestamp": 1489508092707,
+            "transport": "http",
+            "event": "mainViewsUpdated",
+            "reqOutTimestamp": 1489508092653,
+            "stream": false,
+            "to": "logs"
+        },
+        "_id": "f069552a-dcee-4a1a-9e71-881ba108b099"
+    },
+    "d9d0e186-f7bf-49af-9f32-160194a1c08e": {
+        "data": {},
+        "timestamp": 1489508094290,
+        "meta": {
+            "reqOutTimestamp": 1489508094250,
+            "from": "view",
+            "stream": false,
+            "to": "logs",
+            "corrid": "5bf63f99-af64-49b2-8038-ea4051c101f0",
+            "userid": "UNKNOW",
+            "reqInTimestamp": 1489508094281,
+            "transport": "http"
+        },
+        "_id": "d9d0e186-f7bf-49af-9f32-160194a1c08e"
     }
 }

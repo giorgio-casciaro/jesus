@@ -1,27 +1,24 @@
 ## TODO IN TEST
-- [ ] dividere jesus in sharedSchema, net e cqrs
+
+- [ ] completare jsonschema methods e ripulire configs events
 - [ ] controllare schemi ms secondari: view potrebbero avere uno schema linkato alla resource principale e prevedere un filter dei parametri
 - [ ] implementare pagina con script di console in express logs:LOG VISUALIZER->http streaming continuo,invia i vecchi log e si iscrive allo streaming
-- [ ] profiling e ottimizzazione cache locali: in methods utilizzare solo require con cache
-
-- [ ] documentation dei metodi pubblici in jsonschema
 - [ ] ripulire config in testservicesnet
-- [X] rivedere gestione errori, semplice console.error + throw
-- [X] log show correlation id
-- [X] dividere net in net e transport(grpc,http,udp)
 
 ###net: sviluppare message e rpc basati su transport e serialization intercambiabile, events diventa una serie di rpc con funzioni extra
-- [ ] migliore gestione message con multi call, gestire come eccezione, di base messaggio semplice
-- [ ] migliore gestione dei log, non usare event *, ma modificare CONSOLE.log e aggiungere un log a event
-- [ ] delayed in preferenze method ricevente + rpc attrs
-- [ ] validate in net, anche che per transports (message in, response, errorResposne)
-- [ ] netClient aggiungere parametro throwOnErrorResponse a emit-> riconosce una riposta di errore (resolved ma con errore) e thow l'errore
+- [X] net dovrebbe essere completamente astratta ed aprire una api express su unix socket: implementare client in ms -> /#event /service/method
+- [X] migliore gestione message con multi call, gestire come eccezione, di base messaggio semplice
+- [X] eliminare delayed in events
+- [X] validate in net, anche  per transports (message in, response, errorResposne)
+- [X] net non dovrebbe avere indirizzi -> vengono assegnati automaticamente (impossibile lo schema deve essere condiviso e statico)
+- [X] log in stdout estderr -> sarà compito di filebeat inviarli a logstash in seguito
+- [X] aggiungere un log a event( TRIGGER EVENT e EVENT RESPONSE) e un log a rpc ( OUT RPC REQUEST e IN RPC RESPONSE, IN RPC REQUEST e OUT RPC RESPONSE)
+
+- [ ] dividere jesus in sharedSchema, net e cqrs
 - [ ] zeromq transport
 - [ ] udp transport
-- [X] preferedTransports in net (non nei singoli metodi)
-- [X] events definiti indipendentemente da methods
-- [X] test net con solo fake transport, test specifici per ogni transport
-- [X] transports sperarati da gestione eventi
+- [ ] profiling e ottimizzazione cache locali: in methods utilizzare solo require con cache
+
 
 
 

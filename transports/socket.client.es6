@@ -11,8 +11,8 @@ module.exports = function getTransportHttpClientPackage ({ getConsole, methodCal
     return {
       send (listener, message, timeout = 120000, waitResponse = true, isStream = false) {
         return new Promise((resolve, reject) => {
-          var httpUrl = 'http://' + listener.url.replace('http://', '').replace('//', '')
-          CONSOLE.debug('send:', JSON.stringify({ listener, message, timeout, waitResponse, isStream }))
+          var httpUrl = 'http://unix:' + listener.file.replace(":","") + ':'
+          CONSOLE.debug('send:', JSON.stringify({ httpUrl,listener, message, timeout, waitResponse, isStream }))
           var callTimeout, call
           if (isStream) {
             call = request(
@@ -49,7 +49,7 @@ module.exports = function getTransportHttpClientPackage ({ getConsole, methodCal
               })
             callTimeout = setTimeout(() => {
               call.end()
-              CONSOLE.warn('sendMessage timeout  to ' + listener.url, { message, serviceName, timeout })
+              CONSOLE.warn('sendMessage timeout  to ' + listener.file, { message, serviceName, timeout })
               if (waitResponse)reject('Response problems: REQUEST TIMEOUT')
               else resolve(null)
             }, timeout)

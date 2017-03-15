@@ -160,7 +160,7 @@ t.test('*** NET ***', {
   await new Promise((resolve) => setTimeout(resolve, 1000))
   await t.test('netClient1.rpc -> testNoResponse', async function (t) {
     testCheck = false
-    var response = await netClient1.rpc({to: 'net1', method: 'testNoResponse', data: {'test_data': 1}, meta, timeout: 5000, singleResponse: true})
+    var response = await netClient1.rpc({to: 'net1', method: 'testNoResponse', data: {'test_data': 1}, meta, timeout: 5000})
     t.same(response, null, 'response=true on NoResponse')
     await new Promise((resolve) => setTimeout(resolve, 1000))
     t.same(testCheck, {'test_data': 1}, 'testNoResponse richiesta ricevuta')
@@ -168,7 +168,7 @@ t.test('*** NET ***', {
   })
   await t.test('netClient1.rpc -> testAknowlegment', async function (t) {
     testCheck = false
-    var response = await netClient1.rpc({to: 'net1', method: 'testAknowlegment', data: {'test_data': 1}, meta, timeout: 5000, singleResponse: true})
+    var response = await netClient1.rpc({to: 'net1', method: 'testAknowlegment', data: {'test_data': 1}, meta, timeout: 5000})
     t.same(response, null, 'Aknowlegment ok')
     t.same(testCheck, {'test_data': 1}, 'testAknowlegment richiesta ricevuta')
     t.end()
@@ -176,7 +176,7 @@ t.test('*** NET ***', {
   //
   await t.test('netClient1.rpc -> testResponse', async function (t) {
     testCheck = false
-    var response = await netClient1.rpc({to: 'net1', method: 'testResponse', data: {'test_data': 1}, meta, timeout: 5000, singleResponse: true})
+    var response = await netClient1.rpc({to: 'net1', method: 'testResponse', data: {'test_data': 1}, meta, timeout: 5000})
     t.same(response, {'test_data': 1}, 'response as sended')
     t.same(testCheck, {'test_data': 1}, 'testResponse richiesta ricevuta')
     t.end()
@@ -184,7 +184,7 @@ t.test('*** NET ***', {
   await t.test('netClient1.rpc -> testStream', async function (t) {
     testCheck = false
     var testStream = false
-    var streaming = await netClient1.rpc({to: 'net1', method: 'testStream', data: {'test_data': 1}, meta, timeout: 5000, singleResponse: true})
+    var streaming = await netClient1.rpc({to: 'net1', method: 'testStream', data: {'test_data': 1}, meta, timeout: 5000})
     streaming.on('data', (data) => { CONSOLE.debug('streaming data', data); testStream = true })
     streaming.on('error', (data) => CONSOLE.debug('streaming error', data))
     streaming.on('end', (data) => CONSOLE.debug('streaming close', data))
@@ -192,15 +192,6 @@ t.test('*** NET ***', {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     t.same(testStream, true, 'Stream received')
     t.same(testCheck, {'test_data': 1}, 'testStream richiesta ricevuta')
-    t.end()
-  })
-
-  await t.test('netClient1.rpc -> testResponse delayed 2000', async function (t) {
-    testCheck = false
-    var response = await netClient1.rpc({to: 'net1', method: 'testResponse', data: {'test_data': 1}, meta, delayed: 1000, timeout: 5000, singleResponse: true})
-    t.same(response, null, 'delayed response   ')
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    t.same(testCheck, {'test_data': 1}, 'delayed received')
     t.end()
   })
 

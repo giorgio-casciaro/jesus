@@ -35,6 +35,7 @@
     "body-parser": "^1.17.1",
     "compression": "^1.6.2",
     "express-http2": "^4.13.4",
+    "find-port": "^2.0.1",
     "grpc": "^1.1.2",
     "helmet": "^3.4.1",
     "json-schema-deref-sync": "^0.3.3",

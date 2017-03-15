@@ -35,7 +35,7 @@ module.exports = function getTransportGrpcServerPackage ({serialize, deserialize
     var grpcServiceFunctions = {
       async message (call, callback) {
         try {
-          var response = await methodCall(call.request, false, publicApi)
+          var response = await methodCall(call.request, false, publicApi,"grpc")
           callback(null, response)
         } catch (error) {
           CONSOLE.error('message error', error)
@@ -49,7 +49,7 @@ module.exports = function getTransportGrpcServerPackage ({serialize, deserialize
             var timeout = setTimeout(() => { call.end(); close() }, MAX_REQUEST_TIMEOUT)
             return call
           }
-          methodCall(call.request, getStream, publicApi)
+          methodCall(call.request, getStream, publicApi,"grpc")
         } catch (error) {
           CONSOLE.error('messageStream error', error)
           call.cancel()

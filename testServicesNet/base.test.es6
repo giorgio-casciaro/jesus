@@ -122,11 +122,11 @@ t.test('*** SERVICES NET ***', {
 
   await t.test('TEST 0', async function (t) {
     await new Promise((resolve, reject) => {
-      console.log(MS_EVENTS_EMITTER)
+      //console.log(MS_EVENTS_EMITTER)
       MS_EVENTS_EMITTER_requestHttp = request(
         { method: 'GET',
           headers: {
-            stream: true
+            'app-meta-stream': true
           },
           uri: 'http://' + MS_EVENTS_EMITTER.SHARED_NET_CONFIG.transports.httpPublic.url + '/listenEvents'
         })

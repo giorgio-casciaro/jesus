@@ -12,7 +12,6 @@ var httpServer
 module.exports = function getTransportHttpPublicServerPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config }) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
-
     checkRequired({config, methodCall, getConsole})
     async function start () {
       var httpUrl = 'http://' + config.url.replace('http://', '').replace('//', '')
@@ -24,17 +23,20 @@ module.exports = function getTransportHttpPublicServerPackage ({ getConsole, met
       httpApi.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
       httpApi.all('*', async (req, res) => {
         try {
+          var newMeta = {}
+          for (var metaK in req.headers) if (metaK.indexOf('app-meta-') + 1)newMeta[metaK.replace('app-meta-', '')] = req.headers[metaK]
+
           var methodName = req.url.replace('/', '')
           var data = req.body || req.query
           var message = {
-            f: req.headers.from || '__HTTP_CLIENT__',
-            m: methodName,
-            d: [{ d: data, r: req.headers.corrid, u: req.headers.userid }] // HTTP HEADERS ONLY LOWERCASE
+            meta: newMeta, // HTTP HEADERS ONLY LOWERCASE
+            method: methodName,
+            data
           }
-          var isStream = !!req.headers.stream
+          var isStream = (newMeta.stream==="true"||newMeta.stream==="1")
+          CONSOLE.debug('newMeta', {newMeta})
           if (!isStream) {
-            CONSOLE.debug('HttpPublic MESSAGE', {isStream, message, headers: req.headers, data})
-            var response = await methodCall(message, false, publicApi)
+            var response = await methodCall(message, false, publicApi,"httpPublic")
             res.send(response)
           } else {
             CONSOLE.debug('HttpPublic MESSAGE STREAM', {isStream, message, headers: req.headers, data})
@@ -53,7 +55,7 @@ module.exports = function getTransportHttpPublicServerPackage ({ getConsole, met
               }
             }
 
-            methodCall(message, getStream, publicApi)
+            methodCall(message, getStream, publicApi,"httpPublic")
           }
         } catch (error) {
           CONSOLE.warn('Api error', {error})
