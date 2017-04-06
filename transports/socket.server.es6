@@ -5,7 +5,7 @@ var fs = require('fs')
 var helmet = require('helmet')
 const url = require('url')
 const PACKAGE = 'transport.http.server'
-const checkRequired = require('../jesus').checkRequired
+const checkRequired = require('../utils').checkRequired
 const publicApi = false
 var httpApi
 var httpServer

@@ -2,7 +2,7 @@ var R = require('ramda')
 const uuidV4 = require('uuid/v4')
 var ajv = require('ajv')({allErrors: true})
 const PACKAGE = 'net.server'
-const checkRequired = require('./jesus').checkRequired
+const checkRequired = require('./utils').checkRequired
 var validatorMsg = ajv.compile(require('./schemas/message.schema.json'))
 
 module.exports = function getNetServerPackage ({config, getConsole, serviceName = 'unknow', serviceId = 'unknow', getMethods, getSharedConfig}) {

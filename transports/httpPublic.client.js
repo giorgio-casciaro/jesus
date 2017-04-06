@@ -2,7 +2,7 @@
 
 var request = require('request');
 var PACKAGE = 'transport.httpPublic.client';
-var checkRequired = require('../jesus').checkRequired;
+var checkRequired = require('../utils').checkRequired;
 var EventEmitter = require('events');
 
 module.exports = function getTransportHttpPublicClientPackage(_ref) {

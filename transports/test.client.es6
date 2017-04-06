@@ -1,5 +1,5 @@
 const PACKAGE = 'transport.test.server'
-const checkRequired = require('../jesus').checkRequired
+const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
 var globalEmitters = global.transportTestServers = global.transportTestServers || []
 

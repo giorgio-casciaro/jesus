@@ -1,7 +1,7 @@
 'use strict';
 
 var PACKAGE = 'transport.test.server';
-var checkRequired = require('../jesus').checkRequired;
+var checkRequired = require('../utils').checkRequired;
 var EventEmitter = require('events');
 var globalEmitters = global.transportTestServers = global.transportTestServers || [];
 var publicApi = true;

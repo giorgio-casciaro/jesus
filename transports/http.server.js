@@ -8,7 +8,7 @@ var compression = require('compression');
 var helmet = require('helmet');
 var url = require('url');
 var PACKAGE = 'transport.http.server';
-var checkRequired = require('../jesus').checkRequired;
+var checkRequired = require('../utils').checkRequired;
 var publicApi = false;
 var httpApi;
 var httpServer;

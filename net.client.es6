@@ -1,5 +1,5 @@
 const PACKAGE = 'net.client'
-const checkRequired = require('./jesus').checkRequired
+const checkRequired = require('./utils').checkRequired
 const R = require('ramda')
 var preferedTransports = ['grpc', 'zeromq', 'http']
 // var delayedMessages = global.JESUS_NET_CLIENT_delayedMessages = global.JESUS_NET_CLIENT_delayedMessages || {}
@@ -72,7 +72,7 @@ module.exports = function getNetClientPackage ({getConsole, serviceName = 'unkno
         var response = await transport.send(sendTo, message, listenerMethodConfig.timeout, waitResponse, isStream)
         CONSOLE.log('=> CLIENT IN STREAM RESPONSE', {response})
           // if (singleResponse && response && response[0])response = response[0]
-        CONSOLE.debug('rpc to ' + to + ' ' + method + ' corrid:' + meta.corrid, JSON.stringify({response, sendTo, message, waitResponse}))
+        CONSOLE.debug('rpc to ' + to + ' ' + method + ' corrid:' + meta.corrid, {response, sendTo, message, waitResponse})
         return response
       } catch (error) {
         CONSOLE.error(error, {to, method, data, meta, timeout})

@@ -1,19 +1,12 @@
 
 if (!global._babelPolyfill)require('babel-polyfill')
 var R = require('ramda')
-// var deref = require('json-schema-deref-sync')
-// var faker = require('faker')
-// var jsf = require('json-schema-faker')
-// faker.locale = 'it'
-// var restler = require('restler')
-//
 var request = require('request')
 var t = require('tap')
 var path = require('path')
 
-var jesus = require('../jesus')
 
-const getConsole = (serviceName, serviceId, pack) => jesus.getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
+const getConsole = (serviceName, serviceId, pack) => require('../utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
 var CONSOLE = getConsole('BASE TEST', '----', '-----')
 
 var sharedConfig = {
@@ -205,5 +198,5 @@ t.test('*** NET ***', {
 
   await new Promise((resolve) => setTimeout(resolve, 1000))
   t.end()
-  process.exit()
-})
+  //process.exit()
+}).then(() => process.exit())

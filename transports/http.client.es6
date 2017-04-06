@@ -1,6 +1,6 @@
 var request = require('request')
 const PACKAGE = 'transport.http.client'
-const checkRequired = require('../jesus').checkRequired
+const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
 
 module.exports = function getTransportHttpClientPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow' }) {
