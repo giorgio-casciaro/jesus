@@ -1,7 +1,0 @@
-{
-  "authorize": {
-    "method": "authorize",
-    "preValidation": true,
-    "haveResponse": true
-  }
-}

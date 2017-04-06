@@ -1,9 +1,0 @@
-{
-  "viewsUpdated": {
-    "singleResponse": true,
-    "tags": ["#service_view"],
-    "waitResponse": false,
-    "responseRequired": false,
-    "timeout": 5000
-  }
-}
