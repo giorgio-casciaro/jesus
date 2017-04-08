@@ -1,9 +1,13 @@
 {
-  "name": "jesus",
+  "name": "sint-bit-jesus",
   "version": "1.0.0",
   "description": "Jesus Packages",
   "author": "Giorgio Casciaro <giorgio.casciaro@gmail.com>",
   "main": "jesus.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giorgio-casciaro/jesus.git"
+  },
   "scripts": {
     "start": "npm --silent run-script watch_test",
     "watch_test_single": "nodemon --ext js ./test/tests.js",
