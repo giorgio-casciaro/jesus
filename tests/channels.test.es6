@@ -28,18 +28,18 @@ var methodCall = async (data, getStream, isPublic) => {
   setTimeout(() => stream.end(), 1000)
   testStream = true
 }
-var testTransports = [ 'httpPublic', 'socket',  'http', 'test']
+var testChannels = [ 'httpPublic', 'socket',  'http', 'test']
 
-t.plan(testTransports.length)
+t.plan(testChannels.length)
 var message = {
   method: 'testMEthod',
   data: {'testData': 1},
   meta: {'corrid': 1, 'userid': 1}
 }
-var mainTest = (testTransport) => t.test('*** ' + testTransport + ' CHANNEL ***', { autoend: true}, async function mainTest (t) {
+var mainTest = (testChannel) => t.test('*** ' + testChannel + ' CHANNEL ***', { autoend: true}, async function mainTest (t) {
   await new Promise((resolve) => setTimeout(resolve, 1000))
-  var channelServer = require('../channels/' + testTransport + '.server')({getConsole, methodCall, config})
-  var channelClient = require('../channels/' + testTransport + '.client')({getConsole})
+  var channelServer = require('../channels/' + testChannel + '.server')({getConsole, methodCall, config})
+  var channelClient = require('../channels/' + testChannel + '.client')({getConsole})
   channelServer.start()
   await new Promise((resolve) => setTimeout(resolve, 2000))
   t.plan(3)
@@ -85,4 +85,4 @@ var mainTest = (testTransport) => t.test('*** ' + testTransport + ' CHANNEL ***'
   t.end()
 })
 
-Promise.all(testTransports.map(mainTest)).then(() => process.exit())
+Promise.all(testChannels.map(mainTest)).then(() => process.exit())

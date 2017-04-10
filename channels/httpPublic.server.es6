@@ -9,7 +9,7 @@ const publicApi = false
 var httpApi
 var httpServer
 
-module.exports = function getTransportHttpPublicServerPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config }) {
+module.exports = function getChannelHttpPublicServerPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config }) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
     checkRequired({config, methodCall, getConsole})
@@ -79,6 +79,6 @@ module.exports = function getTransportHttpPublicServerPackage ({ getConsole, met
     }
   } catch (error) {
     CONSOLE.error(error, {config})
-    throw new Error('getTransportHttpServerPackage ' + config.url)
+    throw new Error('getChannelHttpServerPackage ' + config.url)
   }
 }

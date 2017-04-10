@@ -3,7 +3,7 @@ const PACKAGE = 'channel.http.client'
 const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
 
-module.exports = function getTransportHttpClientPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow' }) {
+module.exports = function getChannelHttpClientPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow' }) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
 
   try {
@@ -60,6 +60,6 @@ module.exports = function getTransportHttpClientPackage ({ getConsole, methodCal
     }
   } catch (error) {
     CONSOLE.error(error, {getConsole, methodCall})
-    throw new Error('Error during getTransportGrpcClientPackage')
+    throw new Error('Error during getChannelGrpcClientPackage')
   }
 }

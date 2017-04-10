@@ -13,8 +13,14 @@ Schema = share data schema between services
 
 
 ## TODO IN TEST
-- [ ] da transports a channels -> un channel contiene serialization (simple json,webpack) + compression (gzip)  + transport (udp, zeromq, http)
-- [ ] getSharedConfig(service,submodule,...) diventa getNetConfig(service|*), getEventsIn(service|*), getEventsOut(service|*), getMethods(service|*)
+- [X] da transports a channels -> un channel contiene serialization (simple json,webpack) + compression (gzip)  + transport (udp, zeromq, http)
+- [X] getSharedConfig(service,submodule,...) diventa
+  - getNetConfig(service|*)
+  - getEventsIn(service|*)
+  - getEventsOut(service|*)
+  - getMethodsConfig(service|*)
+
+
+- [ ] testConnections -> testa la compatibilità fra i vari  jsonschema (service 1 out schema-> service2 in schema, service 1 in schema -> service2 out schema)
 - [ ] zeromq channel
 - [ ] udp channel
-- [ ] validator separato da client e server: si basa solo sullo schema json dei metodi dei services (tutte le chiamate rpc e gli eventi dovranno essere dichiarate prima dell'avvio del service)

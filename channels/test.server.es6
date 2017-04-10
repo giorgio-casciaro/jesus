@@ -3,7 +3,7 @@ const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
 var globalEmitters = global.channelTestServers = global.channelTestServers || []
 const publicApi = true
-module.exports = function getTransportGrpcServerPackage ({serialize, deserialize, getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config}) {
+module.exports = function getChannelGrpcServerPackage ({serialize, deserialize, getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
     function start () {
@@ -38,6 +38,6 @@ module.exports = function getTransportGrpcServerPackage ({serialize, deserialize
     }
   } catch (error) {
     CONSOLE.error(error, {config})
-    throw new Error('getTransportGrpcServerPackage ' + config.url)
+    throw new Error('getChannelGrpcServerPackage ' + config.url)
   }
 }

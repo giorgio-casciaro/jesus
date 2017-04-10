@@ -5,7 +5,6 @@ var request = require('request')
 var t = require('tap')
 var path = require('path')
 
-
 const getConsole = (serviceName, serviceId, pack) => require('../utils').getConsole({error: true, debug: true, log: false, warn: true}, serviceName, serviceId, pack)
 var CONSOLE = getConsole('BASE TEST', '----', '-----')
 
@@ -18,10 +17,10 @@ var sharedConfig = {
         }
       }
     },
-    'events.emit': {
+    'eventsOut': {
       testEvent: {}
     },
-    'events.listen': {
+    'eventsIn': {
       testEvent: {
         method: 'testResponse'
       }
@@ -117,34 +116,28 @@ var Methods = {
     setTimeout(() => stream.end(), 1000)
   }
 }
-var getMethods = () => {
-  return Methods
-}
 
-var getSharedConfig = async (service, config = 'service', exclude, asObj) => {
-  if (service === '*') {
-    var results = {}
-    for (var i in sharedConfig) {
-      if (i !== exclude) {
-        results[i] = sharedConfig[i][config]
-        results[i].serviceName = i
-      }
-    }
-    if (!asObj) { results = Object.values(results) }
-    return results
-  }
-  return sharedConfig[service][config]
+var getMethods = (service, exclude) => Methods
+
+var getSharedConfig = (field = '*', exclude = '', subfield = 'net') => {
+  if (field === '*') return Object.keys(sharedConfig).filter((key) => key !== exclude).map((key) => { return {items: sharedConfig[key][subfield], service: key} })
+  else return sharedConfig[field][subfield]
 }
-var netServer1 = require('../net.server')({getConsole, serviceName: 'net1', serviceId: 'net1', getMethods, getSharedConfig, config: sharedConfig.net1.net})
-var netServer2 = require('../net.server')({getConsole, serviceName: 'net2', serviceId: 'net2', getMethods, getSharedConfig, config: sharedConfig.net2.net})
-var netServer3 = require('../net.server')({getConsole, serviceName: 'net3', serviceId: 'net3', getMethods, getSharedConfig, config: sharedConfig.net3.net})
-var netServer4 = require('../net.server')({getConsole, serviceName: 'net4', serviceId: 'net4', getMethods, getSharedConfig, config: sharedConfig.net4.net})
+var getMethodsConfig = async (service, exclude) => getSharedConfig(service, exclude, 'methods')
+var getNetConfig = async (service, exclude) => getSharedConfig(service, exclude, 'net')
+var getEventsIn = async (service, exclude) => getSharedConfig(service, exclude, 'eventsIn')
+var getEventsOut = async (service, exclude) => getSharedConfig(service, exclude, 'eventsOut')
+
+var netServer1 = require('../net.server')({getConsole, serviceName: 'net1', serviceId: 'net1', getMethods, getMethodsConfig, getNetConfig})
+var netServer2 = require('../net.server')({getConsole, serviceName: 'net2', serviceId: 'net2', getMethods, getMethodsConfig, getNetConfig})
+var netServer3 = require('../net.server')({getConsole, serviceName: 'net3', serviceId: 'net3', getMethods, getMethodsConfig, getNetConfig})
+var netServer4 = require('../net.server')({getConsole, serviceName: 'net4', serviceId: 'net4', getMethods, getMethodsConfig, getNetConfig})
 netServer1.start()
 netServer2.start()
 netServer3.start()
 netServer4.start()
 
-var netClient1 = require('../net.client')({getConsole, serviceName: 'net1', serviceId: 'net1', getSharedConfig, config: sharedConfig.net1.net})
+var netClient1 = require('../net.client')({getConsole, serviceName: 'net1', serviceId: 'net1', getNetConfig, getEventsIn, getMethodsConfig})
 
 t.test('*** NET ***', {
   autoend: true
@@ -198,5 +191,5 @@ t.test('*** NET ***', {
 
   await new Promise((resolve) => setTimeout(resolve, 1000))
   t.end()
-  //process.exit()
+  // process.exit()
 }).then(() => process.exit())

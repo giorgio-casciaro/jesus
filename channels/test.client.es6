@@ -3,7 +3,7 @@ const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
 var globalEmitters = global.channelTestServers = global.channelTestServers || []
 
-module.exports = function getTransportTestClientPackage ({ getConsole, serviceName = 'unknow', serviceId = 'unknow'}) {
+module.exports = function getChannelTestClientPackage ({ getConsole, serviceName = 'unknow', serviceId = 'unknow'}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
     checkRequired({getConsole})
@@ -23,6 +23,6 @@ module.exports = function getTransportTestClientPackage ({ getConsole, serviceNa
     }
   } catch (error) {
     CONSOLE.error(error, {getConsole})
-    throw new Error('Error during getTransportTestClientPackage')
+    throw new Error('Error during getChannelTestClientPackage')
   }
 }

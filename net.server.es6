@@ -5,21 +5,12 @@ const PACKAGE = 'net.server'
 const checkRequired = require('./utils').checkRequired
 var validatorMsg = ajv.compile(require('./schemas/message.schema.json'))
 
-function defaultGetConsole(){return console}
-function defaultGetMethods(){return {test:(echo)=>echo}}
-var defaultConfig={
-  channels: {
-    'test': {
-      url: 'localhost:10080'
-    }
-  }
-}
+function defaultGetConsole () { return console }
 
-
-module.exports = function getNetServerPackage ({config= defaultConfig, getConsole=defaultGetConsole, serviceName = 'unknow', serviceId = 'unknow', getMethods=defaultGetMethods, getSharedConfig}) {
+module.exports = function getNetServerPackage ({ getConsole = defaultGetConsole, serviceName = 'unknow', serviceId = 'unknow', getMethods, getMethodsConfig, getNetConfig}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
-  checkRequired({getMethods, getSharedConfig, getConsole})
-  CONSOLE.debug('getNetServerPackage ', { config})
+  checkRequired({getMethods, getMethodsConfig, getConsole, getNetConfig})
+  CONSOLE.debug('getNetServerPackage ', { })
   var validateMsg = (data) => {
     if (!validatorMsg(data)) {
       CONSOLE.error('MESSAGE IS NOT VALID ', {errors: validate.errors})
@@ -28,6 +19,7 @@ module.exports = function getNetServerPackage ({config= defaultConfig, getConsol
   }
   try {
   // var defaultEventListen = require('./default.event.listen.json')
+    var config
     var validate = (methodConfig, methodName, data, schemaField = 'requestSchema') => {
       CONSOLE.debug('validate ', { methodConfig, methodName, data, schemaField })
       if (!methodConfig[schemaField]) throw new Error(schemaField + ' not defined in methods.json ' + methodName)
@@ -38,11 +30,9 @@ module.exports = function getNetServerPackage ({config= defaultConfig, getConsol
         throw new Error('validation error ', {errors: validate.errors})
       } else return data
     }
-    var getTrans = (channelName) => require(`./channels/${channelName}.server`)({getSharedConfig, getConsole, methodCall, serviceName, serviceId, config: config.channels[channelName]})
-    var forEachTransport = (func) => Object.keys(config.channels).forEach((channelName) => func(getTrans(channelName)))
+    var getChannel = (channelName) => require(`./channels/${channelName}.server`)({getConsole, methodCall, serviceName, serviceId, config: config.channels[channelName]})
+    var forEachChannel = (func) => Object.keys(config.channels).forEach((channelName) => func(getChannel(channelName)))
 
-    config = R.merge(defaultConfig, config)
-    CONSOLE.debug('config ', config)
     // ogni method call può avere più dati anche dauserid e requestid diversi
     var methodCall = async function methodCall (message, getStream, publicApi = true, channel = 'UNKNOW') {
       try {
@@ -58,7 +48,7 @@ module.exports = function getNetServerPackage ({config= defaultConfig, getConsol
         meta.channel = channel
         var data = message.data || {}
 
-        var serviceMethodsConfig = await getSharedConfig(serviceName, 'methods')
+        var serviceMethodsConfig = await getMethodsConfig(serviceName)
         var methods = getMethods()
         if (!serviceMethodsConfig[methodName]) throw new Error(methodName + ' is not valid (not defined in methods config)')
         if (!serviceMethodsConfig[methodName].public && publicApi) throw new Error(methodName + ' is not public')
@@ -91,17 +81,18 @@ module.exports = function getNetServerPackage ({config= defaultConfig, getConsol
       }
     }
     return {
-      start () {
-        CONSOLE.log('START CHANNELS SERVERS ', {channels: config.channels})
-        forEachTransport((channel) => channel.start())
+      async start () {
+        config = await getNetConfig(serviceName)
+        CONSOLE.debug('START CHANNELS SERVERS ',config)
+        forEachChannel((channel) => channel.start())
       },
       stop () {
-        CONSOLE.log('STOP CHANNELS SERVERS ', {channels: config.channels})
-        forEachTransport((channel) => channel.stop())
+        CONSOLE.debug('STOP CHANNELS SERVERS ', {channels: config.channels})
+        forEachChannel((channel) => channel.stop())
       },
       restart () {
-        CONSOLE.log('RESTART CHANNELS SERVERS ', {channels: config.channels})
-        forEachTransport((channel) => channel.restart())
+        CONSOLE.debug('RESTART CHANNELS SERVERS ', {channels: config.channels})
+        forEachChannel((channel) => channel.restart())
       }
     }
   } catch (error) {

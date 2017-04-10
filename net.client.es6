@@ -1,77 +1,72 @@
 const PACKAGE = 'net.client'
 const checkRequired = require('./utils').checkRequired
 const R = require('ramda')
-var preferedTransports = ['grpc', 'zeromq', 'http']
+var preferedChannels = ['grpc', 'zeromq', 'http']
 // var delayedMessages = global.JESUS_NET_CLIENT_delayedMessages = global.JESUS_NET_CLIENT_delayedMessages || {}
 
-module.exports = function getNetClientPackage ({getConsole, serviceName = 'unknow', serviceId = 'unknow', getSharedConfig, config}) {
+module.exports = function getNetClientPackage ({getConsole, serviceName = 'unknow', serviceId = 'unknow', getNetConfig, getEventsIn, getMethodsConfig}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
-    checkRequired({getSharedConfig, config})
-    var getTrans = (channelName) => require(`./channels/${channelName}.client`)({getConsole, serviceName, serviceId})
-    // var defaultEventEmit = require('./default.event.emit.json')
+    checkRequired({getEventsIn, getMethodsConfig, getNetConfig})
+    var getChannel = (channelName) => require(`./channels/${channelName}.client`)({getConsole, serviceName, serviceId})
 
-    const getServicesEventsConfigByEventName = async (event) => {
-      var configs = await getSharedConfig('*', 'events.listen', serviceName)
+    const getEventsInConfig = async (event) => {
+      var servicesEventsIn = await getEventsIn('*', serviceName)
       var eventConfig = []
-      configs.forEach(config => {
-        Object.keys(config).forEach(eventName => {
-          if (event === eventName || eventName === '*')eventConfig.push({to: config.serviceName, method: config[eventName].method, event: config[eventName], eventName})
+      servicesEventsIn.forEach(config => {
+        Object.keys(config.items).forEach(eventName => {
+          if (event === eventName || eventName === '*')eventConfig.push({to: config.service, method: config.items[eventName].method, event: config.items[eventName], eventName})
         })
       })
+      CONSOLE.debug('getEventsInConfig ', eventConfig)
       return eventConfig
     }
-    // function filterByTag (tags) {
-    //   return (tagFilter) => {
-    //     if (tagFilter)CONSOLE.debug(`filterByTag()`, tags.indexOf(tagFilter) + 1)
-    //     return !tags || !tagFilter ? true : tags.indexOf(tagFilter) + 1
-    //   }
-    // }
 
     async function emit ({event, data = {}, meta = {}, timeout = 5000, singleResponse = true}) {
       meta.event = event
-      var eventConfig = await getServicesEventsConfigByEventName(event)
+      var eventConfig = await getEventsInConfig(event)
       CONSOLE.debug('emit start ' + event, {singleResponse, event, data, meta, timeout, eventConfig})
-      var responses = await Promise.all(eventConfig.map((rpcConfig) => rpc({to: rpcConfig.to, method: rpcConfig.method, data, meta, timeout, log: false })))
+      var responses = await Promise.all(eventConfig.map((rpcConfig) => rpc({ to: rpcConfig.to, method: rpcConfig.method, data, meta, timeout, log: false })))
       responses = responses.filter((response) => response !== null)
       if (singleResponse)responses = responses[0] || null
       CONSOLE.debug('emit response' + event, {responses, event, eventConfig})
       return responses
     }
 
-    async function rpc ({to, method, data = {}, meta = {}, timeout = 5000, }) {
+    async function rpc ({to, method, data = {}, meta = {}, timeout = 5000 }) {
       try {
-        CONSOLE.debug('rpc() start', {to, method, data, meta, timeout })
+        CONSOLE.debug('rpc() start', { to, method, data, meta, timeout })
         checkRequired({to, method})
-        var senderNetConfig = await getSharedConfig(serviceName, 'net')
-        var listenerNetConfig = await getSharedConfig(to, 'net')
-        var listenerMethodsConfig = await getSharedConfig(to, 'methods')
+        var senderNetConfig = await getNetConfig(serviceName)
+        var listenerNetConfig = await getNetConfig(to)
+        var listenerMethodsConfig = await getMethodsConfig(to)
         var listenerMethodConfig = listenerMethodsConfig[method]
 
         if (!listenerMethodsConfig[method]) throw new Error(method + ' is not valid (not defined in listener methods config)')
 
-        var commonTransports = Object.keys(senderNetConfig.channels).filter((value) => 1 + Object.keys(listenerNetConfig.channels).indexOf(value))
-        CONSOLE.debug('commonTransports', commonTransports, Object.keys(senderNetConfig.channels), Object.keys(listenerNetConfig.channels))
-        if (!commonTransports.length) throw new Error(`service ${to} and service ${serviceName} have no common channels`)
-        commonTransports.sort((a, b) => preferedTransports.indexOf(b) - preferedTransports.indexOf(a))// listenerMethod preferedTransports
+        var commonChannels = Object.keys(senderNetConfig.channels).filter((value) => 1 + Object.keys(listenerNetConfig.channels).indexOf(value))
+        CONSOLE.debug('commonChannels', commonChannels, Object.keys(senderNetConfig.channels), Object.keys(listenerNetConfig.channels))
+        if (!commonChannels.length) throw new Error(`service ${to} and service ${serviceName} have no common channels`)
+        commonChannels.sort((a, b) => preferedChannels.indexOf(b) - preferedChannels.indexOf(a))// listenerMethod preferedChannels
 
-        CONSOLE.debug('rpc commonTransports', {commonTransports, first: commonTransports[0]})
-        var channel = getTrans(commonTransports[0])
+        CONSOLE.debug('rpc commonChannels', {commonChannels, first: commonChannels[0]})
+        var channel = getChannel(commonChannels[0])
 
-        var sendTo = listenerNetConfig.channels[commonTransports[0]]
+        var sendTo = listenerNetConfig.channels[commonChannels[0]]
         var waitResponse = (listenerMethodConfig.responseType !== 'noResponse')
         var isStream = (listenerMethodConfig.responseType === 'stream')
-        var meta = R.clone(meta)
-        meta.reqOutTimestamp = Date.now()
-        meta.from = serviceName
-        meta.stream = isStream
-        meta.to = to
+        meta = R.merge({
+          reqOutTimestamp: Date.now(),
+          from: serviceName,
+          stream: isStream,
+          to
+        }, meta)
         var message = {method, meta, data}
 
           // if streaming return eventEmiter con on data,on error,on end altrimenti risposta
-        CONSOLE.log('=> CLIENT OUT STREAM', {to: sendTo, message, waitResponse})
+        CONSOLE.debug('=> CLIENT OUT STREAM', {to: sendTo, message, waitResponse})
         var response = await channel.send(sendTo, message, listenerMethodConfig.timeout, waitResponse, isStream)
-        CONSOLE.log('=> CLIENT IN STREAM RESPONSE', {response})
+        CONSOLE.debug('=> CLIENT IN STREAM RESPONSE', {response})
           // if (singleResponse && response && response[0])response = response[0]
         CONSOLE.debug('rpc to ' + to + ' ' + method + ' corrid:' + meta.corrid, {response, sendTo, message, waitResponse})
         return response
