@@ -36,25 +36,25 @@ var message = {
   data: {'testData': 1},
   meta: {'corrid': 1, 'userid': 1}
 }
-var mainTest = (testTransport) => t.test('*** ' + testTransport + ' TRANSPORT ***', { autoend: true}, async function mainTest (t) {
+var mainTest = (testTransport) => t.test('*** ' + testTransport + ' CHANNEL ***', { autoend: true}, async function mainTest (t) {
   await new Promise((resolve) => setTimeout(resolve, 1000))
-  var transportServer = require('../transports/' + testTransport + '.server')({getConsole, methodCall, config})
-  var transportClient = require('../transports/' + testTransport + '.client')({getConsole})
-  transportServer.start()
+  var channelServer = require('../channels/' + testTransport + '.server')({getConsole, methodCall, config})
+  var channelClient = require('../channels/' + testTransport + '.client')({getConsole})
+  channelServer.start()
   await new Promise((resolve) => setTimeout(resolve, 2000))
   t.plan(3)
-  await t.test('transportClient.send -> testResponse', async function (t) {
+  await t.test('channelClient.send -> testResponse', async function (t) {
     testCheck = false
-    var response = await transportClient.send(config, message, 5000, true, false)
+    var response = await channelClient.send(config, message, 5000, true, false)
     CONSOLE.debug('testResponse response', response)
     t.same(response.data, message.data, 'response data as sended')
     t.same(testCheck, true, 'testResponse richiesta ricevuta')
     t.end()
   })
 
-  await t.test('transportClient.send -> testNoResponse', async function (t) {
+  await t.test('channelClient.send -> testNoResponse', async function (t) {
     testCheck = false
-    var response = await transportClient.send(config, message, 5000, false, false)
+    var response = await channelClient.send(config, message, 5000, false, false)
     CONSOLE.debug('testNoResponse response', response)
     t.same(response, null, 'response null')
     await new Promise((resolve) => setTimeout(resolve, 500))
@@ -62,12 +62,12 @@ var mainTest = (testTransport) => t.test('*** ' + testTransport + ' TRANSPORT **
     t.end()
   })
 
-  await t.test('transportClient.send -> testStream', async function (t) {
+  await t.test('channelClient.send -> testStream', async function (t) {
     testCheck = false
     testStream = false
     var testStream2 = false
     var testStream3 = false
-    var streaming = await transportClient.send(config, message, 5000, true, true)
+    var streaming = await channelClient.send(config, message, 5000, true, true)
     streaming.on('data', (data) => { CONSOLE.debug('streaming data', data); testStream2 = true })
     streaming.on('error', (data) => CONSOLE.debug('streaming error', data))
     streaming.on('end', (data) => { CONSOLE.debug('streaming close', data); testStream3 = true })
@@ -80,7 +80,7 @@ var mainTest = (testTransport) => t.test('*** ' + testTransport + ' TRANSPORT **
   })
 
   await new Promise((resolve) => setTimeout(resolve, 1000))
-  transportServer.stop()
+  channelServer.stop()
   await new Promise((resolve) => setTimeout(resolve, 1000))
   t.end()
 })

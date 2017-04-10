@@ -11,7 +11,7 @@
     "watch_test_b": "nodemon  --ext js --exec \"clear && printf '\\e[3J' && tap testServicesNet/base.test.js --cov --color --reporter=spec || true\"",
     "watch_test": "nodemon  --ext js --exec \"clear && printf '\\e[3J' && tap tests/*.test.js --cov --color --reporter=spec || true\"",
     "watch_debug_b": "nodemon  --ext js  --cov --exec \"clear && printf '\\e[3J' && node --inspect   testServicesNet/base.test.js || true\"",
-    "watch_debug_t": "nodemon  --ext js  --cov --exec \"clear && printf '\\e[3J' && node --inspect   tests/transports.test.js || true\""
+    "watch_debug_t": "nodemon  --ext js  --cov --exec \"clear && printf '\\e[3J' && node --inspect   tests/channels.test.js || true\""
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",

@@ -12,7 +12,7 @@ var CONSOLE = getConsole('BASE TEST', '----', '-----')
 var sharedConfig = {
   'net1': {
     'net': {
-      transports: {
+      channels: {
         'test': {
           url: 'localhost:8080'
         }
@@ -56,7 +56,7 @@ var sharedConfig = {
 }
 sharedConfig.net2 = R.merge(sharedConfig.net1, {
   net: {
-    transports: {
+    channels: {
       'test': {
         url: 'localhost:8082'
       }
@@ -70,7 +70,7 @@ sharedConfig.net2 = R.merge(sharedConfig.net1, {
 })
 sharedConfig.net3 = R.merge(sharedConfig.net1, {
   net: {
-    transports: {
+    channels: {
       'test': {
         url: 'localhost:8083'
       }
@@ -84,7 +84,7 @@ sharedConfig.net3 = R.merge(sharedConfig.net1, {
 })
 sharedConfig.net4 = R.merge(sharedConfig.net1, {
   net: {
-    transports: {
+    channels: {
       'test': {
         url: 'localhost:8084'
       }

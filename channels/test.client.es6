@@ -1,7 +1,7 @@
-const PACKAGE = 'transport.test.server'
+const PACKAGE = 'channel.test.server'
 const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
-var globalEmitters = global.transportTestServers = global.transportTestServers || []
+var globalEmitters = global.channelTestServers = global.channelTestServers || []
 
 module.exports = function getTransportTestClientPackage ({ getConsole, serviceName = 'unknow', serviceId = 'unknow'}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)

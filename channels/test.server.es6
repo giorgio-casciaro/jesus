@@ -1,7 +1,7 @@
-const PACKAGE = 'transport.test.server'
+const PACKAGE = 'channel.test.server'
 const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
-var globalEmitters = global.transportTestServers = global.transportTestServers || []
+var globalEmitters = global.channelTestServers = global.channelTestServers || []
 const publicApi = true
 module.exports = function getTransportGrpcServerPackage ({serialize, deserialize, getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
@@ -28,7 +28,7 @@ module.exports = function getTransportGrpcServerPackage ({serialize, deserialize
         methodCall(message, getStream, publicApi,"test")
         respond(readableStream)
       })
-      CONSOLE.debug('Net started TEST transport')
+      CONSOLE.debug('Net started TEST channel')
     }
     checkRequired({config, methodCall, getConsole})
     return {

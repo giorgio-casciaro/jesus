@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var compression = require('compression');
 var helmet = require('helmet');
 var url = require('url');
-var PACKAGE = 'transport.http.server';
+var PACKAGE = 'channel.http.server';
 var checkRequired = require('../utils').checkRequired;
 var publicApi = false;
 var httpApi;

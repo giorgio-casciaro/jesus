@@ -1,5 +1,5 @@
 var request = require('request')
-const PACKAGE = 'transport.http.client'
+const PACKAGE = 'channel.http.client'
 const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
 

@@ -1,9 +1,9 @@
 'use strict';
 
-var PACKAGE = 'transport.test.server';
+var PACKAGE = 'channel.test.server';
 var checkRequired = require('../utils').checkRequired;
 var EventEmitter = require('events');
-var globalEmitters = global.transportTestServers = global.transportTestServers || [];
+var globalEmitters = global.channelTestServers = global.channelTestServers || [];
 var publicApi = true;
 module.exports = function getTransportGrpcServerPackage(_ref) {
   var serialize = _ref.serialize,
@@ -79,7 +79,7 @@ module.exports = function getTransportGrpcServerPackage(_ref) {
           }
         }, null, this);
       });
-      CONSOLE.debug('Net started TEST transport');
+      CONSOLE.debug('Net started TEST channel');
     };
 
     checkRequired({ config: config, methodCall: methodCall, getConsole: getConsole });

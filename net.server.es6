@@ -8,7 +8,7 @@ var validatorMsg = ajv.compile(require('./schemas/message.schema.json'))
 function defaultGetConsole(){return console}
 function defaultGetMethods(){return {test:(echo)=>echo}}
 var defaultConfig={
-  transports: {
+  channels: {
     'test': {
       url: 'localhost:10080'
     }
@@ -38,13 +38,13 @@ module.exports = function getNetServerPackage ({config= defaultConfig, getConsol
         throw new Error('validation error ', {errors: validate.errors})
       } else return data
     }
-    var getTrans = (transportName) => require(`./transports/${transportName}.server`)({getSharedConfig, getConsole, methodCall, serviceName, serviceId, config: config.transports[transportName]})
-    var forEachTransport = (func) => Object.keys(config.transports).forEach((transportName) => func(getTrans(transportName)))
+    var getTrans = (channelName) => require(`./channels/${channelName}.server`)({getSharedConfig, getConsole, methodCall, serviceName, serviceId, config: config.channels[channelName]})
+    var forEachTransport = (func) => Object.keys(config.channels).forEach((channelName) => func(getTrans(channelName)))
 
     config = R.merge(defaultConfig, config)
     CONSOLE.debug('config ', config)
     // ogni method call può avere più dati anche dauserid e requestid diversi
-    var methodCall = async function methodCall (message, getStream, publicApi = true, transport = 'UNKNOW') {
+    var methodCall = async function methodCall (message, getStream, publicApi = true, channel = 'UNKNOW') {
       try {
         CONSOLE.log('=> SERVER IN', {message})
         validateMsg(message)
@@ -55,7 +55,7 @@ module.exports = function getNetServerPackage ({config= defaultConfig, getConsol
         meta.userid = meta.userid || 'UNKNOW'
         meta.from = meta.from || 'UNKNOW'
         meta.reqInTimestamp = Date.now()
-        meta.transport = transport
+        meta.channel = channel
         var data = message.data || {}
 
         var serviceMethodsConfig = await getSharedConfig(serviceName, 'methods')
@@ -92,16 +92,16 @@ module.exports = function getNetServerPackage ({config= defaultConfig, getConsol
     }
     return {
       start () {
-        CONSOLE.log('START TRANSPORTS SERVERS ', {transports: config.transports})
-        forEachTransport((transport) => transport.start())
+        CONSOLE.log('START CHANNELS SERVERS ', {channels: config.channels})
+        forEachTransport((channel) => channel.start())
       },
       stop () {
-        CONSOLE.log('STOP TRANSPORTS SERVERS ', {transports: config.transports})
-        forEachTransport((transport) => transport.stop())
+        CONSOLE.log('STOP CHANNELS SERVERS ', {channels: config.channels})
+        forEachTransport((channel) => channel.stop())
       },
       restart () {
-        CONSOLE.log('RESTART TRANSPORTS SERVERS ', {transports: config.transports})
-        forEachTransport((transport) => transport.restart())
+        CONSOLE.log('RESTART CHANNELS SERVERS ', {channels: config.channels})
+        forEachTransport((channel) => channel.restart())
       }
     }
   } catch (error) {

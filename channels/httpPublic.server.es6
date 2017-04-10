@@ -3,7 +3,7 @@ var bodyParser = require('body-parser')
 var compression = require('compression')
 var helmet = require('helmet')
 const url = require('url')
-const PACKAGE = 'transport.httpPublic.server'
+const PACKAGE = 'channel.httpPublic.server'
 const checkRequired = require('../utils').checkRequired
 const publicApi = false
 var httpApi

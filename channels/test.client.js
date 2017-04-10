@@ -1,9 +1,9 @@
 'use strict';
 
-var PACKAGE = 'transport.test.server';
+var PACKAGE = 'channel.test.server';
 var checkRequired = require('../utils').checkRequired;
 var EventEmitter = require('events');
-var globalEmitters = global.transportTestServers = global.transportTestServers || [];
+var globalEmitters = global.channelTestServers = global.channelTestServers || [];
 
 module.exports = function getTransportTestClientPackage(_ref) {
   var getConsole = _ref.getConsole,

@@ -1,7 +1,7 @@
 'use strict';
 
 var request = require('request');
-var PACKAGE = 'transport.httpPublic.client';
+var PACKAGE = 'channel.httpPublic.client';
 var checkRequired = require('../utils').checkRequired;
 var EventEmitter = require('events');
 

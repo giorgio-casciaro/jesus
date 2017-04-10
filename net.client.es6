@@ -8,7 +8,7 @@ module.exports = function getNetClientPackage ({getConsole, serviceName = 'unkno
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
     checkRequired({getSharedConfig, config})
-    var getTrans = (transportName) => require(`./transports/${transportName}.client`)({getConsole, serviceName, serviceId})
+    var getTrans = (channelName) => require(`./channels/${channelName}.client`)({getConsole, serviceName, serviceId})
     // var defaultEventEmit = require('./default.event.emit.json')
 
     const getServicesEventsConfigByEventName = async (event) => {
@@ -50,15 +50,15 @@ module.exports = function getNetClientPackage ({getConsole, serviceName = 'unkno
 
         if (!listenerMethodsConfig[method]) throw new Error(method + ' is not valid (not defined in listener methods config)')
 
-        var commonTransports = Object.keys(senderNetConfig.transports).filter((value) => 1 + Object.keys(listenerNetConfig.transports).indexOf(value))
-        CONSOLE.debug('commonTransports', commonTransports, Object.keys(senderNetConfig.transports), Object.keys(listenerNetConfig.transports))
-        if (!commonTransports.length) throw new Error(`service ${to} and service ${serviceName} have no common transports`)
+        var commonTransports = Object.keys(senderNetConfig.channels).filter((value) => 1 + Object.keys(listenerNetConfig.channels).indexOf(value))
+        CONSOLE.debug('commonTransports', commonTransports, Object.keys(senderNetConfig.channels), Object.keys(listenerNetConfig.channels))
+        if (!commonTransports.length) throw new Error(`service ${to} and service ${serviceName} have no common channels`)
         commonTransports.sort((a, b) => preferedTransports.indexOf(b) - preferedTransports.indexOf(a))// listenerMethod preferedTransports
 
         CONSOLE.debug('rpc commonTransports', {commonTransports, first: commonTransports[0]})
-        var transport = getTrans(commonTransports[0])
+        var channel = getTrans(commonTransports[0])
 
-        var sendTo = listenerNetConfig.transports[commonTransports[0]]
+        var sendTo = listenerNetConfig.channels[commonTransports[0]]
         var waitResponse = (listenerMethodConfig.responseType !== 'noResponse')
         var isStream = (listenerMethodConfig.responseType === 'stream')
         var meta = R.clone(meta)
@@ -70,7 +70,7 @@ module.exports = function getNetClientPackage ({getConsole, serviceName = 'unkno
 
           // if streaming return eventEmiter con on data,on error,on end altrimenti risposta
         CONSOLE.log('=> CLIENT OUT STREAM', {to: sendTo, message, waitResponse})
-        var response = await transport.send(sendTo, message, listenerMethodConfig.timeout, waitResponse, isStream)
+        var response = await channel.send(sendTo, message, listenerMethodConfig.timeout, waitResponse, isStream)
         CONSOLE.log('=> CLIENT IN STREAM RESPONSE', {response})
           // if (singleResponse && response && response[0])response = response[0]
         CONSOLE.debug('rpc to ' + to + ' ' + method + ' corrid:' + meta.corrid, {response, sendTo, message, waitResponse})
