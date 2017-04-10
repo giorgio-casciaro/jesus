@@ -6,7 +6,7 @@ var t = require('tap')
 var path = require('path')
 
 
-const getConsole = (serviceName, serviceId, pack) => require('../utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
+const getConsole = (serviceName, serviceId, pack) => require('../utils').getConsole({error: true, debug: true, log: false, warn: true}, serviceName, serviceId, pack)
 var CONSOLE = getConsole('BASE TEST', '----', '-----')
 
 var sharedConfig = {

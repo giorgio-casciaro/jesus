@@ -5,9 +5,21 @@ const PACKAGE = 'net.server'
 const checkRequired = require('./utils').checkRequired
 var validatorMsg = ajv.compile(require('./schemas/message.schema.json'))
 
-module.exports = function getNetServerPackage ({config, getConsole, serviceName = 'unknow', serviceId = 'unknow', getMethods, getSharedConfig}) {
+function defaultGetConsole(){return console}
+function defaultGetMethods(){return {test:(echo)=>echo}}
+var defaultConfig={
+  transports: {
+    'test': {
+      url: 'localhost:10080'
+    }
+  }
+}
+
+
+module.exports = function getNetServerPackage ({config= defaultConfig, getConsole=defaultGetConsole, serviceName = 'unknow', serviceId = 'unknow', getMethods=defaultGetMethods, getSharedConfig}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
-  checkRequired({config, getMethods, getSharedConfig, getConsole})
+  checkRequired({getMethods, getSharedConfig, getConsole})
+  CONSOLE.debug('getNetServerPackage ', { config})
   var validateMsg = (data) => {
     if (!validatorMsg(data)) {
       CONSOLE.error('MESSAGE IS NOT VALID ', {errors: validate.errors})
@@ -29,14 +41,7 @@ module.exports = function getNetServerPackage ({config, getConsole, serviceName 
     var getTrans = (transportName) => require(`./transports/${transportName}.server`)({getSharedConfig, getConsole, methodCall, serviceName, serviceId, config: config.transports[transportName]})
     var forEachTransport = (func) => Object.keys(config.transports).forEach((transportName) => func(getTrans(transportName)))
 
-    config = R.merge({
-      transports: {
-        'grpc': {
-          'url': 'localhost:8080',
-          'public': true
-        }
-      }
-    }, config)
+    config = R.merge(defaultConfig, config)
     CONSOLE.debug('config ', config)
     // ogni method call può avere più dati anche dauserid e requestid diversi
     var methodCall = async function methodCall (message, getStream, publicApi = true, transport = 'UNKNOW') {
@@ -86,7 +91,6 @@ module.exports = function getNetServerPackage ({config, getConsole, serviceName 
       }
     }
     return {
-      methodCall,
       start () {
         CONSOLE.log('START TRANSPORTS SERVERS ', {transports: config.transports})
         forEachTransport((transport) => transport.start())

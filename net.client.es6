@@ -42,6 +42,7 @@ module.exports = function getNetClientPackage ({getConsole, serviceName = 'unkno
     async function rpc ({to, method, data = {}, meta = {}, timeout = 5000, }) {
       try {
         CONSOLE.debug('rpc() start', {to, method, data, meta, timeout })
+        checkRequired({to, method})
         var senderNetConfig = await getSharedConfig(serviceName, 'net')
         var listenerNetConfig = await getSharedConfig(to, 'net')
         var listenerMethodsConfig = await getSharedConfig(to, 'methods')
