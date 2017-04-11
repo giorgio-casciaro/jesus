@@ -17,8 +17,38 @@ var sharedConfig = {
         }
       }
     },
-    'eventsOut': {
-      testEvent: {}
+    rpcOut: {
+      'testRpcNoResponse': {
+        to: 'net1',
+        method: 'testNoResponse',
+        requestSchema: {'type': 'object'},
+        responseSchema: {'type': 'object'}
+      },
+      'testRpcAknowlegment': {
+        to: 'net1',
+        method: 'testAknowlegment',
+        requestSchema: {'type': 'object'},
+        responseSchema: {'type': 'object'}
+      },
+      'testRpcResponse': {
+        to: 'net1',
+        method: 'testResponse',
+        requestSchema: {'type': 'object'},
+        responseSchema: {'type': 'object'}
+      },
+      'testRpcStream': {
+        to: 'net1',
+        method: 'testStream',
+        requestSchema: {'type': 'object'},
+        responseSchema: {'type': 'object'}
+      }
+    },
+    eventsOut: {
+      'testEvent': {
+        multipleResponse: false,
+        requestSchema: {'type': 'object'},
+        responseSchema: {'type': 'object'}
+      }
     },
     'eventsIn': {
       testEvent: {
@@ -119,25 +149,39 @@ var Methods = {
 
 var getMethods = (service, exclude) => Methods
 
-var getSharedConfig = (field = '*', exclude = '', subfield = 'net') => {
-  if (field === '*') return Object.keys(sharedConfig).filter((key) => key !== exclude).map((key) => { return {items: sharedConfig[key][subfield], service: key} })
-  else return sharedConfig[field][subfield]
+var getSharedConfig = (field = 'net', service = '*', exclude = '') => {
+  if (service === '*') return Object.keys(sharedConfig).filter((key) => key !== exclude).map((key) => { return {items: sharedConfig[key][field], service: key} })
+  else return sharedConfig[service][field]
 }
-var getMethodsConfig = async (service, exclude) => getSharedConfig(service, exclude, 'methods')
-var getNetConfig = async (service, exclude) => getSharedConfig(service, exclude, 'net')
-var getEventsIn = async (service, exclude) => getSharedConfig(service, exclude, 'eventsIn')
-var getEventsOut = async (service, exclude) => getSharedConfig(service, exclude, 'eventsOut')
 
-var netServer1 = require('../net.server')({getConsole, serviceName: 'net1', serviceId: 'net1', getMethods, getMethodsConfig, getNetConfig})
-var netServer2 = require('../net.server')({getConsole, serviceName: 'net2', serviceId: 'net2', getMethods, getMethodsConfig, getNetConfig})
-var netServer3 = require('../net.server')({getConsole, serviceName: 'net3', serviceId: 'net3', getMethods, getMethodsConfig, getNetConfig})
-var netServer4 = require('../net.server')({getConsole, serviceName: 'net4', serviceId: 'net4', getMethods, getMethodsConfig, getNetConfig})
+function getServer (serviceName, serviceId) {
+  var getMethodsConfig = async (service, exclude) => getSharedConfig('methods', service || serviceName, exclude)
+  var getNetConfig = async (service, exclude) => getSharedConfig('net', service || serviceName, exclude)
+  var getEventsIn = async (service, exclude) => getSharedConfig('eventsIn', service || serviceName, exclude)
+  var getEventsOut = async (service, exclude) => getSharedConfig('eventsOut', service || serviceName, exclude)
+  var getRpcOut = async (service, exclude) => getSharedConfig('rpcOut', service || serviceName, exclude)
+  return require('../net.server')({getConsole, serviceName, serviceId, getMethods, getMethodsConfig, getNetConfig})
+}
+
+function getClient (serviceName, serviceId) {
+  var getMethodsConfig = async (service, exclude) => getSharedConfig('methods', service || serviceName, exclude)
+  var getNetConfig = async (service, exclude) => getSharedConfig('net', service || serviceName, exclude)
+  var getEventsIn = async (service, exclude) => getSharedConfig('eventsIn', service || serviceName, exclude)
+  var getEventsOut = async (service, exclude) => getSharedConfig('eventsOut', service || serviceName, exclude)
+  var getRpcOut = async (service, exclude) => getSharedConfig('rpcOut', service || serviceName, exclude)
+  return require('../net.client')({getConsole, serviceName, serviceId, getNetConfig, getEventsIn, getEventsOut, getMethodsConfig, getRpcOut})
+}
+
+var netServer1 = getServer('net1', 'net1')
+var netServer2 = getServer('net2', 'net2')
+var netServer3 = getServer('net3', 'net3')
+var netServer4 = getServer('net4', 'net4')
 netServer1.start()
 netServer2.start()
 netServer3.start()
 netServer4.start()
 
-var netClient1 = require('../net.client')({getConsole, serviceName: 'net1', serviceId: 'net1', getNetConfig, getEventsIn, getMethodsConfig})
+var netClient1 = getClient('net1', 'net1')
 
 t.test('*** NET ***', {
   autoend: true
@@ -146,7 +190,7 @@ t.test('*** NET ***', {
   await new Promise((resolve) => setTimeout(resolve, 1000))
   await t.test('netClient1.rpc -> testNoResponse', async function (t) {
     testCheck = false
-    var response = await netClient1.rpc({to: 'net1', method: 'testNoResponse', data: {'test_data': 1}, meta, timeout: 5000})
+    var response = await netClient1.rpc('testRpcNoResponse', {'test_data': 1}, meta)
     t.same(response, null, 'response=true on NoResponse')
     await new Promise((resolve) => setTimeout(resolve, 1000))
     t.same(testCheck, {'test_data': 1}, 'testNoResponse richiesta ricevuta')
@@ -154,7 +198,7 @@ t.test('*** NET ***', {
   })
   await t.test('netClient1.rpc -> testAknowlegment', async function (t) {
     testCheck = false
-    var response = await netClient1.rpc({to: 'net1', method: 'testAknowlegment', data: {'test_data': 1}, meta, timeout: 5000})
+    var response = await netClient1.rpc('testRpcAknowlegment', {'test_data': 1}, meta)
     t.same(response, null, 'Aknowlegment ok')
     t.same(testCheck, {'test_data': 1}, 'testAknowlegment richiesta ricevuta')
     t.end()
@@ -162,7 +206,7 @@ t.test('*** NET ***', {
   //
   await t.test('netClient1.rpc -> testResponse', async function (t) {
     testCheck = false
-    var response = await netClient1.rpc({to: 'net1', method: 'testResponse', data: {'test_data': 1}, meta, timeout: 5000})
+    var response = await netClient1.rpc('testRpcResponse', {'test_data': 1}, meta)
     t.same(response, {'test_data': 1}, 'response as sended')
     t.same(testCheck, {'test_data': 1}, 'testResponse richiesta ricevuta')
     t.end()
@@ -170,7 +214,7 @@ t.test('*** NET ***', {
   await t.test('netClient1.rpc -> testStream', async function (t) {
     testCheck = false
     var testStream = false
-    var streaming = await netClient1.rpc({to: 'net1', method: 'testStream', data: {'test_data': 1}, meta, timeout: 5000})
+    var streaming = await netClient1.rpc('testRpcStream', {'test_data': 1}, meta)
     streaming.on('data', (data) => { CONSOLE.debug('streaming data', data); testStream = true })
     streaming.on('error', (data) => CONSOLE.debug('streaming error', data))
     streaming.on('end', (data) => CONSOLE.debug('streaming close', data))
@@ -183,7 +227,7 @@ t.test('*** NET ***', {
 
   await t.test('netClient1.emit -> testEmit', async function (t) {
     testCheck = false
-    var response = await netClient1.emit({event: 'testEvent', data: {'eventTest_data': 1}, meta, timeout: 5000, singleResponse: true})
+    var response = await netClient1.emit('testEvent', {'eventTest_data': 1}, meta)
     t.same(response, {'eventTest_data': 1}, 'response as sended')
     t.same(testCheck, {'eventTest_data': 1}, 'delayed received')
     t.end()

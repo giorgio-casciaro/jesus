@@ -3,33 +3,35 @@ const uuidV4 = require('uuid/v4')
 var ajv = require('ajv')({allErrors: true})
 const PACKAGE = 'net.server'
 const checkRequired = require('./utils').checkRequired
-var validatorMsg = ajv.compile(require('./schemas/message.schema.json'))
+var validateMsg = ajv.compile(require('./schemas/message.schema.json'))
 
-function defaultGetConsole () { return console }
+const getConsole = (serviceName, serviceId, pack) => require('./utils').getConsole({error: true, debug: true, log: false, warn: true}, serviceName, serviceId, pack)
 
-module.exports = function getNetServerPackage ({ getConsole = defaultGetConsole, serviceName = 'unknow', serviceId = 'unknow', getMethods, getMethodsConfig, getNetConfig}) {
+
+module.exports = function getNetServerPackage ({  serviceName = 'unknow', serviceId = 'unknow', getMethods, getMethodsConfig, getNetConfig}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
-  checkRequired({getMethods, getMethodsConfig, getConsole, getNetConfig})
+  checkRequired({getMethods, getMethodsConfig, getConsole, getNetConfig}, PACKAGE)
   CONSOLE.debug('getNetServerPackage ', { })
-  var validateMsg = (data) => {
-    if (!validatorMsg(data)) {
+  var validateRequest = (data) => {
+    if (!validateMsg(data)) {
       CONSOLE.error('MESSAGE IS NOT VALID ', {errors: validate.errors})
-      throw new Error('MESSAGE IS NOT VALID', {errors: validatorMsg.errors})
+      throw new Error('MESSAGE IS NOT VALID', {errors: validateMsg.errors})
+    } else return data
+  }
+  var validateResponse = (methodConfig, methodName, data, schemaField = 'requestSchema') => {
+    CONSOLE.debug('validate ', { methodConfig, methodName, data, schemaField })
+    if (!methodConfig[schemaField]) throw new Error(schemaField + ' not defined in methods.json ' + methodName)
+    var validate = ajv.compile(methodConfig[schemaField])
+    var valid = validate(data)
+    if (!valid) {
+      CONSOLE.error('validation errors ', {errors: validate.errors, methodName, data, schemaField})
+      throw new Error('validation error ', {errors: validate.errors})
     } else return data
   }
   try {
   // var defaultEventListen = require('./default.event.listen.json')
     var config
-    var validate = (methodConfig, methodName, data, schemaField = 'requestSchema') => {
-      CONSOLE.debug('validate ', { methodConfig, methodName, data, schemaField })
-      if (!methodConfig[schemaField]) throw new Error(schemaField + ' not defined in methods.json ' + methodName)
-      var validate = ajv.compile(methodConfig[schemaField])
-      var valid = validate(data)
-      if (!valid) {
-        CONSOLE.error('validation errors ', {errors: validate.errors, methodName, data, schemaField})
-        throw new Error('validation error ', {errors: validate.errors})
-      } else return data
-    }
+
     var getChannel = (channelName) => require(`./channels/${channelName}.server`)({getConsole, methodCall, serviceName, serviceId, config: config.channels[channelName]})
     var forEachChannel = (func) => Object.keys(config.channels).forEach((channelName) => func(getChannel(channelName)))
 
@@ -37,7 +39,7 @@ module.exports = function getNetServerPackage ({ getConsole = defaultGetConsole,
     var methodCall = async function methodCall (message, getStream, publicApi = true, channel = 'UNKNOW') {
       try {
         CONSOLE.log('=> SERVER IN', {message})
-        validateMsg(message)
+        validateRequest(message)
 
         var methodName = message.method
         var meta = message.meta || {}
@@ -57,7 +59,7 @@ module.exports = function getNetServerPackage ({ getConsole = defaultGetConsole,
         var methodConfig = serviceMethodsConfig[methodName]
         CONSOLE.debug('methodCall', {message, getStream, publicApi, serviceMethodsConfig, methodConfig}, serviceName)
 
-        data = validate(methodConfig, methodName, data, 'requestSchema')
+        data = validateResponse(methodConfig, methodName, data, 'requestSchema')
 
         var response
         // if noResponse not await response on the client side
@@ -67,7 +69,7 @@ module.exports = function getNetServerPackage ({ getConsole = defaultGetConsole,
           response = null
         } else if (methodConfig.responseType === 'response') {
           response = await method(data, meta, getStream || null)
-          response = validate(methodConfig, methodName, response, 'responseSchema')
+          response = validateResponse(methodConfig, methodName, response, 'responseSchema')
         } else {
           response = await method(data, meta, getStream || null)
         }
@@ -84,6 +86,7 @@ module.exports = function getNetServerPackage ({ getConsole = defaultGetConsole,
       async start () {
         config = await getNetConfig(serviceName)
         CONSOLE.debug('START CHANNELS SERVERS ',config)
+        checkRequired({channels:config.channels}, PACKAGE)
         forEachChannel((channel) => channel.start())
       },
       stop () {
