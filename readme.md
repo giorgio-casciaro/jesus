@@ -37,8 +37,4 @@ Schema = share data schema between services
 - [ ] zeromq channel
 - [ ] udp channel
 
-<svg>
-  <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" >
-  </circle>
-  <text x="0" y="15" fill="red">I love SVG!</text>
-</svg>
+  <img src="svg/test.svg">
