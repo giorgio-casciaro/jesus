@@ -3,10 +3,11 @@ Javascript Microservice Comunication Manager:
 jesus is a cross-service multichannel (http,tcp,upd) comunication (rpc, events) layer
 
 FEATURES:
+-  rpc and event managment
 -  various response types: noResponse, aknowlegment, response, stream
 -  various channels:udp,http,socket
 -  CHANNEL = serialization -> compression -> tranport , ES. compressedHttp = JSON -> gzip -> http/rest
--  event channel is choosed based on event/rpc config (ex. log event on udp, domain event on http/rest)
+-  event's channel selected by event/rpc config (ex. log event on udp, domain event on http/rest)
 
 REQUIRE:
 -  schema manager, a way to share info between microservice (etcd,consul,memcache,redis,ecc)
