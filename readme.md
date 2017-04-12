@@ -36,3 +36,9 @@ Schema = share data schema between services
 - [ ] testConnections -> testa la compatibilità fra i vari  jsonschema (service 1 out schema-> service2 in schema, service 1 in schema -> service2 out schema)
 - [ ] zeromq channel
 - [ ] udp channel
+
+<svg>
+  <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" >
+  </circle>
+  <text x="0" y="15" fill="red">I love SVG!</text>
+</svg>
