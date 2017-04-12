@@ -1,7 +1,7 @@
 {
   "name": "sint-bit-jesus",
   "version": "0.0.3",
-  "description": "Jesus Packages",
+  "description": "Javascript Microservice Comunication Manager:  jesus is a cross-service multichannel (http,tcp,upd) comunication (rpc, events) layer  ",
   "author": "Giorgio Casciaro <giorgio.casciaro@gmail.com>",
   "main": "jesus.js",
   "repository": {

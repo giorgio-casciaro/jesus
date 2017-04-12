@@ -1,4 +1,14 @@
 # jesus
+Javascript Microservice Comunication Manager:
+jesus is a cross-service multichannel (http,tcp,upd) comunication (rpc, events) layer
+
+FEATURE: various response type: noResponse, aknowlegment, response, stream
+FEATURE: various channels udp,http,socket (channel=tranport+serialization+compression, es http=rest+plain+compression)
+FEATURE: event transport is choosed based on event/rpc config (ex. log event on udp, domain event on http/rest)
+REQUIRE: schema manager, a way to share info between microservice (etcd,consul,memcache,redis,ecc)
+TODO: All requests and responses (for rpc and events) are described with jsonschema and the compatibility between microservice is tested at start
+TODO: channels based on zeromq
+TODO: comunication between microservice and jesus based on unixsocket: not npm module require, language agnostic comunication, deployable on kubernetes as Daemonset (one jesus server per node, comunication based on unixsocket)
 
 #### RPC
 - Microservice 1
@@ -10,17 +20,12 @@
             - Microservice 2 function
 
 
-
+#### OBJS
 Msg (rpc call) = { Method, Data, Meta}
-
 Method = method to call
-
 Data = method data defined in jsonschema
-
 Meta = { corrid, userid, from, reqInTimestamp, reqOutTimestamp, channel}
-
 Channel = serialization (simple json,webpack) + compression (gzip)  + channel
-
 Schema = share data schema between services
 
 
