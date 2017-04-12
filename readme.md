@@ -6,14 +6,16 @@ FEATURES:
 -  various response type: noResponse, aknowlegment, response, stream
 -  various channels udp,http,socket (channel=tranport+serialization+compression, es http=rest+plain+compression)
 -  event transport is choosed based on event/rpc config (ex. log event on udp, domain event on http/rest)
+
 REQUIRE:
 -  schema manager, a way to share info between microservice (etcd,consul,memcache,redis,ecc)
+
 TODO:
 -  All requests and responses (for rpc and events) are described with jsonschema and the compatibility between microservice is tested at start
 -  channels based on zeromq
 -  comunication between microservice and jesus based on unixsocket: not npm module require, language agnostic comunication, deployable on kubernetes as Daemonset (one jesus server per node, comunication based on unixsocket)
 
-#### RPC
+#### EXAMPLE
 - Microservice 1
   - JesusClient EVENT : find services listening for event and loop rpc
     - JesusClient RPC : validate message and data (based on receiver method jsonschema), find right transport and send
@@ -24,11 +26,11 @@ TODO:
 
 
 #### OBJS
-Msg (rpc call) = { Method, Data, Meta}
-Method = method to call
-Data = method data defined in jsonschema
-Meta = { corrid, userid, from, reqInTimestamp, reqOutTimestamp, channel}
-Channel = serialization (simple json,webpack) + compression (gzip)  + channel
-Schema = share data schema between services
+- Msg (rpc call) = { Method, Data, Meta}
+- Method = method to call
+- Data = method data defined in jsonschema
+- Meta = { corrid, userid, from, reqInTimestamp, reqOutTimestamp, channel}
+- Channel = serialization (simple json,webpack) + compression (gzip)  + channel
+- Schema = share data schema between services
 
 <!--<img src="https://cdn.rawgit.com/giorgio-casciaro/jesus/master/svg/test.svg"> -->
