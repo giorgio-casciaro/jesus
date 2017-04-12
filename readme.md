@@ -37,4 +37,4 @@ Schema = share data schema between services
 - [ ] zeromq channel
 - [ ] udp channel
 
-  <img src="svg/test.svg">
+  <img src="https://cdn.rawgit.com/giorgio-casciaro/jesus/master/svg/test.svg">
