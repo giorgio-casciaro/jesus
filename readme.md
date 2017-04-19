@@ -3,19 +3,23 @@ Javascript Microservice Comunication Manager:
 jesus is a cross-service multichannel (http,tcp,upd) comunication (rpc, events) layer
 
 FEATURES:
--  rpc and event managment
--  various response types: noResponse, aknowlegment, response, stream
--  various channels:udp,http,socket
--  CHANNEL = serialization -> compression -> tranport , ES. compressedHttp = JSON -> gzip -> http/rest
--  event's channel selected by event/rpc config (ex. log event on udp, domain event on http/rest)
+- rpc and event managment
+- various response types: noResponse, aknowlegment, response, stream
+- various channels:udp,http,socket
+- CHANNEL = serialization -> compression -> tranport , ES. compressedHttp = JSON -> gzip -> http/rest
+- event's channel selected by event/rpc config (ex. log event on udp, domain event on http/rest)
+- All requests and responses (for rpc and events) are described with jsonschema
 
 REQUIRE:
--  schema manager, a way to share info between microservice (etcd,consul,memcache,redis,ecc)
+- schema manager, a way to share info between microservice (etcd,consul,memcache,redis,ecc)
 
 TODO:
--  All requests and responses (for rpc and events) are described with jsonschema and the compatibility between microservice is tested at start
--  channels based on zeromq
--  comunication between microservice and jesus based on unixsocket: not npm module require, language agnostic comunication, deployable on kubernetes as Daemonset (one jesus server per node, comunication based on unixsocket)
+- the compatibility between microservices is tested at start
+- eliminate babel await/async dependecy
+- channels based on zeromq
+- TLS connnection encryption based on certificates (protection of the exchanged on single comunication)
+- specific message encryption (only messages with the right certificate can decrypt)
+- comunication between microservice and jesus based on unixsocket: not npm module require, language agnostic comunication, deployable on kubernetes as Daemonset (one jesus server per node, comunication based on unixsocket)
 
 #### EXAMPLE
 - Microservice 1

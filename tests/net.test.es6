@@ -132,11 +132,30 @@ var meta = {
 
 var testCheck = false
 var stream
+// var Methods = {
+//   testNoResponse: async(data, meta) => { CONSOLE.debug('testNoResponse', {data, meta}); testCheck = data },
+//   testAknowlegment: async(data, meta) => { testCheck = data },
+//   testResponse: async(data, meta) => { testCheck = data; return data },
+//   testStream: (data, meta, getStream) => {
+//     CONSOLE.debug('testStream', {data, meta, getStream})
+//     testCheck = data
+//     var onClose = () => { CONSOLE.log('stream closed') }
+//     stream = getStream(onClose, 120000)
+//     stream.write({testStreamConnnected: 1})
+//     setTimeout(() => stream.write({testStreamData: 1}), 500)
+//     setTimeout(() => stream.end(), 1000)
+//   }
+// }
+var co = require('co')
 var Methods = {
-  testNoResponse: async(data, meta) => { CONSOLE.debug('testNoResponse', {data, meta}); testCheck = data },
-  testAknowlegment: async(data, meta) => { testCheck = data },
-  testResponse: async(data, meta) => { testCheck = data; return data },
-  testStream: (data, meta, getStream) => {
+  testNoResponse: co.wrap(function* (data, meta, getStream) { testCheck = data }),
+  testAknowlegment: co.wrap(function* (data, meta, getStream) { testCheck = data }),
+  testResponse: co.wrap(function* (data, meta, getStream) {
+    yield new Promise((resolve) => setTimeout(resolve, 1000))
+    testCheck = data
+    return data
+  }),
+  testStream: co.wrap(function* (data, meta, getStream) {
     CONSOLE.debug('testStream', {data, meta, getStream})
     testCheck = data
     var onClose = () => { CONSOLE.log('stream closed') }
@@ -144,8 +163,9 @@ var Methods = {
     stream.write({testStreamConnnected: 1})
     setTimeout(() => stream.write({testStreamData: 1}), 500)
     setTimeout(() => stream.end(), 1000)
-  }
+  })
 }
+co.wrap(function* (data, meta, getStream) { testCheck = data })
 
 var getMethods = (service, exclude) => Methods
 

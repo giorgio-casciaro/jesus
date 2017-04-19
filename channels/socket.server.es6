@@ -69,7 +69,7 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
       stop () {
         httpServer.close()
       },
-      httpart () {
+      restart () {
         httpServer.close(start)
       }
     }

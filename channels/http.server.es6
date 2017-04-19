@@ -106,9 +106,10 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
     return {
       start,
       stop () {
+        CONSOLE.debug('Stopping httpServer' ,httpServer)
         httpServer.close()
       },
-      httpart () {
+      restart () {
         httpServer.close(start)
       }
     }
