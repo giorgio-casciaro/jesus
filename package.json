@@ -23,7 +23,6 @@
     "body-parser": "^1.17.1",
     "co": "^4.6.0",
     "compression": "^1.6.2",
-    "express-http2": "^4.13.4",
     "helmet": "^3.5.0",
     "ramda": "^0.23.0",
     "uuid": "^3.0.1",

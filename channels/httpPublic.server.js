@@ -1,4 +1,4 @@
-var express = require('express-http2')
+var express = require('')
 var bodyParser = require('body-parser')
 var compression = require('compression')
 var helmet = require('helmet')
