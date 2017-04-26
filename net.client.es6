@@ -3,7 +3,7 @@ const checkRequired = require('./utils').checkRequired
 const R = require('ramda')
 var preferedChannels = ['grpc', 'zeromq', 'http']
 // var delayedMessages = global.JESUS_NET_CLIENT_delayedMessages = global.JESUS_NET_CLIENT_delayedMessages || {}
-const getConsole = (serviceName, serviceId, pack) => require('./utils').getConsole({error: true, debug: true, log: false, warn: true}, serviceName, serviceId, pack)
+const getConsole = (serviceName, serviceId, pack) => require('./utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
 
 module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceId = 'unknow', getNetConfig, getEventsIn, getMethodsConfig, getRpcOut, getEventsOut}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
@@ -28,6 +28,10 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
       checkRequired({event}, PACKAGE)
       meta.event = event
       var eventsOutConfigAll = await getEventsOut()
+      if(!eventsOutConfigAll[event]){
+        CONSOLE.warn(`event ${event} not found in config EventsOut`, eventsOutConfigAll)
+        return null
+      }
       var eventOutConfig = eventsOutConfigAll[event]
       var eventsInConfig = await getEventsFromServices(event)
       CONSOLE.debug('emit start ' + event, { eventsOutConfigAll,eventOutConfig,eventsInConfig, event, data, meta, timeout })
@@ -57,6 +61,7 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
         var listenerMethodConfig = listenerMethodsConfig[method]
 
         CONSOLE.debug('rpcCall() start', { to, method, data, meta, timeout, listenerNetConfig })
+        CONSOLE.debug('rpcCall() start', to,listenerMethodsConfig)
         if (!listenerMethodsConfig[method]) throw new Error(method + ' is not valid (not defined in listener methods config)')
 
         var commonChannels = Object.keys(senderNetConfig.channels).filter((value) => 1 + Object.keys(listenerNetConfig.channels).indexOf(value))
