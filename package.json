@@ -1,6 +1,6 @@
 {
   "name": "sint-bit-jesus",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "jesus is a cross-service multichannel (http,tcp,upd) comunication (rpc, events) manager",
   "author": "Giorgio Casciaro <giorgio.casciaro@gmail.com>",
   "main": "jesus.js",
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "npm --silent run-script watch_test",
-    "test":"tap tests/*.test.js --cov --color --reporter=spec",
+    "test": "tap tests/*.test.js --cov --color --reporter=spec",
     "watch_test": "nodemon  --ext js --exec \"tap tests/*.test.js --cov --color --reporter=spec\"",
     "watch_debug": "nodemon  --ext js  --exec 'node --inspect   tests/channels.test.js '"
   },
