@@ -17,7 +17,7 @@ var CONSOLE = getConsole('BASE TEST', '----', '-----')
 var config = {url: 'localhost:8080', file: '/tmp/test'}
 var testCheck = false
 var testStream = false
-var methodCall = async (data, getStream, isPublic) => {
+var methodCall = co.wrap(function*(data, getStream, isPublic) {
   CONSOLE.debug('methodCall', data, getStream, isPublic)
   testCheck = true
   if (!getStream) return data
@@ -27,7 +27,7 @@ var methodCall = async (data, getStream, isPublic) => {
   setTimeout(() => stream.write({testStreamData: 1}), 500)
   setTimeout(() => stream.end(), 1000)
   testStream = true
-}
+})
 var testChannels = [ 'httpPublic', 'socket', 'http', 'test']
 
 t.plan(testChannels.length)
