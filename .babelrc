@@ -1,8 +1,0 @@
-{
-  "only": [
-    "*.babel", "*.jsx", "*.es6", "*.es7"
-  ],
-  "presets": ["es2015"],
-  "sourceMaps": "inline",
-  "plugins": ["syntax-async-functions", "transform-regenerator"]
-}

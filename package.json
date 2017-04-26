@@ -10,20 +10,16 @@
   },
   "scripts": {
     "start": "npm --silent run-script watch_test",
-    "watch_test": "nodemon  --ext js --exec \"clear && printf '\\e[3J' && tap tests/*.test.js --cov --color --reporter=spec || true\"",
-    "watch_debug": "nodemon  --ext js  --cov --exec \"clear && printf '\\e[3J' && node --inspect   tests/net.test.js || true\""
+    "test":"tap tests/*.test.js --cov --color --reporter=spec",
+    "watch_test": "nodemon  --ext js --exec \"tap tests/*.test.js --cov --color --reporter=spec\"",
+    "watch_debug": "nodemon  --ext js  --exec 'node --inspect   tests/channels.test.js '"
   },
   "devDependencies": {
-    "babel-plugin-syntax-async-functions": "^6.13.0",
-    "babel-plugin-transform-regenerator": "^6.22.0",
-    "babel-preset-es2015": "^6.24.0",
-    "babel-preset-es2017": "^6.22.0",
     "nodemon": "^1.11.0",
     "request": "^2.81.0",
     "tap": "^10.3.1"
   },
   "dependencies": {
-    "babel-polyfill": "^6.23.0",
     "body-parser": "^1.17.1",
     "co": "^4.6.0",
     "compression": "^1.6.2",
