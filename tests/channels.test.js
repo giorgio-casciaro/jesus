@@ -9,7 +9,7 @@
 // var request = require('request')
 var t = require('tap')
 var co = require('co')
-// var path = require('path')
+var path = require('path')
 
 const getConsole = (serviceName, serviceId, pack) => require('../utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
 var CONSOLE = getConsole('BASE TEST', '----', '-----')
@@ -38,11 +38,12 @@ var message = {
 }
 var mainTest = (testChannel) => t.test('*** ' + testChannel + ' CHANNEL ***', { autoend: true}, co.wrap(function*(t) {
   yield new Promise((resolve) => setTimeout(resolve, 1000))
-  var channelServer = require('../channels/' + testChannel + '.server')({getConsole, methodCall, config})
-  var channelClient = require('../channels/' + testChannel + '.client')({getConsole})
+  var channelServer = require(path.join(__dirname, '../channels/http.server'))({getConsole, methodCall, config})
+  var channelClient = require(path.join(__dirname, '../channels/http.client'))({getConsole})
   channelServer.start()
   yield new Promise((resolve) => setTimeout(resolve, 2000))
   t.plan(3)
+
   yield t.test('channelClient.send -> testResponse', co.wrap(function*(t) {
     testCheck = false
     var response = yield channelClient.send(config, message, 5000, true, false)

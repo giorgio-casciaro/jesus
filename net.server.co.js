@@ -9,8 +9,6 @@ var validateMsg = ajv.compile(require('./schemas/message.schema.json'))
 const getConsole = (serviceName, serviceId, pack) => require('./utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
 
 module.exports = function getNetServerPackage ({ serviceName = 'unknow', serviceId = 'unknow', getMethods, getMethodsConfig, getNetConfig }) {
-  
-
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   checkRequired({getMethods, getMethodsConfig, getConsole, getNetConfig}, PACKAGE)
   CONSOLE.debug('getNetServerPackage ', { })
@@ -58,6 +56,7 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
         if (!serviceMethodsConfig[methodName]) throw new Error(methodName + ' is not valid (not defined in methods config)')
         if (!serviceMethodsConfig[methodName].public && publicApi) throw new Error(methodName + ' is not public')
         if (!methods[methodName]) throw new Error(methodName + ' is not valid (not defined service methods js file)')
+
 
         var method = methods[methodName]
         var methodConfig = serviceMethodsConfig[methodName]

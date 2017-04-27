@@ -12,7 +12,7 @@
     "start": "npm --silent run-script watch_test",
     "test": "tap tests/*.test.js --cov --color --reporter=spec",
     "watch_test": "nodemon  --ext js --exec \"tap tests/*.test.js --cov --color --reporter=spec\"",
-    "watch_debug": "nodemon  --ext js  --exec 'node --inspect   tests/channels.test.js '"
+    "watch_debug": "nodemon  --ext js  --exec 'node --inspect   tests/net.test.js '"
   },
   "devDependencies": {
     "nodemon": "^1.11.0",
@@ -23,6 +23,7 @@
     "body-parser": "^1.17.1",
     "co": "^4.6.0",
     "compression": "^1.6.2",
+    "express": "^4.15.2",
     "helmet": "^3.5.0",
     "ramda": "^0.23.0",
     "uuid": "^3.0.1",
