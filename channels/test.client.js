@@ -2,7 +2,6 @@ const PACKAGE = 'channel.test.server'
 const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
 var globalEmitters = global.channelTestServers = global.channelTestServers || []
-const co = require('co')
 
 module.exports = function getChannelTestClientPackage ({ getConsole, serviceName = 'unknow', serviceId = 'unknow'}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)

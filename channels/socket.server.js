@@ -4,7 +4,6 @@ var compression = require('compression')
 var fs = require('fs')
 var helmet = require('helmet')
 const url = require('url')
-const co = require('co')
 const PACKAGE = 'channel.http.server'
 const checkRequired = require('../utils').checkRequired
 const publicApi = false
@@ -15,9 +14,9 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
     checkRequired({config, methodCall, getConsole})
-    const start = co.wrap(function* () {
-      var socketFile=config.file.replace(":","")
-      if (fs.existsSync(socketFile))fs.unlinkSync(socketFile);
+    async function start () {
+      var socketFile = config.file.replace(':', '')
+      if (fs.existsSync(socketFile))fs.unlinkSync(socketFile)
       // var httpUrl = 'http://' + config.file.replace('http://', '').replace('//', '')
       // var httpPort = url.parse(httpUrl, false, true).port
       httpApi = express()
@@ -25,18 +24,18 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
       httpApi.use(compression({level: 1}))
       httpApi.use(bodyParser.json()) // support json encoded bodies
       httpApi.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
-      httpApi.all('/_httpMessage', co.wrap(function* (req, res) {
+      httpApi.all('/_httpMessage', async (req, res) => {
         try {
           var data = req.body || req.query
           CONSOLE.debug('_httpMessage', req, data)
-          var response = yield methodCall(data, false, publicApi,"socket")
+          var response = await methodCall(data, false, publicApi, 'socket')
           res.send(response)
         } catch (error) {
           CONSOLE.warn('Api error', {error})
           res.send({error})
         }
-      }))
-      httpApi.all('/_httpMessageStream', co.wrap(function* (req, res) {
+      })
+      httpApi.all('/_httpMessageStream', async (req, res) => {
         try {
           var data = req.body || req.query
           CONSOLE.debug('_httpMessageStream', req, data)
@@ -54,16 +53,16 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
               end: (obj) => res.end()
             }
           }
-          methodCall(data, getStream, publicApi,"socket")
+          methodCall(data, getStream, publicApi, 'socket')
         } catch (error) {
           CONSOLE.warn('Api error', {error})
           res.send({error})
         }
-      }))
+      })
 
-      httpServer = httpApi.listen( socketFile)
+      httpServer = httpApi.listen(socketFile)
       CONSOLE.debug('http Api listening on ' + socketFile)
-    })
+    }
 
     return {
       start,

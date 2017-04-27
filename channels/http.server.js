@@ -3,7 +3,6 @@ var bodyParser = require('body-parser')
 var compression = require('compression')
 var helmet = require('helmet')
 const url = require('url')
-const co = require('co')
 const PACKAGE = 'channel.http.server'
 const checkRequired = require('../utils').checkRequired
 const publicApi = false
@@ -14,7 +13,7 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
     checkRequired({config, methodCall, getConsole})
-    const start = co.wrap(function* () {
+    async function start () {
       var httpUrl = 'http://' + config.url.replace('http://', '').replace('//', '')
       var httpPort = url.parse(httpUrl, false, true).port
       httpApi = express()
@@ -22,18 +21,18 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
       httpApi.use(compression({level: 1}))
       httpApi.use(bodyParser.json()) // support json encoded bodies
       httpApi.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
-      httpApi.all('/_httpMessage', co.wrap(function* (req, res) {
+      httpApi.all('/_httpMessage', async (req, res) => {
         try {
           var data = req.body || req.query
           CONSOLE.debug('_httpMessage', req, data)
-          var response = yield methodCall(data, false, publicApi, 'http')
+          var response = await methodCall(data, false, publicApi, 'http')
           res.send(response)
         } catch (error) {
           CONSOLE.warn('Api error', {error})
           res.send({error})
         }
-      }))
-      httpApi.all('/_httpMessageStream', co.wrap(function* (req, res) {
+      })
+      httpApi.all('/_httpMessageStream', async (req, res) => {
         try {
           var data = req.body || req.query
           CONSOLE.debug('_httpMessageStream', req, data)
@@ -56,8 +55,8 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
           CONSOLE.warn('Api error', {error})
           res.send({error})
         }
-      }))
-      httpApi.all('*', co.wrap(function* (req, res) {
+      })
+      httpApi.all('*', async (req, res) => {
         try {
           var newMeta = {}
           for (var metaK in req.headers) if (metaK.indexOf('app-meta-') + 1)newMeta[metaK.replace('app-meta-', '')] = req.headers[metaK]
@@ -72,7 +71,7 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
           var isStream = (newMeta.stream === 'true' || newMeta.stream === '1')
           CONSOLE.debug('newMeta', {newMeta})
           if (!isStream) {
-            var response = yield methodCall(message, false, publicApi, 'httpPublic')
+            var response = await methodCall(message, false, publicApi, 'httpPublic')
             res.send(response)
           } else {
             CONSOLE.debug('HttpPublic MESSAGE STREAM', {isStream, message, headers: req.headers, data})
@@ -97,12 +96,12 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
           CONSOLE.warn('Api error', {error})
           res.send({error})
         }
-      }))
+      })
       httpServer = httpApi.on('connection', function (socket) {
         // socket.setTimeout(60000)
       }).listen(httpPort)
       CONSOLE.debug('http Api listening on ' + config.url)
-    })
+    }
 
     return {
       start,

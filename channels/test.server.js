@@ -1,7 +1,6 @@
 const PACKAGE = 'channel.test.server'
 const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
-const co = require('co')
 var globalEmitters = global.channelTestServers = global.channelTestServers || []
 const publicApi = true
 module.exports = function getChannelGrpcServerPackage ({serialize, deserialize, getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config}) {
@@ -9,11 +8,11 @@ module.exports = function getChannelGrpcServerPackage ({serialize, deserialize, 
   try {
     function start () {
       var globalEmitter = globalEmitters[config.url] = globalEmitters[config.url] || new EventEmitter()
-      globalEmitter.on('message', co.wrap(function*(message, respond) {
-        var response = yield methodCall(message, false, publicApi, 'test')
+      globalEmitter.on('message', async function (message, respond) {
+        var response = await methodCall(message, false, publicApi, 'test')
         respond(response)
-      }))
-      globalEmitter.on('messageStream', co.wrap(function*(message, respond) {
+      })
+      globalEmitter.on('messageStream', async function (message, respond) {
         var stream = {
           write: (data) => readableStream.emit('data', data),
           end: () => readableStream.emit('end')
@@ -28,7 +27,7 @@ module.exports = function getChannelGrpcServerPackage ({serialize, deserialize, 
         }
         methodCall(message, getStream, publicApi, 'test')
         respond(readableStream)
-      }))
+      })
       CONSOLE.debug('Net started TEST channel')
     }
     checkRequired({config, methodCall, getConsole})

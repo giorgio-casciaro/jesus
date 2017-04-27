@@ -11,8 +11,8 @@ module.exports = function getChannelHttpClientPackage ({ getConsole, methodCall,
     return {
       send (listener, message, timeout = 120000, waitResponse = true, isStream = false) {
         return new Promise((resolve, reject) => {
-          var httpUrl = 'http://unix:' + listener.file.replace(":","") + ':'
-          CONSOLE.debug('send:', JSON.stringify({ httpUrl,listener, message, timeout, waitResponse, isStream }))
+          var httpUrl = 'http://unix:' + listener.file.replace(':', '') + ':'
+          CONSOLE.debug('send:', JSON.stringify({ httpUrl, listener, message, timeout, waitResponse, isStream }))
           var callTimeout, call
           if (isStream) {
             call = request(
@@ -24,7 +24,7 @@ module.exports = function getChannelHttpClientPackage ({ getConsole, methodCall,
                 uri: httpUrl + '/_httpMessageStream'
               })
             // stream serializer
-            //console.log(call.listeners('data'))
+            // console.log(call.listeners('data'))
             var rectifiedCall = new EventEmitter()
             call.on('data', (data) => {
               rectifiedCall.emit('data', JSON.parse(data))

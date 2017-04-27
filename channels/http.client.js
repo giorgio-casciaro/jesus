@@ -24,7 +24,7 @@ module.exports = function getChannelHttpClientPackage ({ getConsole, methodCall,
                 uri: httpUrl + '/_httpMessageStream'
               })
             // stream serializer
-            //console.log(call.listeners('data'))
+            // console.log(call.listeners('data'))
             var rectifiedCall = new EventEmitter()
             call.on('data', (data) => {
               rectifiedCall.emit('data', JSON.parse(data))

@@ -2,7 +2,6 @@ var express = require('express')
 var bodyParser = require('body-parser')
 var compression = require('compression')
 var helmet = require('helmet')
-const co = require('co')
 const url = require('url')
 const PACKAGE = 'channel.httpPublic.server'
 const checkRequired = require('../utils').checkRequired
@@ -14,7 +13,7 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
     checkRequired({config, methodCall, getConsole})
-    const start = co.wrap(function* () {
+    async function start () {
       var httpUrl = 'http://' + config.url.replace('http://', '').replace('//', '')
       var httpPort = url.parse(httpUrl, false, true).port
       httpApi = express()
@@ -22,7 +21,7 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
       httpApi.use(compression({level: 1}))
       httpApi.use(bodyParser.json()) // support json encoded bodies
       httpApi.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
-      httpApi.all('*', co.wrap(function* (req, res) {
+      httpApi.all('*', async (req, res) => {
         try {
           var newMeta = {}
           for (var metaK in req.headers) if (metaK.indexOf('app-meta-') + 1)newMeta[metaK.replace('app-meta-', '')] = req.headers[metaK]
@@ -37,7 +36,7 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
           var isStream = (newMeta.stream === 'true' || newMeta.stream === '1')
           CONSOLE.debug('newMeta', {newMeta})
           if (!isStream) {
-            var response = yield methodCall(message, false, publicApi, 'httpPublic')
+            var response = await methodCall(message, false, publicApi, 'httpPublic')
             res.send(response)
           } else {
             CONSOLE.debug('HttpPublic MESSAGE STREAM', {isStream, message, headers: req.headers, data})
@@ -62,12 +61,12 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
           CONSOLE.warn('Api error', {error})
           res.send({error})
         }
-      }))
+      })
       httpServer = httpApi.on('connection', function (socket) {
         // socket.setTimeout(60000)
       }).listen(httpPort)
       CONSOLE.debug('http Api listening on ' + config.url)
-    })
+    }
 
     return {
       start,

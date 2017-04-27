@@ -13,7 +13,7 @@ module.exports = function getChannelHttpPublicClientPackage ({ getConsole, metho
         return new Promise((resolve, reject) => {
           var newMeta = {}
           for (var metaK in message.meta)newMeta['app-meta-' + metaK] = message.meta[metaK]
-          newMeta['app-meta-stream']=isStream
+          newMeta['app-meta-stream'] = isStream
           var httpUrl = 'http://' + listener.url.replace('http://', '').replace('//', '')
           CONSOLE.debug('send:', JSON.stringify({ listener, message, timeout, waitResponse, isStream }))
           var callTimeout, call
@@ -28,7 +28,7 @@ module.exports = function getChannelHttpPublicClientPackage ({ getConsole, metho
                 uri: httpUrl + '/' + message.method
               })
             // stream serializer
-            //console.log(call.listeners('data'))
+            // console.log(call.listeners('data'))
             var rectifiedCall = new EventEmitter()
             call.on('data', (data) => {
               rectifiedCall.emit('data', JSON.parse(data))
