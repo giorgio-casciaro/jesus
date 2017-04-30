@@ -181,7 +181,7 @@ t.test('*** NET ***', {
   await t.test('netClient1.rpc -> testAknowlegment', async function (t) {
     testCheck = false
     var response = await netClient1.rpc('testRpcAknowlegment', {'test_data': 1}, meta)
-    t.same(response, null, 'Aknowlegment ok')
+    t.same(response, { aknowlegment: 1 }, 'Aknowlegment ok')
     t.same(testCheck, {'test_data': 1}, 'testAknowlegment richiesta ricevuta')
     t.end()
   })

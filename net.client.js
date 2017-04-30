@@ -1,6 +1,6 @@
 const PACKAGE = 'net.client'
-const checkRequired = require('./utils').checkRequired
 const R = require('ramda')
+const checkRequired = require('./utils').checkRequired
 var preferedChannels = ['grpc', 'zeromq', 'http']
 // var delayedMessages = global.JESUS_NET_CLIENT_delayedMessages = global.JESUS_NET_CLIENT_delayedMessages || {}
 const getConsole = (serviceName, serviceId, pack) => require('./utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
@@ -23,26 +23,29 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
       CONSOLE.debug('getEventsFromServices ', eventConfig)
       return eventConfig
     }
-
-    async function emit (event, data = {}, meta = {}, timeout = 5000, channel = false) {
-      checkRequired({event}, PACKAGE)
-      meta.event = event
+    const getEventOutConfig = async (event) => {
       var eventsOutConfigAll = await getEventsOut()
       if (!eventsOutConfigAll[event]) {
         CONSOLE.warn(`event ${event} not found in config EventsOut`, eventsOutConfigAll)
         return null
       }
-      var eventOutConfig = eventsOutConfigAll[event]
+      return eventsOutConfigAll[event]
+    }
+
+    async function emit (event, data = {}, metaRaw = {}, timeout = false, channel = false) {
+      checkRequired({event}, PACKAGE)
+      var meta = Object.assign({}, metaRaw, { emit: event })
+      var eventOutConfig = await getEventOutConfig(event)
       var eventsInConfig = await getEventsFromServices(event)
-      CONSOLE.debug('emit start ' + event, { eventsOutConfigAll, eventOutConfig, eventsInConfig, event, data, meta, timeout })
-      checkRequired({eventOutConfig}, PACKAGE)
+      CONSOLE.debug('emit start ' + event, { event, eventOutConfig, eventsInConfig })
       var responses = await Promise.all(eventsInConfig.map((rpcConfig) => rpcCall({ to: rpcConfig.to, method: rpcConfig.method, data, meta, timeout, log: false, channel })))
       responses = responses.filter((response) => response !== null)
       if (!eventOutConfig.multipleResponse)responses = responses[0] || null
       CONSOLE.debug('emit response ' + event, {responses, event, eventsInConfig})
       return responses
     }
-    async function rpc (rpcName, data = {}, meta = {}, timeout = 5000, channel = false) {
+
+    async function rpc (rpcName, data = {}, meta = {}, timeout = false, channel = false) {
       checkRequired({rpcName}, PACKAGE)
       var rpcOutConfigAll = await getRpcOut()
       var rpcOutConfig = rpcOutConfigAll[rpcName]
@@ -60,39 +63,57 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
       CONSOLE.debug('rpc commonChannels', {commonChannels, first: commonChannels[0]})
       return commonChannels[0] || false
     }
-    async function rpcCall ({to, method, data = {}, meta = {}, timeout = 5000, channel = false }) {
+
+    async function getMethodConfig (service, method) {
+      var listenerMethodsConfig = await getMethodsConfig(service)
+      if (!listenerMethodsConfig[method]) throw new Error(method + ' is not valid method(not defined in listener methods config)')
+      return listenerMethodsConfig[method]
+    }
+
+    async function getMessageMeta (metaRaw = {}, channel, stream = false, to) {
+      return Object.assign({}, metaRaw, {
+        corrid: metaRaw.corrid || uuidV4(),
+        userid: metaRaw.userid || 'UNKNOW',
+        from: serviceName,
+        timestamp: Date.now(),
+        reqtype: 'out',
+        channel: channel || 'UNKNOW',
+        stream: stream,
+        to: to
+      },)
+    }
+
+    async function rpcCall ({to, method, data = {}, meta = {}, timeout = false, channel = false }) {
       try {
         CONSOLE.debug('rpcCall() start', { to, method, data, meta, timeout, channel })
         checkRequired({to, method}, PACKAGE)
 
-        // DEFAULT META
-        meta = R.merge({ reqOutTimestamp: Date.now(), from: serviceName, stream: isStream, to }, meta)
-
         // CONFIG
-        var listenerMethodsConfig = await getMethodsConfig(to)
-        if (!listenerMethodsConfig[method]) throw new Error(method + ' is not valid method(not defined in listener methods config)')
-        var listenerMethodConfig = listenerMethodsConfig[method]
-        var senderNetConfig = await getNetConfig(serviceName)
+        var listenerMethodConfig = await getMethodConfig(to, method)
         var listenerNetConfig = await getNetConfig(to)
 
         // GET CHANNEL OBJ
-        if (!channel) channel = findChannel(serviceName, to, senderNetConfig, listenerNetConfig)
+        if (!channel) {
+          var senderNetConfig = await getNetConfig(serviceName)
+          channel = findChannel(serviceName, to, senderNetConfig, listenerNetConfig)
+        }
         var channelObj = getChannel(channel)
 
         // SEND
-        var message = {method, meta, data}
+        var message = { method, meta: getMessageMeta(meta, channel, isStream, to), data }
         var sendTo = listenerNetConfig.channels[channel]
         var waitResponse = (listenerMethodConfig.responseType !== 'noResponse')
         var isStream = (listenerMethodConfig.responseType === 'stream')
-        CONSOLE.log('=> CLIENT OUT ', {sendTo, message, timeout: listenerMethodConfig.timeout, waitResponse, isStream})
-        var response = await channelObj.send(sendTo, message, listenerMethodConfig.timeout, waitResponse, isStream)
+
+        timeout = timeout || listenerMethodConfig.timeout || 10000
+
+        CONSOLE.log('=> CLIENT OUT ', {sendTo, message, timeout, waitResponse, isStream})
+        var response = await channelObj.send(sendTo, message, timeout, waitResponse, isStream)
         CONSOLE.log('=> CLIENT IN  RESPONSE', {message, response})
         return response
-
       } catch (error) {
         CONSOLE.debug('RPC error -->', error)
         return {error: 'RPC error -->' + error}
-        // throw new Error('Error during rpc')
       }
     }
     return {

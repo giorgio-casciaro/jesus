@@ -9,60 +9,71 @@ const getConsole = (serviceName, serviceId, pack) => require('./utils').getConso
 
 module.exports = function getNetServerPackage ({ serviceName = 'unknow', serviceId = 'unknow', getMethods, getMethodsConfig, getNetConfig}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
-  checkRequired({getMethods, getMethodsConfig, getConsole, getNetConfig}, PACKAGE)
-  CONSOLE.debug('getNetServerPackage ', { })
-  var validateRequest = (data) => {
-    if (!validateMsg(data)) {
-      CONSOLE.error('MESSAGE IS NOT VALID ', {errors: validate.errors})
-      throw new Error('MESSAGE IS NOT VALID', {errors: validateMsg.errors})
-    } else return data
-  }
-  var validateResponse = (methodConfig, methodName, data, schemaField = 'requestSchema') => {
-    CONSOLE.debug('validate ', { methodConfig, methodName, data, schemaField })
-    if (!methodConfig[schemaField]) throw new Error(schemaField + ' not defined in methods.json ' + methodName)
-    var validate = ajv.compile(methodConfig[schemaField])
-    var valid = validate(data)
-    if (!valid) {
-      CONSOLE.error('validation errors ', {errors: validate.errors, methodName, data, schemaField})
-      throw new Error('validation error ', {errors: validate.errors})
-    } else return data
-  }
   try {
-  // var defaultEventListen = require('./default.event.listen.json')
+    checkRequired({getMethods, getMethodsConfig, getConsole, getNetConfig}, PACKAGE)
+
     var config
 
+    var validateMessage = (data) => {
+      if (!validateMsg(data)) {
+        CONSOLE.error('MESSAGE IS NOT VALID ', {errors: validate.errors})
+        throw new Error('MESSAGE IS NOT VALID', {errors: validateMsg.errors})
+      } else return data
+    }
+    var validateWithSchema = (methodConfig, methodName, data, schemaField = 'requestSchema') => {
+      CONSOLE.debug('validate ', { methodConfig, methodName, data, schemaField })
+      if (!methodConfig[schemaField]) throw new Error(schemaField + ' not defined in methods.json ' + methodName)
+      var validate = ajv.compile(methodConfig[schemaField])
+      var valid = validate(data)
+      if (!valid) {
+        CONSOLE.error('validation errors ', {errors: validate.errors, methodName, data, schemaField})
+        throw new Error('validation error ', {errors: validate.errors})
+      } else return data
+    }
+    function getMethodMeta (metaRaw = {}, channel) {
+      return {
+        corrid: metaRaw.corrid || uuidV4(),
+        userid: metaRaw.userid || 'UNKNOW',
+        from: metaRaw.from || 'UNKNOW',
+        reqintime: metaRaw.timestamp || 'UNKNOW',
+        timestamp: Date.now(),
+        reqtype: 'out',
+        channel: channel || metaRaw.channel || 'UNKNOW',
+        stream: metaRaw.stream || false
+      }
+    }
+    async function getMethod (methodName) {
+      var methods = await getMethods()
+      if (!methods[methodName]) throw new Error(methodName + ' is not valid (not defined service methods js file)')
+      return methods[methodName]
+    }
+    async function getMethodConfig (methodName, publicApi = false, service = serviceName) {
+      var serviceMethodsConfig = await getMethodsConfig(service)
+      if (!serviceMethodsConfig[methodName]) throw new Error(methodName + ' is not valid (not defined in methods config)')
+      if (!serviceMethodsConfig[methodName].public && publicApi) throw new Error(methodName + ' is not public')
+      return serviceMethodsConfig[methodName]
+    }
     var getChannel = (channelName) => require(`./channels/${channelName}.server`)({getConsole, methodCall, serviceName, serviceId, config: config.channels[channelName]})
     var forEachChannel = (func) => Object.keys(config.channels).forEach((channelName) => func(getChannel(channelName)))
 
-    // ogni method call può avere più dati anche dauserid e requestid diversi
     var methodCall = async function methodCall (message, getStream, publicApi = true, channel = 'UNKNOW') {
       try {
         CONSOLE.log('=> SERVER IN', {message})
-        validateRequest(message)
+        validateMessage(message)
 
+        // CONFIG
         var methodName = message.method
-        var meta = message.meta || {}
-        meta.corrid = meta.corrid || uuidV4()
-        meta.userid = meta.userid || 'UNKNOW'
-        meta.from = meta.from || 'UNKNOW'
-        meta.reqInTimestamp = Date.now()
-        meta.channel = channel
+        var meta = getMethodMeta(message.meta, channel)
         var data = message.data || {}
+        var method = await getMethod(methodName)
+        var methodConfig = await getMethodConfig(methodName, publicApi)
 
-        var serviceMethodsConfig = await getMethodsConfig(serviceName)
-        var methods = await getMethods()
-        if (!serviceMethodsConfig[methodName]) throw new Error(methodName + ' is not valid (not defined in methods config)')
-        if (!serviceMethodsConfig[methodName].public && publicApi) throw new Error(methodName + ' is not public')
-        if (!methods[methodName]) throw new Error(methodName + ' is not valid (not defined service methods js file)')
-        var method = methods[methodName]
-        var methodConfig = serviceMethodsConfig[methodName]
-        CONSOLE.debug('methodCall', {message, getStream, publicApi, serviceMethodsConfig, methodConfig}, serviceName)
+        // VALIDATION
+        data = validateWithSchema(methodConfig, methodName, data, 'requestSchema')
 
-        data = validateResponse(methodConfig, methodName, data, 'requestSchema')
-
+        // CALL
         var response
-        // if noResponse not await response on the client side
-        // if aknowlegment await response on the client side but not await response on the server side
+
         if (methodConfig.responseType === 'noResponse') {
           method(data, meta, getStream || null)
           response = null
@@ -71,13 +82,12 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
           response = {'aknowlegment': 1}
         } else if (methodConfig.responseType === 'response') {
           response = await method(data, meta, getStream || null)
-          response = validateResponse(methodConfig, methodName, response, 'responseSchema')
+          response = validateWithSchema(methodConfig, methodName, response, 'responseSchema')
         } else {
           response = await method(data, meta, getStream || null)
         }
 
         CONSOLE.log('SERVER OUT => ', {response, responseType: methodConfig.responseType})
-        CONSOLE.debug('MAIN RESPONSE ' + methodName, response)
         return response
       } catch (error) {
         CONSOLE.error(error, {methodName})
