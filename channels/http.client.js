@@ -9,7 +9,7 @@ module.exports = function getChannelHttpClientPackage ({ getConsole, methodCall,
   try {
     checkRequired({ getConsole})
     return {
-      send (listener, message, timeout = 120000, waitResponse = true, isStream = false) {
+      send (listener, message, timeout = 5000, waitResponse = true, isStream = false) {
         return new Promise((resolve, reject) => {
           var httpUrl = 'http://' + listener.url.replace('http://', '').replace('//', '')
           CONSOLE.debug('send:', JSON.stringify({ listener, message, timeout, waitResponse, isStream }))
@@ -42,7 +42,7 @@ module.exports = function getChannelHttpClientPackage ({ getConsole, methodCall,
                 uri: httpUrl + '/_httpMessage'
               },
               function (error, response, body) {
-                CONSOLE.debug('Http request response', {error, response, body})
+                CONSOLE.debug('Http request response', {message,error, response, body})
                 if (callTimeout)clearTimeout(callTimeout)
                 if (error) return reject(error)
                 if (waitResponse)resolve(body)

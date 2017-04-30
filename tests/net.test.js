@@ -131,20 +131,6 @@ var meta = {
 
 var testCheck = false
 var stream
-// var Methods = {
-//   testNoResponse: async(data, meta) => { CONSOLE.debug('testNoResponse', {data, meta}); testCheck = data },
-//   testAknowlegment: async(data, meta) => { testCheck = data },
-//   testResponse: async(data, meta) => { testCheck = data; return data },
-//   testStream: (data, meta, getStream) => {
-//     CONSOLE.debug('testStream', {data, meta, getStream})
-//     testCheck = data
-//     var onClose = () => { CONSOLE.log('stream closed') }
-//     stream = getStream(onClose, 120000)
-//     stream.write({testStreamConnnected: 1})
-//     setTimeout(() => stream.write({testStreamData: 1}), 500)
-//     setTimeout(() => stream.end(), 1000)
-//   }
-// }
 var co = require('co')
 var Methods = {
   testNoResponse: co.wrap(function* (data, meta, getStream) { testCheck = data }),
@@ -164,43 +150,20 @@ var Methods = {
     setTimeout(() => stream.end(), 1000)
   })
 }
-co.wrap(function* (data, meta, getStream) { testCheck = data })
 
-var getMethods = (service, exclude) => Methods
 
-var getSharedConfig = (field = 'net', service = '*', exclude = '') => {
-  if (service === '*') return Object.keys(sharedConfig).filter((key) => key !== exclude).map((key) => { return {items: sharedConfig[key][field], service: key} })
-  else return sharedConfig[service][field]
-}
+var stubs = require('./stubs')(sharedConfig,Methods,getConsole)
 
-function getServer (serviceName, serviceId) {
-  var getMethodsConfig = async (service, exclude) => getSharedConfig('methods', service || serviceName, exclude)
-  var getNetConfig = async (service, exclude) => getSharedConfig('net', service || serviceName, exclude)
-  var getEventsIn = async (service, exclude) => getSharedConfig('eventsIn', service || serviceName, exclude)
-  var getEventsOut = async (service, exclude) => getSharedConfig('eventsOut', service || serviceName, exclude)
-  var getRpcOut = async (service, exclude) => getSharedConfig('rpcOut', service || serviceName, exclude)
-  return require('../net.server')({getConsole, serviceName, serviceId, getMethods, getMethodsConfig, getNetConfig})
-}
-
-function getClient (serviceName, serviceId) {
-  var getMethodsConfig = async (service, exclude) => getSharedConfig('methods', service || serviceName, exclude)
-  var getNetConfig = async (service, exclude) => getSharedConfig('net', service || serviceName, exclude)
-  var getEventsIn = async (service, exclude) => getSharedConfig('eventsIn', service || serviceName, exclude)
-  var getEventsOut = async (service, exclude) => getSharedConfig('eventsOut', service || serviceName, exclude)
-  var getRpcOut = async (service, exclude) => getSharedConfig('rpcOut', service || serviceName, exclude)
-  return require('../net.client')({getConsole, serviceName, serviceId, getNetConfig, getEventsIn, getEventsOut, getMethodsConfig, getRpcOut})
-}
-
-var netServer1 = getServer('net1', 'net1')
-var netServer2 = getServer('net2', 'net2')
-var netServer3 = getServer('net3', 'net3')
-var netServer4 = getServer('net4', 'net4')
+var netServer1 = stubs.getServer('net1', 'net1')
+var netServer2 = stubs.getServer('net2', 'net2')
+var netServer3 = stubs.getServer('net3', 'net3')
+var netServer4 = stubs.getServer('net4', 'net4')
 netServer1.start()
 netServer2.start()
 netServer3.start()
 netServer4.start()
 
-var netClient1 = getClient('net1', 'net1')
+var netClient1 = stubs.getClient('net1', 'net1')
 
 t.test('*** NET ***', {
   autoend: true

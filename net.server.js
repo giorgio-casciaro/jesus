@@ -7,8 +7,7 @@ var validateMsg = ajv.compile(require('./schemas/message.schema.json'))
 
 const getConsole = (serviceName, serviceId, pack) => require('./utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
 
-
-module.exports = function getNetServerPackage ({  serviceName = 'unknow', serviceId = 'unknow', getMethods, getMethodsConfig, getNetConfig}) {
+module.exports = function getNetServerPackage ({ serviceName = 'unknow', serviceId = 'unknow', getMethods, getMethodsConfig, getNetConfig}) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   checkRequired({getMethods, getMethodsConfig, getConsole, getNetConfig}, PACKAGE)
   CONSOLE.debug('getNetServerPackage ', { })
@@ -64,9 +63,12 @@ module.exports = function getNetServerPackage ({  serviceName = 'unknow', servic
         var response
         // if noResponse not await response on the client side
         // if aknowlegment await response on the client side but not await response on the server side
-        if (methodConfig.responseType === 'noResponse' || methodConfig.responseType === 'aknowlegment') {
+        if (methodConfig.responseType === 'noResponse') {
           method(data, meta, getStream || null)
           response = null
+        } else if (methodConfig.responseType === 'aknowlegment') {
+          method(data, meta, getStream || null)
+          response = {'aknowlegment': 1}
         } else if (methodConfig.responseType === 'response') {
           response = await method(data, meta, getStream || null)
           response = validateResponse(methodConfig, methodName, response, 'responseSchema')
@@ -85,8 +87,8 @@ module.exports = function getNetServerPackage ({  serviceName = 'unknow', servic
     return {
       async start () {
         config = await getNetConfig(serviceName)
-        CONSOLE.debug('START CHANNELS SERVERS ',config)
-        checkRequired({channels:config.channels}, PACKAGE)
+        CONSOLE.debug('START CHANNELS SERVERS ', config)
+        checkRequired({channels: config.channels}, PACKAGE)
         forEachChannel((channel) => channel.start())
       },
       stop () {
