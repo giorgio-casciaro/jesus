@@ -1,6 +1,6 @@
 {
   "name": "sint-bit-jesus",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "jesus is a cross-service multichannel (http,tcp,upd) comunication (rpc, events) manager",
   "author": "Giorgio Casciaro <giorgio.casciaro@gmail.com>",
   "main": "jesus.js",
