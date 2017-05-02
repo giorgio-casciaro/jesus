@@ -97,7 +97,7 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
     return {
       async start () {
         config = await getNetConfig(serviceName)
-        CONSOLE.debug('START CHANNELS SERVERS ', config)
+        CONSOLE.log('START CHANNELS SERVERS ',serviceName, config)
         checkRequired({channels: config.channels}, PACKAGE)
         forEachChannel((channel) => channel.start())
       },

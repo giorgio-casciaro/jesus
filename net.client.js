@@ -1,5 +1,6 @@
 const PACKAGE = 'net.client'
 const R = require('ramda')
+const uuidV4 = require('uuid/v4')
 const checkRequired = require('./utils').checkRequired
 var preferedChannels = ['grpc', 'zeromq', 'http']
 // var delayedMessages = global.JESUS_NET_CLIENT_delayedMessages = global.JESUS_NET_CLIENT_delayedMessages || {}
@@ -26,23 +27,29 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
     const getEventOutConfig = async (event) => {
       var eventsOutConfigAll = await getEventsOut()
       if (!eventsOutConfigAll[event]) {
-        CONSOLE.warn(`event ${event} not found in config EventsOut`, eventsOutConfigAll)
+        // CONSOLE.warn(`event ${event} not found in config EventsOut`, eventsOutConfigAll)
+        throw new Error(`event ${event} not found in config EventsOut`)
         return null
       }
       return eventsOutConfigAll[event]
     }
 
     async function emit (event, data = {}, metaRaw = {}, timeout = false, channel = false) {
-      checkRequired({event}, PACKAGE)
-      var meta = Object.assign({}, metaRaw, { emit: event })
-      var eventOutConfig = await getEventOutConfig(event)
-      var eventsInConfig = await getEventsFromServices(event)
-      CONSOLE.debug('emit start ' + event, { event, eventOutConfig, eventsInConfig })
-      var responses = await Promise.all(eventsInConfig.map((rpcConfig) => rpcCall({ to: rpcConfig.to, method: rpcConfig.method, data, meta, timeout, log: false, channel })))
-      responses = responses.filter((response) => response !== null)
-      if (!eventOutConfig.multipleResponse)responses = responses[0] || null
-      CONSOLE.debug('emit response ' + event, {responses, event, eventsInConfig})
-      return responses
+      try {
+        checkRequired({event}, PACKAGE)
+        var meta = Object.assign({}, metaRaw, { emit: event })
+        var eventOutConfig = await getEventOutConfig(event)
+        var eventsInConfig = await getEventsFromServices(event)
+        CONSOLE.debug('emit start ' + event, { event, eventOutConfig, eventsInConfig })
+        var responses = await Promise.all(eventsInConfig.map((rpcConfig) => rpcCall({ to: rpcConfig.to, method: rpcConfig.method, data, meta, timeout, log: false, channel })))
+        responses = responses.filter((response) => response !== null)
+        if (!eventOutConfig.multipleResponse)responses = responses[0] || null
+        CONSOLE.debug('emit response ' + event, {responses, event, eventsInConfig})
+        return responses
+      } catch (error) {
+        CONSOLE.debug('RPC error -->', error)
+        return {error: 'emit error -->' + error}
+      }
     }
 
     async function rpc (rpcName, data = {}, meta = {}, timeout = false, channel = false) {
@@ -80,7 +87,7 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
         channel: channel || 'UNKNOW',
         stream: stream,
         to: to
-      },)
+      })
     }
 
     async function rpcCall ({to, method, data = {}, meta = {}, timeout = false, channel = false }) {
