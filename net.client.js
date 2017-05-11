@@ -12,13 +12,13 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
     checkRequired({getEventsIn, getMethodsConfig, getNetConfig, getRpcOut, getEventsOut}, PACKAGE)
     var getChannel = (channelName) => require(`./channels/${channelName}.client`)({getConsole, serviceName, serviceId})
 
-    const getEventsFromServices = async (event) => {
-      var servicesEventsIn = await getEventsIn('*', serviceName)
+    const getEventsFromServices = async (event, eventOutConfig) => {
+      var servicesEventsIn = await getEventsIn('*')
       CONSOLE.debug('getEventsFromServices servicesEventsIn', servicesEventsIn, event)
       var eventConfig = []
       servicesEventsIn.forEach(config => {
         Object.keys(config.items).forEach(eventName => {
-          if (event === eventName || eventName === '*')eventConfig.push({to: config.service, method: config.items[eventName].method, event: config.items[eventName], eventName})
+          if (event === eventName)eventConfig.push({to: config.service, method: config.items[eventName].method, event: config.items[eventName], eventName})
         })
       })
       CONSOLE.debug('getEventsFromServices ', eventConfig)
@@ -39,7 +39,7 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
         checkRequired({event}, PACKAGE)
         var meta = Object.assign({}, metaRaw, { emit: event })
         var eventOutConfig = await getEventOutConfig(event)
-        var eventsInConfig = await getEventsFromServices(event)
+        var eventsInConfig = await getEventsFromServices(event, eventOutConfig)
         CONSOLE.debug('emit start ' + event, { event, eventOutConfig, eventsInConfig })
         var responses = await Promise.all(eventsInConfig.map((rpcConfig) => rpcCall({ to: rpcConfig.to, method: rpcConfig.method, data, meta, timeout, log: false, channel })))
         responses = responses.filter((response) => response !== null)
@@ -52,11 +52,15 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
       }
     }
 
+    async function testLocalMethod (method, data = {}, meta = {}, timeout = false, channel = false) {
+      return await rpcCall({to: serviceName, method, data, meta, timeout, channel})
+    }
+
     async function rpc (rpcName, data = {}, meta = {}, timeout = false, channel = false) {
       checkRequired({rpcName}, PACKAGE)
       var rpcOutConfigAll = await getRpcOut()
       var rpcOutConfig = rpcOutConfigAll[rpcName]
-      CONSOLE.debug('rpc() start', { rpcName, rpcOutConfig, rpcOutConfigAll})
+      CONSOLE.debug('rpc() start', { rpcName, rpcOutConfig, rpcOutConfigAll })
       checkRequired({rpcOutConfig}, PACKAGE)
       if (rpcOutConfig.timeout)timeout = rpcOutConfig.timeout
       return await rpcCall({to: rpcOutConfig.to, method: rpcOutConfig.method, data, meta, timeout, channel})
@@ -77,10 +81,10 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
       return listenerMethodsConfig[method]
     }
 
-    async function getMessageMeta (metaRaw = {}, channel, stream = false, to) {
+    function getMessageMeta (metaRaw = {}, channel, stream = false, to) {
       return Object.assign({}, metaRaw, {
         corrid: metaRaw.corrid || uuidV4(),
-        userid: metaRaw.userid || 'UNKNOW',
+        // userid: metaRaw.userid || 'UNKNOW',
         from: serviceName,
         timestamp: Date.now(),
         reqtype: 'out',
@@ -124,10 +128,10 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
       }
     }
     return {
-      rpc, emit
+      rpc, emit, testLocalMethod,rpcCall
     }
   } catch (error) {
-    CONSOLE.debug(error.toString(), {serviceName, serviceId, getNetConfig, getEventsIn, getMethodsConfig, getRpcOut, getEventsOut})
+    CONSOLE.error(error.toString(), {serviceName, serviceId, getNetConfig, getEventsIn, getMethodsConfig, getRpcOut, getEventsOut})
     throw new Error('Error during getNetClientPackage')
   }
 }
