@@ -3,7 +3,7 @@ const uuidV4 = require('uuid/v4')
 const PACKAGE = 'net.server'
 const checkRequired = require('./utils').checkRequired
 var Ajv = require('ajv')
-var ajvNoRemoveAdditional = new Ajv({ allErrors: true , removeAdditional: false})
+var ajvNoRemoveAdditional = new Ajv({ allErrors: true, removeAdditional: false})
 var ajvRemoveAdditional = new Ajv({ allErrors: true, removeAdditional: true })
 var validateMsg = ajvRemoveAdditional.compile(require('./schemas/message.schema.json'))
 
@@ -59,7 +59,7 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
       if (!serviceMethodsConfig[methodName].public && publicApi) throw new Error(methodName + ' is not public')
       return serviceMethodsConfig[methodName]
     }
-    var getChannel = (channelName) => require(`./channels/${channelName}.server`)({getConsole, methodCall, serviceName, serviceId, config: config.channels[channelName]})
+    var getChannel = (channelName) => require(`./channels/${channelName}.server`)({getConsole, methodCall, serviceName, serviceId, config: config.channels[channelName], getMethodsConfig})
     var forEachChannel = (func) => Object.keys(config.channels).forEach((channelName) => func(getChannel(channelName)))
 
     var methodCall = async function methodCall (message, getStream, publicApi = true, channel = 'UNKNOW') {

@@ -10,10 +10,10 @@ const publicApi = false
 var httpApi
 var httpServer
 
-module.exports = function getChannelHttpPublicServerPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config }) {
+module.exports = function getChannelHttpPublicServerPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config, getMethodsConfig }) {
   var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
-    checkRequired({config, methodCall, getConsole})
+    checkRequired({config, methodCall, getConsole, getMethodsConfig})
     async function start () {
       var httpUrl = 'http://' + config.url.replace('http://', '').replace('//', '')
       var httpPort = url.parse(httpUrl, false, true).port
@@ -28,7 +28,10 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
         try {
           var newMeta = {}
           for (var metaK in req.headers) if (metaK.indexOf('app-meta-') + 1)newMeta[metaK.replace('app-meta-', '')] = req.headers[metaK]
-          var methodName = req.url.replace('/', '')
+          var methodsConfig = await getMethodsConfig()
+          var paths = req.path.split('/')
+          var methodName = paths[0]
+          if (!methodsConfig[methodName]) throw new Error('not valid method')
           var data = req.body || req.query
           var message = {
             meta: newMeta, // HTTP HEADERS ONLY LOWERCASE

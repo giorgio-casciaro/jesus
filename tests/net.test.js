@@ -151,13 +151,13 @@ var Methods = {
   })
 }
 
-
-var stubs = require('./stubs')(sharedConfig,Methods,getConsole)
+var stubs = require('./stubs')(sharedConfig, Methods, getConsole)
 
 var netServer1 = stubs.getServer('net1', 'net1')
 var netServer2 = stubs.getServer('net2', 'net2')
 var netServer3 = stubs.getServer('net3', 'net3')
 var netServer4 = stubs.getServer('net4', 'net4')
+
 netServer1.start()
 netServer2.start()
 netServer3.start()
@@ -173,11 +173,13 @@ t.test('*** NET ***', {
   await t.test('netClient1.rpc -> testNoResponse', async function (t) {
     testCheck = false
     var response = await netClient1.rpc('testRpcNoResponse', {'test_data': 1}, meta)
-    t.same(response, null, 'response=true on NoResponse')
+    t.same(response, null, 'response=null on NoResponse')
     await new Promise((resolve) => setTimeout(resolve, 1000))
     t.same(testCheck, {'test_data': 1}, 'testNoResponse richiesta ricevuta')
     t.end()
   })
+  console.log('TEEEEEEEE')
+  process.exit()
   await t.test('netClient1.rpc -> testAknowlegment', async function (t) {
     testCheck = false
     var response = await netClient1.rpc('testRpcAknowlegment', {'test_data': 1}, meta)
