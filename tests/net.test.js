@@ -7,6 +7,7 @@ var path = require('path')
 const getConsole = (serviceName, serviceId, pack) => require('../utils').getConsole({error: true, debug: true, log: false, warn: true}, serviceName, serviceId, pack)
 var CONSOLE = getConsole('BASE TEST', '----', '-----')
 
+var genericSchema = {'type': 'object', 'additionalProperties': true}
 var sharedConfig = {
   'net1': {
     'net': {
@@ -20,33 +21,33 @@ var sharedConfig = {
       'testRpcNoResponse': {
         to: 'net1',
         method: 'testNoResponse',
-        requestSchema: {'type': 'object'},
-        responseSchema: {'type': 'object'}
+        requestSchema: genericSchema,
+        responseSchema: genericSchema
       },
       'testRpcAknowlegment': {
         to: 'net1',
         method: 'testAknowlegment',
-        requestSchema: {'type': 'object'},
-        responseSchema: {'type': 'object'}
+        requestSchema: genericSchema,
+        responseSchema: genericSchema
       },
       'testRpcResponse': {
         to: 'net1',
         method: 'testResponse',
-        requestSchema: {'type': 'object'},
-        responseSchema: {'type': 'object'}
+        requestSchema: genericSchema,
+        responseSchema: genericSchema
       },
       'testRpcStream': {
         to: 'net1',
         method: 'testStream',
-        requestSchema: {'type': 'object'},
-        responseSchema: {'type': 'object'}
+        requestSchema: genericSchema,
+        responseSchema: genericSchema
       }
     },
     eventsOut: {
       'testEvent': {
         multipleResponse: false,
-        requestSchema: {'type': 'object'},
-        responseSchema: {'type': 'object'}
+        requestSchema: genericSchema,
+        responseSchema: genericSchema
       }
     },
     'eventsIn': {
@@ -58,26 +59,26 @@ var sharedConfig = {
       'testNoResponse': {
         public: true,
         responseType: 'noResponse',
-        responseSchema: {'type': 'object'},
-        requestSchema: {'type': 'object'}
+        responseSchema: genericSchema,
+        requestSchema: genericSchema
       },
       'testAknowlegment': {
         public: true,
         responseType: 'aknowlegment',
-        responseSchema: {'type': 'object'},
-        requestSchema: {'type': 'object'}
+        responseSchema: genericSchema,
+        requestSchema: genericSchema
       },
       'testResponse': {
         public: true,
         responseType: 'response',
-        responseSchema: {'type': 'object'},
-        requestSchema: {'type': 'object'}
+        responseSchema: genericSchema,
+        requestSchema: genericSchema
       },
       'testStream': {
         public: true,
         responseType: 'stream',
-        responseSchema: {'type': 'object'},
-        requestSchema: {'type': 'object'}
+        responseSchema: genericSchema,
+        requestSchema: genericSchema
       }
     }
   }
@@ -131,16 +132,18 @@ var meta = {
 
 var testCheck = false
 var stream
-var co = require('co')
 var Methods = {
-  testNoResponse: co.wrap(function* (data, meta, getStream) { testCheck = data }),
-  testAknowlegment: co.wrap(function* (data, meta, getStream) { testCheck = data }),
-  testResponse: co.wrap(function* (data, meta, getStream) {
-    yield new Promise((resolve) => setTimeout(resolve, 1000))
+  testNoResponse: async function (data, meta, getStream) {
+    console.log('METHOD testNoResponse', {data, meta, getStream})
+    testCheck = data
+  },
+  testAknowlegment: async function (data, meta, getStream) { testCheck = data },
+  testResponse: async function (data, meta, getStream) {
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     testCheck = data
     return data
-  }),
-  testStream: co.wrap(function* (data, meta, getStream) {
+  },
+  testStream: async function (data, meta, getStream) {
     CONSOLE.debug('testStream', {data, meta, getStream})
     testCheck = data
     var onClose = () => { CONSOLE.log('stream closed') }
@@ -148,7 +151,7 @@ var Methods = {
     stream.write({testStreamConnnected: 1})
     setTimeout(() => stream.write({testStreamData: 1}), 500)
     setTimeout(() => stream.end(), 1000)
-  })
+  }
 }
 
 var stubs = require('./stubs')(sharedConfig, Methods, getConsole)
@@ -178,8 +181,7 @@ t.test('*** NET ***', {
     t.same(testCheck, {'test_data': 1}, 'testNoResponse richiesta ricevuta')
     t.end()
   })
-  console.log('TEEEEEEEE')
-  process.exit()
+
   await t.test('netClient1.rpc -> testAknowlegment', async function (t) {
     testCheck = false
     var response = await netClient1.rpc('testRpcAknowlegment', {'test_data': 1}, meta)

@@ -26,13 +26,15 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
       httpApi.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
       httpApi.all('*', async (req, res) => {
         try {
+          if (req.path.indexOf('.') > 0) throw new Error(req.path + ' not valid')
           var newMeta = {}
           for (var metaK in req.headers) if (metaK.indexOf('app-meta-') + 1)newMeta[metaK.replace('app-meta-', '')] = req.headers[metaK]
           var methodsConfig = await getMethodsConfig()
-          var paths = req.path.split('/')
+          var paths = req.path.split('/').filter(s => s !== '')
+          // console.log(methodsConfig)
           var methodName = paths[0]
-          if (!methodsConfig[methodName]) throw new Error('not valid method')
-          var data = req.body || req.query
+          if (!methodsConfig[methodName]) throw new Error(paths[0] + ' not valid method')
+          var data = req.method === 'GET' ? req.query : req.body
           var message = {
             meta: newMeta, // HTTP HEADERS ONLY LOWERCASE
             method: methodName,
@@ -63,7 +65,7 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
             methodCall(message, getStream, publicApi, 'httpPublic')
           }
         } catch (error) {
-          CONSOLE.warn('Api error', {error})
+          CONSOLE.warn('Api error', error.toString())
           res.send({error})
         }
       })

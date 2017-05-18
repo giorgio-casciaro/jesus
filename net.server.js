@@ -7,6 +7,14 @@ var ajvNoRemoveAdditional = new Ajv({ allErrors: true, removeAdditional: false})
 var ajvRemoveAdditional = new Ajv({ allErrors: true, removeAdditional: true })
 var validateMsg = ajvRemoveAdditional.compile(require('./schemas/message.schema.json'))
 
+class ErrorWithData extends Error {
+  constructor (message, data) {
+    super(message)
+    Object.defineProperty(this, 'data', { value: data })
+    Error.captureStackTrace(this, this.constructor)
+  }
+}
+
 const getConsole = (serviceName, serviceId, pack) => require('./utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
 
 module.exports = function getNetServerPackage ({ serviceName = 'unknow', serviceId = 'unknow', getMethods, getMethodsConfig, getNetConfig}) {
@@ -33,7 +41,7 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
       var validate = ajv.compile(schema)
       var valid = validate(data)
       if (!valid) {
-        throw new Error(JSON.stringify({'type': 'schemaValidation', methodName, data, schemaField, 'errors': validate.errors}))
+        throw new ErrorWithData('validation errors', {'type': 'schemaValidation', schemaField, 'errors': validate.errors})
       } else return data
     }
     function getMethodMeta (metaRaw = {}, channel) {
@@ -96,7 +104,8 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
         CONSOLE.log('SERVER OUT => ', {response, responseType: methodConfig.responseType})
         return response
       } catch (error) {
-        return {'type': 'method', method: methodName, 'error': error.message}
+        CONSOLE.log('SERVER OUT => !ERROR : ', {'type': 'method', method: methodName, 'error': error.message, 'data': error.data})
+        return {'type': 'method', method: methodName, 'error': error.message, 'data': error.data}
       }
     }
     return {
