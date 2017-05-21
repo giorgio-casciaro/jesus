@@ -3,8 +3,8 @@ const uuidV4 = require('uuid/v4')
 const PACKAGE = 'net.server'
 const checkRequired = require('./utils').checkRequired
 var Ajv = require('ajv')
-var ajvNoRemoveAdditional = new Ajv({ allErrors: true, removeAdditional: false})
-var ajvRemoveAdditional = new Ajv({ allErrors: true, removeAdditional: true })
+var ajvNoRemoveAdditional = new Ajv({ coerceTypes: true, allErrors: true, removeAdditional: false})
+var ajvRemoveAdditional = new Ajv({ coerceTypes: true, allErrors: true, removeAdditional: true })
 var validateMsg = ajvRemoveAdditional.compile(require('./schemas/message.schema.json'))
 
 class ErrorWithData extends Error {
@@ -30,6 +30,7 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
     }
     var validateWithSchema = (methodConfig, methodName, data, schemaField = 'requestSchema') => {
       CONSOLE.log('validate ', { methodConfig: methodConfig[schemaField], methodName, data, schemaField })
+      if (methodConfig[schemaField] === false) return data
       if (!methodConfig[schemaField]) throw new Error(schemaField + ' not defined in methods.json ' + methodName)
       var schema = Object.assign({
         'type': 'object',
