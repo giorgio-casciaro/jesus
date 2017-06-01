@@ -6,7 +6,7 @@ services:
      image: node:7-alpine
      #entrypoint: sh -c "ifconfig -a && node /service/service/tests/base.test"
      #entrypoint: sh -c "cd /service/ && npm start"
-     entrypoint: sh -c "cd /service/ && npm run test_compose_net1"
+     entrypoint: sh -c "cd /service/ && npm run compose_test_net1"
      ports:
        - "9229"
        - "5858"
@@ -25,7 +25,7 @@ services:
      image: node:7-alpine
      #entrypoint: sh -c "ifconfig -a && node /service/service/tests/base.test"
      #entrypoint: sh -c "cd /service/ && npm start"
-     entrypoint: sh -c "cd /service/ && npm run test_compose_net2"
+     entrypoint: sh -c "cd /service/ && npm run compose_test_net2"
      ports:
        - "9229"
      environment:

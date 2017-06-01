@@ -96,7 +96,7 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
 
     async function rpcCall ({to, method, data = {}, meta = {}, timeout = false, channel = false }) {
       try {
-        CONSOLE.debug('rpcCall() start', { to, method, data, meta, timeout, channel })
+        CONSOLE.log('rpcCall() start', { to, method, data, meta, timeout, channel })
         checkRequired({to, method}, PACKAGE)
 
         // CONFIG
@@ -123,7 +123,7 @@ module.exports = function getNetClientPackage ({serviceName = 'unknow', serviceI
         CONSOLE.log('=> CLIENT IN  RESPONSE', {message, response})
         return response
       } catch (error) {
-        CONSOLE.debug('RPC error -->', error)
+        CONSOLE.error('RPC error -->', error)
         return {error: 'RPC error -->' + error}
       }
     }

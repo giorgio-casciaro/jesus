@@ -13,8 +13,8 @@
     "test": "tap tests/*.test.js --cov --color --reporter=spec",
     "watch_test": "nodemon  --ext js --exec \"tap tests/net.test.js --cov --color --reporter=spec\"",
     "watch_debug": "nodemon  --ext js  --exec 'node --inspect   tests/net.test.js '",
-    "test_compose_net1": "node --inspect=0.0.0.0:9229 tests/compose/net1.testraw.js",
-    "test_compose_net2": "nodemon --debug=5858 --ext js  --exec 'node --inspect=0.0.0.0:9229 tests/compose/net2.testraw.js '"
+    "compose_test_net1": "node --inspect=0.0.0.0:9229 tests/compose/net1.testraw.js",
+    "compose_test_net2": "nodemon --debug=5858 --ext js  --exec 'node --inspect=0.0.0.0:9229 tests/compose/net2.testraw.js '"
   },
   "devDependencies": {
     "nodemon": "^1.11.0",
@@ -30,7 +30,9 @@
     "file-type": "^4.3.0",
     "helmet": "^3.6.0",
     "multer": "^1.3.0",
+    "mv": "^2.1.1",
     "ramda": "^0.23.0",
+    "read-chunk": "^2.0.0",
     "request": "^2.81.0",
     "uuid": "^3.0.1",
     "zeromq": "^4.2.0"

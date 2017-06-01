@@ -29,15 +29,14 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
       } else return data
     }
     var validateWithSchema = (methodConfig, methodName, data, schemaField = 'requestSchema') => {
-      CONSOLE.log('validate ', { methodConfig: methodConfig[schemaField], methodName, data, schemaField })
       if (methodConfig[schemaField] === false) return data
       if (!methodConfig[schemaField]) throw new Error(schemaField + ' not defined in methods.json ' + methodName)
       var schema = Object.assign({
         'type': 'object',
         'additionalProperties': false
       }, methodConfig[schemaField])
-
       var ajv = ajvNoRemoveAdditional
+      CONSOLE.log('validate ', { schema,data })
       if (!schema.additionalProperties)ajv = ajvRemoveAdditional
       var validate = ajv.compile(schema)
       var valid = validate(data)
@@ -85,7 +84,6 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
 
         // VALIDATION
         data = validateWithSchema(methodConfig, methodName, data, 'requestSchema')
-
         // CALL
         var response
 

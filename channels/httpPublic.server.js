@@ -4,8 +4,13 @@ const compression = require('compression')
 const helmet = require('helmet')
 const cors = require('cors')
 const multer = require('multer')
+const fileType = require('file-type')
+const readChunk = require('read-chunk')
 
 const url = require('url')
+const mv = require('mv')
+const fs = require('fs')
+const path = require('path')
 const PACKAGE = 'channel.httpPublic.server'
 const checkRequired = require('../utils').checkRequired
 const publicApi = false
@@ -24,16 +29,16 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
       // MIDDLEWARE
       if (!config.mimetypes)config.mimetypes = 'image/jpeg,image/png'
       const upload = multer({
-        dest: '/uploads/',
+        dest: path.join(__dirname, '../tempUpload/'),
         fileFilter: function (req, file, cb) {
           if (config.mimetypes.split(',').indexOf(file.mimetype) < 0) { return cb(null, false, new Error('Wrong file type ' + file.mimetype)) }
           cb(null, true)
         },
         limits: {
           fieldNameSize: 1024, // 1kb
-          fieldSize: 1024 * 120, // 120kb
+          fieldSize: 1024 *1024 * 120, // 120kb
           fields: 150,
-          fileSize: 1024 * 1024 * 5, // 5MB
+          fileSize: 1024 * 1024 * 50, // 5MB
           files: 10,
           parts: 150,
           headerPairs: 150
@@ -65,7 +70,17 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
           if (req.files) {
             newMeta['files'] = req.files
             req.files.forEach((file) => {
-              console.log('fileField', file)
+              var chunk = readChunk.sync(file.path, 0, 4100)
+              var mime = fileType(chunk)
+              console.log('fileField', {config: config.mimetypes, mime, file})
+              if (config.mimetypes.split(',').indexOf(mime.mime) < 0) {
+                fs.unlinkSync(file.path)
+                throw new Error('wrong file type ' + mime.mime)
+              }
+              file.mimetype = mime.mime
+              // var newPath = path.join(__dirname, '../tempUpload/', XXHash.hash(file, 0xCAFEBABE))
+              // mv(file.path, newPath)
+              // file.path = newPath
               data[file.fieldname] = file
             })
           }
@@ -78,8 +93,18 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
           CONSOLE.debug('newMeta', {newMeta})
           if (!isStream) {
             var response = await methodCall(message, false, publicApi, 'httpPublic')
-            if (response === null)res.status(404)
-            res.send(response)
+            if (response === null)res.status(404).end()
+            else if (typeof response === 'string') {
+              // res.set('Content-Type', 'text/plain')
+              res.status(200).send(response)
+            } else if (response instanceof Buffer) {
+              var mime = fileType(response)
+              console.log('mime', mime.mime)
+              if (mime) res.set('Content-Type', mime.mime)
+              res.status(200).send(response)
+            } else if (typeof response === 'object') {
+              res.status(200).json(response)
+            }
           } else {
             CONSOLE.debug('HttpPublic MESSAGE STREAM', {isStream, message, headers: req.headers, data})
             res.writeHead(200, {
