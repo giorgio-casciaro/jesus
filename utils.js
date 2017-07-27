@@ -11,6 +11,8 @@ var getConsoleInitTime = Date.now()
 
 function getConsole (config = {debug: false, log: true, error: true, warn: true}, serviceName, serviceId, pack, logDir = false) {
   var initTime = getConsoleInitTime
+  if (!console.debug || typeof (console.debug) !== 'function') console.debug = console.log
+  if (!console.warn || typeof (console.warn) !== 'function') console.warn = console.log
   return {
     profile (name) { if (!console.profile) return false; console.profile(name) },
     profileEnd (name) { if (!console.profile) return false; console.profileEnd(name) },
@@ -20,7 +22,7 @@ function getConsole (config = {debug: false, log: true, error: true, warn: true}
       var args = Array.prototype.slice.call(arguments)
       console.log.apply(this, [serviceName, Date.now() - initTime, serviceId, pack].concat(args))
     },
-    debug () { if (!config.debug || typeof (console.debug) !== 'function') return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, ['%c' + serviceName, 'background: ' + stringToColor(serviceName) + '; color: white; display: block;', Date.now() - initTime, serviceId, pack].concat(args)) },
+    debug () { if (!config.debug || typeof (console.debug) !== 'function') return false; var args = Array.prototype.slice.call(arguments); console.debug.apply(this, [serviceName, Date.now() - initTime, serviceId, pack].concat(args)) },
     warn () { if (!config.warn || !console.warn) return false; var args = Array.prototype.slice.call(arguments); console.warn.apply(this, [serviceName, Date.now() - initTime, serviceId, pack].concat(args)) }
   }
 }
