@@ -4,9 +4,6 @@ var request = require('request')
 var t = require('tap')
 var path = require('path')
 
-const getConsole = (serviceName, serviceId, pack) => require('../utils').getConsole({error: true, debug: true, log: false, warn: true}, serviceName, serviceId, pack)
-var CONSOLE = getConsole('BASE TEST', '----', '-----')
-
 var genericSchema = {'type': 'object', 'additionalProperties': true}
 var sharedConfig = {
   'net1': {
@@ -144,9 +141,9 @@ var Methods = {
     return data
   },
   testStream: async function (data, meta, getStream) {
-    CONSOLE.debug('testStream', {data, meta, getStream})
+    console.debug('testStream', {data, meta, getStream})
     testCheck = data
-    var onClose = () => { CONSOLE.log('stream closed') }
+    var onClose = () => { console.log('stream closed') }
     stream = getStream(onClose, 120000)
     stream.write({testStreamConnnected: 1})
     setTimeout(() => stream.write({testStreamData: 1}), 500)
@@ -154,7 +151,7 @@ var Methods = {
   }
 }
 
-var stubs = require('./stubs')(sharedConfig, Methods, getConsole)
+var stubs = require('./stubs')(sharedConfig, Methods)
 
 var netServer1 = stubs.getServer('net1', 'net1')
 var netServer2 = stubs.getServer('net2', 'net2')
@@ -201,9 +198,9 @@ t.test('*** NET ***', {
     testCheck = false
     var testStream = false
     var streaming = await netClient1.rpc('testRpcStream', {'test_data': 1}, meta)
-    streaming.on('data', (data) => { CONSOLE.debug('streaming data', data); testStream = true })
-    streaming.on('error', (data) => CONSOLE.debug('streaming error', data))
-    streaming.on('end', (data) => CONSOLE.debug('streaming close', data))
+    streaming.on('data', (data) => { console.debug('streaming data', data); testStream = true })
+    streaming.on('error', (data) => console.debug('streaming error', data))
+    streaming.on('end', (data) => console.debug('streaming close', data))
 
     await new Promise((resolve) => setTimeout(resolve, 1000))
     t.same(testStream, true, 'Stream received')

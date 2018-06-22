@@ -3,8 +3,8 @@ const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
 var globalEmitters = global.channelTestServers = global.channelTestServers || []
 const publicApi = true
-module.exports = function getChannelGrpcServerPackage ({serialize, deserialize, getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config}) {
-  var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
+module.exports = function getChannelGrpcServerPackage ({serialize, deserialize,  methodCall, serviceName = 'unknow', serviceId = 'unknow', config}) {
+  
   try {
     function start () {
       var globalEmitter = globalEmitters[config.url] = globalEmitters[config.url] || new EventEmitter()
@@ -28,16 +28,16 @@ module.exports = function getChannelGrpcServerPackage ({serialize, deserialize, 
         methodCall(message, getStream, publicApi, 'test')
         respond(readableStream)
       })
-      CONSOLE.debug('Net started TEST channel')
+      console.debug('Net started TEST channel')
     }
-    checkRequired({config, methodCall, getConsole})
+    checkRequired({config, methodCall})
     return {
       start,
       stop () {},
       restart () {}
     }
   } catch (error) {
-    CONSOLE.error(error, {config})
+    console.error(error, {config})
     throw new Error('getChannelGrpcServerPackage ' + config.url)
   }
 }

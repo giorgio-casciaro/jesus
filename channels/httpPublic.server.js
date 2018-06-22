@@ -7,6 +7,10 @@ const multer = require('multer')
 const fileType = require('file-type')
 const readChunk = require('read-chunk')
 
+const log = (msg, data) => { console.log('\n' + JSON.stringify(['LOG', 'JESUS SERVER HTTP PUBLIC', msg, data])) }
+const debug = (msg, data) => { if (process.env.debugJesus)console.log('\n' + JSON.stringify(['DEBUG', 'JESUS SERVER HTTP PUBLIC', msg, data])) }
+const error = (msg, data) => { console.log('\n' + JSON.stringify(['ERROR', 'JESUS SERVER HTTP PUBLIC', msg, data])) }
+
 const url = require('url')
 const mv = require('mv')
 const fs = require('fs')
@@ -17,10 +21,9 @@ const publicApi = false
 var httpApi
 var httpServer
 
-module.exports = function getChannelHttpPublicServerPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config, getMethodsConfig }) {
-  var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
+module.exports = function getChannelHttpPublicServerPackage ({ methodCall, serviceName = 'unknow', serviceId = 'unknow', config, getMethodsConfig }) {
   try {
-    checkRequired({config, methodCall, getConsole, getMethodsConfig})
+    checkRequired({config, methodCall, getMethodsConfig})
     async function start () {
       var httpUrl = 'http://' + config.url.replace('http://', '').replace('//', '')
       var httpPort = url.parse(httpUrl, false, true).port
@@ -36,7 +39,7 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
         },
         limits: {
           fieldNameSize: 1024, // 1kb
-          fieldSize: 1024 *1024 * 120, // 120kb
+          fieldSize: 1024 * 1024 * 120, // 120kb
           fields: 150,
           fileSize: 1024 * 1024 * 50, // 5MB
           files: 10,
@@ -47,13 +50,13 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
 
       var corsOrigin = config.cors ? config.cors.split(',') : false
       httpApi.use(cors({origin: corsOrigin}))
-      httpApi.use(helmet())
-      httpApi.use(compression({level: 1}))
+      // httpApi.use(helmet())
+      // httpApi.use(compression({level: 1}))
       httpApi.use(bodyParser.json())
       httpApi.use(bodyParser.urlencoded({ extended: true }))
 
       // ROUTE
-      httpApi.all('*', upload.any(), async (req, res) => {
+      httpApi.all('*', upload.any(), async function (req, res) {
         try {
           // if (req.path.indexOf('.') > 0) throw new Error(req.path + ' not valid')
           var newMeta = {}
@@ -67,12 +70,13 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
             var tempName // PATH EXTRA DATA
             paths.slice(1).forEach((value, index) => { if (index % 2)data[tempName] = value; else tempName = value })
           }
+          // hl('req.files', req.files)
           if (req.files) {
             newMeta['files'] = req.files
             req.files.forEach((file) => {
               var chunk = readChunk.sync(file.path, 0, 4100)
               var mime = fileType(chunk)
-              console.log('fileField', {config: config.mimetypes, mime, file})
+              log('fileField', {config: config.mimetypes, mime, file})
               if (config.mimetypes.split(',').indexOf(mime.mime) < 0) {
                 fs.unlinkSync(file.path)
                 throw new Error('wrong file type ' + mime.mime)
@@ -89,8 +93,9 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
             method: methodName,
             data
           }
-          var isStream = (newMeta.stream === 'true' || newMeta.stream === '1')
-          CONSOLE.debug('newMeta', {newMeta})
+          // var isStream = (newMeta.stream === 'true' || newMeta.stream === '1')
+          var isStream = methodsConfig[methodName].responseType === 'stream' || newMeta.stream === 'true' || newMeta.stream === '1'
+          debug('newMeta', {newMeta})
           if (!isStream) {
             var response = await methodCall(message, false, publicApi, 'httpPublic')
             if (response === null)res.status(404).end()
@@ -99,46 +104,55 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
               res.status(200).send(response)
             } else if (response instanceof Buffer) {
               var mime = fileType(response)
-              console.log('mime', mime.mime)
+              log('mime', mime.mime)
               if (mime) res.set('Content-Type', mime.mime)
               res.status(200).send(response)
             } else if (typeof response === 'object') {
               res.status(200).json(response)
             }
           } else {
-            CONSOLE.debug('HttpPublic MESSAGE STREAM', {isStream, message, headers: req.headers, data})
+            debug('HttpPublic MESSAGE STREAM', {isStream, message, headers: req.headers, data})
             res.writeHead(200, {
               'Content-Type': 'text/event-stream',
               'Cache-Control': 'no-cache',
               'Connection': 'keep-alive'
             })
-            var getStream = (onClose, MAX_REQUEST_TIMEOUT = 120000) => {
-              const close = () => { if (timeout)clearTimeout(timeout); onClose() }
-              res.on('close', close).on('finish', close).on('error', close).on('end', close)
-              var timeout = setTimeout(res.end, MAX_REQUEST_TIMEOUT)
+            function getStream (onClose, MAX_REQUEST_TIMEOUT) {
+              var isClosed = false
+              const close = () => { isClosed = true; if (timeout)clearTimeout(timeout); onClose() }
+              res
+              .on('close', (data) => { log('streaming closed', data); close() })
+              .on('finish', (data) => { log('streaming finish', data); close() })
+              .on('error', (data) => { log('streaming error', data); close() })
+              .on('end', (data) => { log('streaming end', data); close() })
+              var timeout = false
+              //  hl('MAX_REQUEST_TIMEOUT', MAX_REQUEST_TIMEOUT)
+              // if (MAX_REQUEST_TIMEOUT)timeout = setTimeout(function () { // hl('MAX_REQUEST_TIMEOUT', MAX_REQUEST_TIMEOUT) }, MAX_REQUEST_TIMEOUT)
+              if (MAX_REQUEST_TIMEOUT)timeout = setTimeout(() => { timeout = false; res.end() }, MAX_REQUEST_TIMEOUT)
               return {
-                write: (obj) => res.write(JSON.stringify(obj)),
-                end: (obj) => res.end()
+                // write: (obj) => res.write(JSON.stringify(obj)),
+                write: function (obj) { if (!isClosed)res.write('data: ' + JSON.stringify(obj) + '\n\n') },
+                end: function (obj) { if (!isClosed)res.end() }
               }
             }
 
             methodCall(message, getStream, publicApi, 'httpPublic')
           }
         } catch (error) {
-          CONSOLE.warn('Api error', error.toString())
+          log('Api error', error.toString())
           res.send({error})
         }
       })
       httpServer = httpApi.on('connection', function (socket) {
         // socket.setTimeout(60000)
       }).listen(httpPort)
-      CONSOLE.debug('http Api listening on ' + config.url)
+      debug('http Api listening on ' + config.url)
     }
 
     return {
       start,
       stop () {
-        CONSOLE.debug('Stopping httpServer', httpServer)
+        debug('Stopping httpServer')
         httpServer.close()
       },
       restart () {
@@ -146,7 +160,7 @@ module.exports = function getChannelHttpPublicServerPackage ({ getConsole, metho
       }
     }
   } catch (error) {
-    CONSOLE.error(error, {config})
+    error(error, {config})
     throw new Error('getChannelHttpServerPackage ' + config.url)
   }
 }

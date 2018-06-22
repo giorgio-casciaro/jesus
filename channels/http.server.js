@@ -1,112 +1,158 @@
-var express = require('express')
-var bodyParser = require('body-parser')
-var compression = require('compression')
-var helmet = require('helmet')
+const express = require('express')
+const bodyParser = require('body-parser')
+const compression = require('compression')
+const helmet = require('helmet')
+const cors = require('cors')
+const multer = require('multer')
+const fileType = require('file-type')
+const readChunk = require('read-chunk')
+
+const log = (msg, data) => { console.log('\n' + JSON.stringify(['LOG', 'JESUS SERVER HTTP', msg, data])) }
+const debug = (msg, data) => { if (process.env.debugJesus)console.log('\n' + JSON.stringify(['DEBUG', 'JESUS SERVER HTTP', msg, data])) }
+const error = (msg, data) => { console.log('\n' + JSON.stringify(['ERROR', 'JESUS SERVER HTTP', msg, data])) }
+
 const url = require('url')
-const PACKAGE = 'channel.http.server'
+const mv = require('mv')
+const fs = require('fs')
+const path = require('path')
+const PACKAGE = 'channel.httpPublic.server'
 const checkRequired = require('../utils').checkRequired
 const publicApi = false
 var httpApi
 var httpServer
 
-module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config}) {
-  var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
+module.exports = function getChannelHttpPublicServerPackage ({ methodCall, serviceName = 'unknow', serviceId = 'unknow', config, getMethodsConfig }) {
   try {
-    checkRequired({config, methodCall, getConsole})
+    checkRequired({config, methodCall, getMethodsConfig})
     async function start () {
       var httpUrl = 'http://' + config.url.replace('http://', '').replace('//', '')
       var httpPort = url.parse(httpUrl, false, true).port
       httpApi = express()
-      httpApi.use(helmet())
-      httpApi.use(compression({level: 1}))
-      httpApi.use(bodyParser.json()) // support json encoded bodies
-      httpApi.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
-      httpApi.all('/_httpMessage', async (req, res) => {
-        try {
-          var data = req.body || req.query
-          CONSOLE.debug('_httpMessage', req, data)
-          var response = await methodCall(data, false, publicApi, 'http')
-          res.send(response)
-        } catch (error) {
-          CONSOLE.warn('Api error', {error})
-          res.send({error})
+
+      // MIDDLEWARE
+      if (!config.mimetypes)config.mimetypes = 'image/jpeg,image/png'
+      const upload = multer({
+        dest: path.join(__dirname, '../tempUpload/'),
+        fileFilter: function (req, file, cb) {
+          if (config.mimetypes.split(',').indexOf(file.mimetype) < 0) { return cb(null, false, new Error('Wrong file type ' + file.mimetype)) }
+          cb(null, true)
+        },
+        limits: {
+          fieldNameSize: 1024, // 1kb
+          fieldSize: 1024 * 1024 * 120, // 120kb
+          fields: 150,
+          fileSize: 1024 * 1024 * 50, // 5MB
+          files: 10,
+          parts: 150,
+          headerPairs: 150
         }
       })
-      httpApi.all('/_httpMessageStream', async (req, res) => {
+
+      var corsOrigin = config.cors ? config.cors.split(',') : false
+      httpApi.use(cors({origin: corsOrigin}))
+      // httpApi.use(helmet())
+      // httpApi.use(compression({level: 1}))
+      httpApi.use(bodyParser.json())
+      httpApi.use(bodyParser.urlencoded({ extended: true }))
+
+      // ROUTE
+      httpApi.all('*', upload.any(), async function (req, res) {
         try {
-          var data = req.body || req.query
-          CONSOLE.debug('_httpMessageStream', req, data)
-          res.writeHead(200, {
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive'
-          })
-          var getStream = (onClose, MAX_REQUEST_TIMEOUT = 120000) => {
-            const close = () => { if (timeout)clearTimeout(timeout); onClose() }
-            res.on('close', close).on('finish', close).on('error', close).on('end', close)
-            var timeout = setTimeout(res.end, MAX_REQUEST_TIMEOUT)
-            return {
-              write: (obj) => res.write(JSON.stringify(obj)),
-              end: (obj) => res.end()
-            }
-          }
-          methodCall(data, getStream, publicApi, 'http')
-        } catch (error) {
-          CONSOLE.warn('Api error', {error})
-          res.send({error})
-        }
-      })
-      httpApi.all('*', async (req, res) => {
-        try {
+          // if (req.path.indexOf('.') > 0) throw new Error(req.path + ' not valid')
           var newMeta = {}
           for (var metaK in req.headers) if (metaK.indexOf('app-meta-') + 1)newMeta[metaK.replace('app-meta-', '')] = req.headers[metaK]
-
-          var methodName = req.url.replace('/', '')
-          var data = req.body || req.query
+          var methodsConfig = await getMethodsConfig()
+          var paths = req.path.split('/').filter(s => s !== '')
+          var methodName = paths[0]
+          if (!methodsConfig[methodName]) throw new Error(paths[0] + ' not valid method')
+          var data = req.method === 'GET' ? req.query : req.body
+          if (paths.length > 1) {
+            var tempName // PATH EXTRA DATA
+            paths.slice(1).forEach((value, index) => { if (index % 2)data[tempName] = value; else tempName = value })
+          }
+          // hl('req.files', req.files)
+          if (req.files) {
+            newMeta['files'] = req.files
+            req.files.forEach((file) => {
+              var chunk = readChunk.sync(file.path, 0, 4100)
+              var mime = fileType(chunk)
+              log('fileField', {config: config.mimetypes, mime, file})
+              if (config.mimetypes.split(',').indexOf(mime.mime) < 0) {
+                fs.unlinkSync(file.path)
+                throw new Error('wrong file type ' + mime.mime)
+              }
+              file.mimetype = mime.mime
+              // var newPath = path.join(__dirname, '../tempUpload/', XXHash.hash(file, 0xCAFEBABE))
+              // mv(file.path, newPath)
+              // file.path = newPath
+              data[file.fieldname] = file
+            })
+          }
           var message = {
             meta: newMeta, // HTTP HEADERS ONLY LOWERCASE
             method: methodName,
             data
           }
-          var isStream = (newMeta.stream === 'true' || newMeta.stream === '1')
-          CONSOLE.debug('newMeta', {newMeta})
+          // var isStream = (newMeta.stream === 'true' || newMeta.stream === '1')
+          var isStream = methodsConfig[methodName].responseType === 'stream' || newMeta.stream === 'true' || newMeta.stream === '1'
+          debug('newMeta', {newMeta})
           if (!isStream) {
             var response = await methodCall(message, false, publicApi, 'httpPublic')
-            res.send(response)
+            if (response === null)res.status(404).end()
+            else if (typeof response === 'string') {
+              // res.set('Content-Type', 'text/plain')
+              res.status(200).send(response)
+            } else if (response instanceof Buffer) {
+              var mime = fileType(response)
+              log('mime', mime.mime)
+              if (mime) res.set('Content-Type', mime.mime)
+              res.status(200).send(response)
+            } else if (typeof response === 'object') {
+              res.status(200).json(response)
+            }
           } else {
-            CONSOLE.debug('HttpPublic MESSAGE STREAM', {isStream, message, headers: req.headers, data})
+            debug('HttpPublic MESSAGE STREAM', {isStream, message, headers: req.headers, data})
             res.writeHead(200, {
               'Content-Type': 'text/event-stream',
               'Cache-Control': 'no-cache',
               'Connection': 'keep-alive'
             })
-            var getStream = (onClose, MAX_REQUEST_TIMEOUT = 120000) => {
-              const close = () => { if (timeout)clearTimeout(timeout); onClose() }
-              res.on('close', close).on('finish', close).on('error', close).on('end', close)
-              var timeout = setTimeout(res.end, MAX_REQUEST_TIMEOUT)
+            function getStream (onClose, MAX_REQUEST_TIMEOUT) {
+              var isClosed = false
+              const close = () => { isClosed = true; if (timeout)clearTimeout(timeout); onClose() }
+              res
+              .on('close', (data) => { log('streaming closed', data); close() })
+              .on('finish', (data) => { log('streaming finish', data); close() })
+              .on('error', (data) => { log('streaming error', data); close() })
+              .on('end', (data) => { log('streaming end', data); close() })
+              var timeout = false
+              //  hl('MAX_REQUEST_TIMEOUT', MAX_REQUEST_TIMEOUT)
+              // if (MAX_REQUEST_TIMEOUT)timeout = setTimeout(function () { // hl('MAX_REQUEST_TIMEOUT', MAX_REQUEST_TIMEOUT) }, MAX_REQUEST_TIMEOUT)
+              if (MAX_REQUEST_TIMEOUT)timeout = setTimeout(() => { timeout = false; res.end() }, MAX_REQUEST_TIMEOUT)
               return {
-                write: (obj) => res.write(JSON.stringify(obj)),
-                end: (obj) => res.end()
+                // write: (obj) => res.write(JSON.stringify(obj)),
+                write: function (obj) { if (!isClosed)res.write('data: ' + JSON.stringify(obj) + '\n\n') },
+                end: function (obj) { if (!isClosed)res.end() }
               }
             }
 
             methodCall(message, getStream, publicApi, 'httpPublic')
           }
         } catch (error) {
-          CONSOLE.warn('Api error', {error})
+          log('Api error', error.toString())
           res.send({error})
         }
       })
       httpServer = httpApi.on('connection', function (socket) {
         // socket.setTimeout(60000)
       }).listen(httpPort)
-      CONSOLE.debug('http Api listening on ' + config.url)
+      debug('http Api listening on ' + config.url)
     }
 
     return {
       start,
       stop () {
-        CONSOLE.debug('Stopping httpServer', httpServer)
+        debug('Stopping httpServer')
         httpServer.close()
       },
       restart () {
@@ -114,7 +160,7 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
       }
     }
   } catch (error) {
-    CONSOLE.error(error, {config})
+    error(error, {config})
     throw new Error('getChannelHttpServerPackage ' + config.url)
   }
 }

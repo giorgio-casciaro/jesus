@@ -10,10 +10,10 @@ const publicApi = false
 var httpApi
 var httpServer
 
-module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow', config}) {
-  var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
+module.exports = function getChannelHttpServerPackage ({ methodCall, serviceName = 'unknow', serviceId = 'unknow', config}) {
+  
   try {
-    checkRequired({config, methodCall, getConsole})
+    checkRequired({config, methodCall})
     async function start () {
       var socketFile = config.file.replace(':', '')
       if (fs.existsSync(socketFile))fs.unlinkSync(socketFile)
@@ -27,18 +27,18 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
       httpApi.all('/_httpMessage', async (req, res) => {
         try {
           var data = req.body || req.query
-          CONSOLE.debug('_httpMessage', req, data)
+          console.debug('_httpMessage', req, data)
           var response = await methodCall(data, false, publicApi, 'socket')
           res.send(response)
         } catch (error) {
-          CONSOLE.warn('Api error', {error})
+          console.warn('Api error', {error})
           res.send({error})
         }
       })
       httpApi.all('/_httpMessageStream', async (req, res) => {
         try {
           var data = req.body || req.query
-          CONSOLE.debug('_httpMessageStream', req, data)
+          console.debug('_httpMessageStream', req, data)
           res.writeHead(200, {
             'Content-Type': 'text/event-stream',
             'Cache-Control': 'no-cache',
@@ -55,13 +55,13 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
           }
           methodCall(data, getStream, publicApi, 'socket')
         } catch (error) {
-          CONSOLE.warn('Api error', {error})
+          console.warn('Api error', {error})
           res.send({error})
         }
       })
 
       httpServer = httpApi.listen(socketFile)
-      CONSOLE.debug('http Api listening on ' + socketFile)
+      console.debug('http Api listening on ' + socketFile)
     }
 
     return {
@@ -74,7 +74,7 @@ module.exports = function getChannelHttpServerPackage ({getConsole, methodCall, 
       }
     }
   } catch (error) {
-    CONSOLE.error(error, {config})
+    console.error(error, {config})
     throw new Error('getChannelHttpServerPackage ' + config.file)
   }
 }

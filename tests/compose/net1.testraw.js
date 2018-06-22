@@ -7,26 +7,23 @@ var testName = 'COMPOSE SERVER net1'
 var path = require('path')
 var microTest = require('../microTest')(testName)
 
-const getConsole = (serviceName, serviceId, pack) => require('../../utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
-var CONSOLE = getConsole(testName, '----', '-----')
-
 var co = require('co')
 
 var Methods = {
   testNoResponse: co.wrap(function* (data, meta, getStream) {
-    CONSOLE.debug('testNoResponse', {data, meta, getStream})
+    console.debug('testNoResponse', {data, meta, getStream})
   }),
   testAknowlegment: co.wrap(function* (data, meta, getStream) {
-    CONSOLE.debug('testAknowlegment', {data, meta, getStream})
+    console.debug('testAknowlegment', {data, meta, getStream})
   }),
   testResponse: co.wrap(function* (data, meta, getStream) {
-    CONSOLE.debug('testResponse', {data, meta, getStream})
+    console.debug('testResponse', {data, meta, getStream})
     yield new Promise((resolve) => setTimeout(resolve, 1000))
     return data
   }),
   testStream: co.wrap(function* (data, meta, getStream) {
-    CONSOLE.debug('testStream', {data, meta, getStream})
-    var onClose = () => { CONSOLE.log('stream closed') }
+    console.debug('testStream', {data, meta, getStream})
+    var onClose = () => { console.log('stream closed') }
     var stream = getStream(onClose, 120000)
     stream.write({testStreamConnnected: 1})
     setTimeout(() => stream.write(data), 500)
@@ -34,7 +31,7 @@ var Methods = {
   })
 }
 
-var stubs = require('../stubs')(require('./sharedConfig'), Methods, getConsole)
+var stubs = require('../stubs')(require('./sharedConfig'), Methods)
 var netServer1 = stubs.getServer('net1', 'net1')
 
 async function mainTest () {

@@ -10,14 +10,11 @@
 var t = require('tap')
 // var path = require('path')
 
-const getConsole = (serviceName, serviceId, pack) => require('../utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
-var CONSOLE = getConsole('BASE TEST', '----', '-----')
-
 var config = {url: 'localhost:8080', file: '/tmp/test'}
 var testCheck = false
 var testStream = false
 var methodCall = async (data, getStream, isPublic) => {
-  CONSOLE.debug('methodCall', data, getStream, isPublic)
+  console.debug('methodCall', data, getStream, isPublic)
   testCheck = true
   if (!getStream) return data
   var stream = getStream(() => console.log('closed'), 120000)
@@ -37,15 +34,15 @@ var message = {
 }
 var mainTest = (testChannel) => t.test('*** ' + testChannel + ' CHANNEL ***', { autoend: true}, async function mainTest (t) {
   await new Promise((resolve) => setTimeout(resolve, 1000))
-  var channelServer = require('../channels/' + testChannel + '.server')({getConsole, methodCall, config})
-  var channelClient = require('../channels/' + testChannel + '.client')({getConsole})
+  var channelServer = require('../channels/' + testChannel + '.server')({ methodCall, config})
+  var channelClient = require('../channels/' + testChannel + '.client')()
   channelServer.start()
   await new Promise((resolve) => setTimeout(resolve, 2000))
   t.plan(3)
   await t.test('channelClient.send -> testResponse', async function (t) {
     testCheck = false
     var response = await channelClient.send(config, message, 5000, true, false)
-    CONSOLE.debug('testResponse response', response)
+    console.debug('testResponse response', response)
     t.same(response.data, message.data, 'response data as sended')
     t.same(testCheck, true, 'testResponse richiesta ricevuta')
     t.end()
@@ -54,7 +51,7 @@ var mainTest = (testChannel) => t.test('*** ' + testChannel + ' CHANNEL ***', { 
   await t.test('channelClient.send -> testNoResponse', async function (t) {
     testCheck = false
     var response = await channelClient.send(config, message, 5000, false, false)
-    CONSOLE.debug('testNoResponse response', response)
+    console.debug('testNoResponse response', response)
     t.same(response, null, 'response null')
     await new Promise((resolve) => setTimeout(resolve, 500))
     t.same(testCheck, true, 'testResponse richiesta ricevuta')
@@ -67,9 +64,9 @@ var mainTest = (testChannel) => t.test('*** ' + testChannel + ' CHANNEL ***', { 
     var testStream2 = false
     var testStream3 = false
     var streaming = await channelClient.send(config, message, 5000, true, true)
-    streaming.on('data', (data) => { CONSOLE.debug('streaming data', data); testStream2 = true })
-    streaming.on('error', (data) => CONSOLE.debug('streaming error', data))
-    streaming.on('end', (data) => { CONSOLE.debug('streaming close', data); testStream3 = true })
+    streaming.on('data', (data) => { console.debug('streaming data', data); testStream2 = true })
+    streaming.on('error', (data) => console.debug('streaming error', data))
+    streaming.on('end', (data) => { console.debug('streaming close', data); testStream3 = true })
     await new Promise((resolve) => setTimeout(resolve, 3000))
     t.same(testStream, true, 'methodCall raggiunto streaming ')
     t.same(testStream2, true, 'testStream2 on data ricevuto')

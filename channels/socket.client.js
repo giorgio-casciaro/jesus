@@ -3,16 +3,16 @@ const PACKAGE = 'channel.http.client'
 const checkRequired = require('../utils').checkRequired
 const EventEmitter = require('events')
 
-module.exports = function getChannelHttpClientPackage ({ getConsole, methodCall, serviceName = 'unknow', serviceId = 'unknow' }) {
-  var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
+module.exports = function getChannelHttpClientPackage ({  methodCall, serviceName = 'unknow', serviceId = 'unknow' }) {
+  
 
   try {
-    checkRequired({ getConsole})
+    
     return {
       send (listener, message, timeout = 120000, waitResponse = true, isStream = false) {
         return new Promise((resolve, reject) => {
           var httpUrl = 'http://unix:' + listener.file.replace(':', '') + ':'
-          CONSOLE.debug('send:', JSON.stringify({ httpUrl, listener, message, timeout, waitResponse, isStream }))
+          console.debug('send:', { httpUrl, listener, message, timeout, waitResponse, isStream })
           var callTimeout, call
           if (isStream) {
             call = request(
@@ -42,14 +42,14 @@ module.exports = function getChannelHttpClientPackage ({ getConsole, methodCall,
                 uri: httpUrl + '/_httpMessage'
               },
               function (error, response, body) {
-                CONSOLE.debug('Http request response', {error, response, body})
+                console.debug('Http request response', {error, body})
                 if (callTimeout)clearTimeout(callTimeout)
                 if (error) return reject(error)
                 if (waitResponse)resolve(body)
               })
             callTimeout = setTimeout(() => {
               call.end()
-              CONSOLE.warn('sendMessage timeout  to ' + listener.file, { message, serviceName, timeout })
+              console.warn('sendMessage timeout  to ' + listener.file, { message, serviceName, timeout })
               if (waitResponse)reject('Response problems: REQUEST TIMEOUT')
               else resolve(null)
             }, timeout)
@@ -59,7 +59,7 @@ module.exports = function getChannelHttpClientPackage ({ getConsole, methodCall,
       }
     }
   } catch (error) {
-    CONSOLE.error(error, {getConsole, methodCall})
+    console.error(error, { methodCall})
     throw new Error('Error during getChannelGrpcClientPackage')
   }
 }

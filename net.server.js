@@ -2,8 +2,13 @@ var R = require('ramda')
 const uuidV4 = require('uuid/v4')
 const PACKAGE = 'net.server'
 const checkRequired = require('./utils').checkRequired
+
+const log = (msg, data) => { console.log('\n' + JSON.stringify(['LOG', 'JESUS SERVER', msg, data])) }
+const debug = (msg, data) => { if (process.env.debugJesus) console.log('\n' + JSON.stringify(['DEBUG', 'JESUS SERVER', msg, data])) }
+const error = (msg, data) => { console.log('\n' + JSON.stringify(['ERROR', 'JESUS SERVER', msg, data])); console.error(data) }
+
 var Ajv = require('ajv')
-var ajvNoRemoveAdditional = new Ajv({ coerceTypes: true, allErrors: true, removeAdditional: false})
+var ajvNoRemoveAdditional = new Ajv({ coerceTypes: true, allErrors: true, removeAdditional: false })
 var ajvRemoveAdditional = new Ajv({ coerceTypes: true, allErrors: true, removeAdditional: true })
 var validateMsg = ajvRemoveAdditional.compile(require('./schemas/message.schema.json'))
 
@@ -15,16 +20,13 @@ class ErrorWithData extends Error {
   }
 }
 
-const getConsole = (serviceName, serviceId, pack) => require('./utils').getConsole({error: true, debug: true, log: true, warn: true}, serviceName, serviceId, pack)
-
 module.exports = function getNetServerPackage ({ serviceName = 'unknow', serviceId = 'unknow', getMethods, getMethodsConfig, getNetConfig}) {
-  var CONSOLE = getConsole(serviceName, serviceId, PACKAGE)
   try {
-    checkRequired({getMethods, getMethodsConfig, getConsole, getNetConfig}, PACKAGE)
+    checkRequired({getMethods, getMethodsConfig, getNetConfig}, PACKAGE)
     var config
     var validateMessage = (data) => {
       if (!validateMsg(data)) {
-        CONSOLE.error('MESSAGE IS NOT VALID ', {errors: validate.errors})
+        error('MESSAGE IS NOT VALID ', {errors: validateMsg.errors})
         throw new Error('MESSAGE IS NOT VALID', {errors: validateMsg.errors})
       } else return data
     }
@@ -36,11 +38,11 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
         'additionalProperties': false
       }, methodConfig[schemaField])
       var ajv = ajvNoRemoveAdditional
-      CONSOLE.log('validate ', { schema,data })
-      if (!schema.additionalProperties)ajv = ajvRemoveAdditional
+//      if (!schema.additionalProperties)ajv = ajvRemoveAdditional
       var validate = ajv.compile(schema)
       var valid = validate(data)
       if (!valid) {
+        log('Validation Errors', {data, error: validate.errors})
         throw new ErrorWithData('validation errors', {'type': 'schemaValidation', schemaField, 'errors': validate.errors})
       } else return data
     }
@@ -67,12 +69,13 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
       if (!serviceMethodsConfig[methodName].public && publicApi) throw new Error(methodName + ' is not public')
       return serviceMethodsConfig[methodName]
     }
-    var getChannel = (channelName) => require(`./channels/${channelName}.server`)({getConsole, methodCall, serviceName, serviceId, config: config.channels[channelName], getMethodsConfig})
+
+    var getChannel = (channelName) => require(`./channels/${channelName}.server`)({ methodCall, serviceName, serviceId, config: config.channels[channelName], getMethodsConfig })
     var forEachChannel = (func) => Object.keys(config.channels).forEach((channelName) => func(getChannel(channelName)))
 
     var methodCall = async function methodCall (message, getStream, publicApi = true, channel = 'UNKNOW') {
       try {
-        CONSOLE.log('=> SERVER IN', {message})
+        log('=> SERVER IN', {message})
         validateMessage(message)
 
         // CONFIG
@@ -100,31 +103,32 @@ module.exports = function getNetServerPackage ({ serviceName = 'unknow', service
           response = await method(data, meta, getStream || null)
         }
 
-        CONSOLE.log('SERVER OUT => ', {response, responseType: methodConfig.responseType})
+        log('SERVER OUT => ', {responseType: methodConfig.responseType, response})
         return response
-      } catch (error) {
-        CONSOLE.log('SERVER OUT => !ERROR : ', {'type': 'method', method: methodName, 'error': error.message, 'data': error.data})
-        return {'type': 'method', method: methodName, 'error': error.message, 'data': error.data}
+      } catch (err) {
+        error('SERVER OUT => !ERROR : ', err)
+        log('SERVER OUT => !ERROR : ', {'type': 'method', method: methodName, 'error': err.message, 'data': err.data})
+        return {__RESULT_TYPE__: 'error', method: methodName, 'error': err.message, 'data': err.data}
       }
     }
     return {
       async start () {
         config = await getNetConfig(serviceName)
-        CONSOLE.log('START CHANNELS SERVERS ', serviceName, config)
+        log('START CHANNELS SERVERS ', serviceName, config)
         checkRequired({channels: config.channels}, PACKAGE)
         forEachChannel((channel) => channel.start())
       },
       stop () {
-        CONSOLE.debug('STOP CHANNELS SERVERS ', {channels: config.channels})
+        debug('STOP CHANNELS SERVERS ', {channels: config.channels})
         forEachChannel((channel) => channel.stop())
       },
       restart () {
-        CONSOLE.debug('RESTART CHANNELS SERVERS ', {channels: config.channels})
+        debug('RESTART CHANNELS SERVERS ', {channels: config.channels})
         forEachChannel((channel) => channel.restart())
       }
     }
   } catch (error) {
-    CONSOLE.error(error)
+    error(error)
     throw new Error('Error during getNetServerPackage')
   }
 }

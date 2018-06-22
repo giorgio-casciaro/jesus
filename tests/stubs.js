@@ -1,4 +1,4 @@
-module.exports = function (sharedConfig, Methods, getConsole) {
+module.exports = function (sharedConfig, Methods) {
   var getMethods = (service, exclude) => Methods
 
   var getSharedConfig = (field = 'net', service = '*', exclude = '') => {
@@ -6,7 +6,7 @@ module.exports = function (sharedConfig, Methods, getConsole) {
     if (service === '*') return Object.keys(sharedConfig).filter((key) => key !== exclude).map((key) => { return {items: sharedConfig[key][field], service: key} })
     else return sharedConfig[service][field]
   }
-  // getMethods: () => require(path.join(__dirname, './methods'))(CONSOLE, netClient),
+  // getMethods: () => require(path.join(__dirname, './methods'))(console, netClient),
   // getMethodsConfig: (service, exclude) => schemaClient.get('methods', service),
   // getNetConfig: (service, exclude) => schemaClient.get('net', service, exclude),
   // getEventsIn: (service, exclude) => schemaClient.get('eventsIn', service, exclude),
@@ -19,7 +19,7 @@ module.exports = function (sharedConfig, Methods, getConsole) {
     var getEventsIn = async (service, exclude) => getSharedConfig('eventsIn', service || serviceName, exclude)
     var getEventsOut = async (service, exclude) => getSharedConfig('eventsOut', service || serviceName, exclude)
     var getRpcOut = async (service, exclude) => getSharedConfig('rpcOut', service || serviceName, exclude)
-    return require('../net.server')({getConsole, serviceName, serviceId, getMethods, getMethodsConfig, getNetConfig})
+    return require('../net.server')({ serviceName, serviceId, getMethods, getMethodsConfig, getNetConfig})
   }
 
   function getClient (serviceName, serviceId) {
@@ -28,7 +28,7 @@ module.exports = function (sharedConfig, Methods, getConsole) {
     var getEventsIn = async (service, exclude) => getSharedConfig('eventsIn', service || serviceName, exclude)
     var getEventsOut = async (service, exclude) => getSharedConfig('eventsOut', service || serviceName, exclude)
     var getRpcOut = async (service, exclude) => getSharedConfig('rpcOut', service || serviceName, exclude)
-    return require('../net.client')({getConsole, serviceName, serviceId, getNetConfig, getEventsIn, getEventsOut, getMethodsConfig, getRpcOut})
+    return require('../net.client')({ serviceName, serviceId, getNetConfig, getEventsIn, getEventsOut, getMethodsConfig, getRpcOut})
   }
 
   return {
