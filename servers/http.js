@@ -86,10 +86,17 @@ function addUploadedFiles (filesInfo, data, meta, uploadConfig) {
 
 function getMeta (headers) {
   var newMeta = {}
-  log('getMeta', headers)
+  if (headers.cookie) {
+    for (var metaString of headers.cookie.split('; ')) {
+      var metaInfo = metaString.split('=')
+      log('getMeta metaInfo', {metaInfo, metaString})
+      if (metaInfo[0].indexOf('app-meta-') === 0)newMeta[metaInfo[0].replace('app-meta-', '')] = metaInfo[1]
+    }
+  }
   for (var metaK in headers) if (metaK.indexOf('app-meta-') + 1)newMeta[metaK.replace('app-meta-', '')] = headers[metaK]
   if (!newMeta.corrid)newMeta.corrid = uuidV4()
   if (!newMeta.ch)newMeta.ch = 'http'
+  log('getMeta', {newMeta, headers})
   return newMeta
 }
 
@@ -116,12 +123,13 @@ module.exports = function httpServer ({ config, methods }) {
         log('http Api start method ', methodName)
 
         var method = methods[methodName]
-        if (!method.config.public) return false
+        if (!method.config || !method.config.public) return false
         var middleware = []
         pushUploadMiddleware(middleware, method.config.upload)
         httpApi.all('/' + methodName, middleware, async function (req, res) {
           log('http Api call method ', {methodName, query: req.query, body: req.body})
           var meta = getMeta(req.headers)
+          log('http Api call meta ', {meta, headers: req.headers})
           var data = req.method === 'GET' ? req.query : req.body
           await addUploadedFiles(req.files, data, meta, method.config.upload)
           if (!method.config.stream) {
@@ -143,7 +151,7 @@ module.exports = function httpServer ({ config, methods }) {
             } catch (err) {
             // if (!err.data)err.data = {errors: [error.message]}
               error('httpApi error', err)
-              res.status(200).json({__RESULT_TYPE__: 'error', errorType: 'httpApi', error: err.message, errorData: err.data})
+              res.status(200).json({__RESULT_TYPE__: 'error', errorType: err.type || 'httpApi', error: err.message, errorData: err.data})
             }
           } else {
             debug('HttpPublic MESSAGE STREAM', {data, meta, headers: req.headers})
@@ -152,26 +160,40 @@ module.exports = function httpServer ({ config, methods }) {
               'Cache-Control': 'no-cache',
               'Connection': 'keep-alive'
             })
-            var getStream = function (onClose, MAX_REQUEST_TIMEOUT) {
-              var isClosed = false
-              const close = () => { isClosed = true; if (timeout)clearTimeout(timeout); onClose() }
-              res.on('close', (data) => { log('streaming closed', data); close() })
-                .on('finish', (data) => { log('streaming finish', data); close() })
-                .on('error', (data) => { log('streaming error', data); close() })
-                .on('end', (data) => { log('streaming end', data); close() })
-              var timeout = false
-              if (MAX_REQUEST_TIMEOUT)timeout = setTimeout(() => { timeout = false; res.end() }, MAX_REQUEST_TIMEOUT)
-              return {
-                write: function (obj) { if (!isClosed)res.write('data: ' + JSON.stringify(obj) + '\n\n') },
-                end: function (obj) { if (!isClosed)res.end() }
-              }
+            // var getStream = function (onClose, MAX_REQUEST_TIMEOUT) {
+            //   var isClosed = false
+            //   const close = () => { isClosed = true; if (timeout)clearTimeout(timeout); onClose() }
+            //   res.on('close', (data) => { log('streaming closed', data); close() })
+            //     .on('finish', (data) => { log('streaming finish', data); close() })
+            //     .on('error', (data) => { log('streaming error', data); close() })
+            //     .on('end', (data) => { log('streaming end', data); close() })
+            //   var timeout = false
+            //   if (MAX_REQUEST_TIMEOUT)timeout = setTimeout(() => { timeout = false; res.end() }, MAX_REQUEST_TIMEOUT)
+            //   return {
+            //     write: function (obj) { if (!isClosed)res.write('data: ' + JSON.stringify(obj) + '\n\n') },
+            //     end: function (obj) { if (!isClosed)res.end() }
+            //   }
+            // }
+            var getStream = function () {
+              res.on('close', (data) => { log('streaming closed', data) })
+                .on('finish', (data) => { log('streaming finish', data) })
+                .on('error', (data) => { log('streaming error', data) })
+                .on('end', (data) => { log('streaming end', data) })
+              return res
             }
 
             method.exec(data, meta, getStream)
           }
         })
       })
-
+      httpApi.all('*', function (req, res) {
+        var paths = req.path.split('/').filter(s => s !== '')
+        var methodName = paths[0]
+        if (!methods[methodName])res.status(200).json({__RESULT_TYPE__: 'error', errorType: 'httpApi', error: 'api method not exists', errorData: {methodName}})
+      })
+      // httpApi.all('*' + methodName, [], async function (req, res) {
+      //   log('http Api call not used method ', {methodName, query: req.query, body: req.body})
+      // })
     // ROUTE
     // httpApi.all('*', upload.any(), async function (req, res) {
     //   try {

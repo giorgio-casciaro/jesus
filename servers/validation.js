@@ -7,9 +7,9 @@ const error = (msg, data) => { console.log('\n' + JSON.stringify(['ERROR', 'SCHE
 
 class ValidationError extends Error {
   constructor (errors, schema, data) {
-    super(errors ? 'ValidationErrors :' + errors.map((err) => err.message).join(', ') : 'ValidationErrors')
+    super(errors ? 'ValidationErrors : ' + errors.map((err) => err.dataPath + ' ' + err.message).join(', ') : 'ValidationErrors')
     this.name = this.constructor.name
-    this.data = {errorsType: 'ValidationError', errors, schema, data}
+    this.data = { errorsType: 'ValidationError', errors, schema, data }
   }
 }
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
     if (!schema.additionalProperties)schema.additionalProperties = false
     // log('schema', schema)
     var validate = ajv.compile(schema)
-    debug('schema', {data, schema})
+    log('validate', { data, schema })
     var valid = validate(data)
     debug('schema data after validation', {data})
     if (!valid) {

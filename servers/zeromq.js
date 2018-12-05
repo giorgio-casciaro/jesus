@@ -10,7 +10,7 @@ const uuidV4 = require('uuid/v4')
 
 const log = (msg, data) => { console.log('\n' + JSON.stringify(['LOG', 'ZEROMQ SERVER', msg, data])) }
 const debug = (msg, data) => { if (process.env.debugJesus)console.log('\n' + JSON.stringify(['DEBUG', 'ZEROMQ SERVER', msg, data])) }
-const error = (msg, data) => { console.log('\n' + JSON.stringify(['ERROR', 'ZEROMQ SERVER', msg, data])) }
+const error = (msg, err) => { console.error(err); console.log('\n' + JSON.stringify(['ERROR', 'ZEROMQ SERVER', msg, err])) }
 
 const validate = require('./validation').validate
 
@@ -21,9 +21,12 @@ function getMeta (data) {
   return newMeta
 }
 
-class ZeromqServerStream extends require('stream').Writable {
+class ZeromqServerStream extends require('stream').Duplex {
+  _read (n) {
+    log('ZeromqServerStream _read', { n})
+  }
   _write (chunk, encoding, callback) {
-    debug('_write', {chunk, encoding, callback})
+    log('ZeromqServerStream _write', { chunk, encoding})
     try {
       // WRITE STREAM TO RESOURCE
       this.zeromqServer.send([this.clientIdRaw, JSON.stringify({ reqId: this.reqId, type: 'stream', data: chunk })])
@@ -32,20 +35,8 @@ class ZeromqServerStream extends require('stream').Writable {
       callback(new Error('chunk is invalid'))
     }
   }
-
-  setReqId (reqId) {
-    this.reqId = reqId
-    return this
-  }
-  setClientIdRaw (clientIdRaw) {
-    this.clientIdRaw = clientIdRaw
-    return this
-  }
-  setZeromqServer (zeromqServer) {
-    this.zeromqServer = zeromqServer
-    return this
-  }
   _destroy () {
+    log('ZeromqServerStream _destroy', {})
     // READ STREAM FROM RESOURCE
     this.zeromqServer.send([this.clientIdRaw, JSON.stringify({ reqId: this.reqId, type: 'streamEnd' })])
     // if (this.externalBuffer && this.externalBuffer[0]) this.push(this.externalBuffer.shift())
@@ -55,7 +46,7 @@ class ZeromqServerStream extends require('stream').Writable {
 
 module.exports = function zeromqServer ({ config, methods }) {
   var zeromqServer
-  var requestStreams = {}
+  var requestStreamsByClientId = {}
   try {
     var start = async function () {
       log('zeromq Api try to start on ' + config.url)
@@ -71,6 +62,12 @@ module.exports = function zeromqServer ({ config, methods }) {
         error(`0MQ error: ${err}`, err)
       })
         .on('disconnect', (clientIdRaw, err) => {
+          if (requestStreamsByClientId[clientIdRaw]) {
+            Objects.keys(requestStreamsByClientId[clientIdRaw]).forEach((reqId) => {
+              requestStreamsByClientId[clientIdRaw][reqId].end()
+              delete requestStreamsByClientId[clientIdRaw][reqId]
+            })
+          }
           log('zeromqServer disconnect', {clientIdRaw, err, zeromqServer})
         })
         .on('error', err => {
@@ -96,19 +93,23 @@ module.exports = function zeromqServer ({ config, methods }) {
         })
         .on('message', async (clientIdRaw, dataRaw) => {
           // var clientId = clientIdRaw.toString('base64')
+          log('zeromq  SERVER message data', {clientIdRaw, dataRaw, dataRawToString: dataRaw.toString()})
           var data = JSON.parse(dataRaw.toString())
-          debug('zeromq  SERVER message ', {clientIdRaw, data})
+          log('zeromq  SERVER message ', {method: data.method, type: data.type})
           if (data.type === 'streamEnd') {
-            if (requestStreams[data.reqId]) {
-              await requestStreams[data.reqId].destroy()
-              // delete requestStreams[data.reqId]
+            if (requestStreamsByClientId[clientIdRaw] && requestStreamsByClientId[clientIdRaw][data.reqId]) {
+              // requestStreamsByClientId[clientIdRaw][data.reqId].destroy()
+              requestStreamsByClientId[clientIdRaw][data.reqId].end()
+              delete requestStreamsByClientId[clientIdRaw][data.reqId]
             }
-          }
-          if (!data.type || data.type === 'request') {
+          } else if (data.type === 'stream') {
+            log('zeromq  SERVER message stream', data)
+            requestStreamsByClientId[clientIdRaw][data.reqId].push(data.data)
+          } else if (!data.type || data.type === 'request') {
             var method = methods[data.method]
             debug('zeromq  SERVER message ', {data, method})
-            if (!method) {
-              return zeromqServer.send([clientIdRaw, JSON.stringify({ reqId: data.reqId, data: {__RESULT_TYPE__: 'error', errorType: 'zeromqServer', error: 'method not defined', errorData: data} })])
+            if (!method || !method.config) {
+              return zeromqServer.send([clientIdRaw, JSON.stringify({ reqId: data.reqId, data: {__RESULT_TYPE__: 'error', errorType: 'zeromqServer', error: 'method not defined: ' + method, errorData: data} })])
             }
             // if (typeof method.config.warmUp === 'undefined')method.config.warmUp = 2000
             // if (method.config.warmUp) {
@@ -123,6 +124,7 @@ module.exports = function zeromqServer ({ config, methods }) {
                 validate(method.response, response)
               } catch (err) {
                 // if (!err.data)err.data = {errors: [err.message]}
+                error('zeromqServer error', err)
                 response = {__RESULT_TYPE__: 'error', errorType: 'zeromqServer', error: err.message, errorData: err.data}
               }
               debug('zeromq  SERVER message response', {response})
@@ -140,25 +142,29 @@ module.exports = function zeromqServer ({ config, methods }) {
                 //       zeromqServer.send([clientIdRaw, JSON.stringify({ reqId: data.reqId, type: 'streamEnd' })])
                 //     } catch (err) { log(`0MQ getStream close: ${err}`, err) }
                 //     if (onClose)onClose()
-                //     delete requestStreams[data.reqId]
+                //     delete requestStreamsByClientId[clientIdRaw][data.reqId]
                 //   }
                 // }
                 var stream = new ZeromqServerStream({objectMode: true, writableObjectMode: true, readableObjectMode: true})
-                stream.setReqId(data.reqId).setClientIdRaw(clientIdRaw).setZeromqServer(zeromqServer)
+                stream.zeromqServer = zeromqServer
+                stream.reqId = data.reqId
+                stream.clientIdRaw = clientIdRaw
+                stream.info = data
                 stream.on('finish', (error) => { log('stream finish', {error}) })
-                stream.on('error', (error) => { debug('stream error', {error}) })
-                stream.on('readable', () => { debug('stream readable', true) })
-                stream.on('end', (error) => { debug('stream end', error) })
+                stream.on('error', (error) => { log('stream error', {error}) })
+                stream.on('data', (data) => { log('stream data', data) })
+                stream.on('end', (error) => { log('stream end', error) })
                 stream.on('close', (data) => {
                   log('zeromqServer stream close', data)
-                  delete requestStreams[data.reqId]
+                  delete requestStreamsByClientId[clientIdRaw][data.reqId]
                 })
                 // stream.on('data', (streamData) => {
                 //   log('zeromqServer stream data', {data, streamData})
                 //   zeromqServer.send([clientIdRaw, JSON.stringify({ reqId: data.reqId, type: 'stream', data: streamData })])
                 // })
                 // if (MAX_REQUEST_TIMEOUT)timeout = setTimeout(stream.end, MAX_REQUEST_TIMEOUT)
-                requestStreams[data.reqId] = stream
+                if (!requestStreamsByClientId[clientIdRaw])requestStreamsByClientId[clientIdRaw] = {}
+                requestStreamsByClientId[clientIdRaw][data.reqId] = stream
                 return stream
               }
               await method.exec(data.data, data.meta, getStream)
